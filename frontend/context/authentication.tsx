@@ -1,9 +1,13 @@
 import React, { createContext, useContext } from 'react'
 import { useRouter } from 'expo-router'
+import * as SecureStore from 'expo-secure-store'
+
+import { getRefreshToken } from '../utils/authentication'
 
 interface AuthContextType {
-  isAuthenticated: boolean,
+  isAuthenticated: boolean | null,
   setIsAuthenticated: (authState:boolean) => void,
+  isLoading:boolean,
   login: () => void,
   logout: () => void,
 }
@@ -11,7 +15,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export const useAuthContext = () => {
-  return useContext(AuthContext)
+  const context =  useContext(AuthContext)
+  if(!context) throw new Error('useAuthContext should be used inside AuthContextProvider')
+  return context
 }
 
 interface ContextProp {
@@ -21,22 +27,36 @@ interface ContextProp {
 export const AuthContextProvider = ({ children }: ContextProp) => {
   
   const router = useRouter()
-  const [isAuthenticated,setIsAuthenticated] = React.useState<boolean | null>(false)
+  const [isLoading,setIsLoading] = React.useState<boolean>(true)
+  const [isAuthenticated,setIsAuthenticated] = React.useState<boolean | null>(null)
   
-  const login = React.useCallback(() => {
+  const login = React.useCallback(async() => {
+    await SecureStore.setItemAsync('refresh','dummy')
     setIsAuthenticated(true)
-    router.replace('(home)')
+    router.replace('(home)/')
   },[isAuthenticated])
   
-  const logout = React.useCallback(() => {
-    setIsAuthenticated(true)
-    router.replace('(authentication)')
+  const logout = React.useCallback(async() => {
+    await SecureStore.deleteItemAsync('refresh')
+    setIsAuthenticated(false)
+    router.replace('authentication/')
   },[isAuthenticated]) 
+  
+  
+  React.useEffect(() => {
+    async function checkAuth(){
+      const token = await getRefreshToken()
+      setIsAuthenticated(token? true: false)
+      setIsLoading(false)
+    }
+    checkAuth()
+  },[])
   
   return (
     <AuthContext.Provider value={{
       isAuthenticated,
       setIsAuthenticated,
+      isLoading,
       login,
       logout
     }}>

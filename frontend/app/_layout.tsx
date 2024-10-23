@@ -1,31 +1,33 @@
 import React from 'react'
-import { Stack } from 'expo-router'
-import { AuthContextProvider, useAuthContext } from '../context/authentication'
-import { View } from 'react-native'
+import { Slot, useRouter } from 'expo-router'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
-const CoreStack = () => {
+import { AuthContextProvider, useAuthContext } from '../context/authentication'
+
+
+function InitialLayout(){
   
-  const { isAuthenticated } = useAuthContext()
+  const { isAuthenticated, isLoading } = useAuthContext()
+  const router = useRouter()
+  
+  React.useEffect(() => {
+    if(!isLoading){
+      router.replace(isAuthenticated? '(home)':'authentication')
+    }
+  },[isLoading])
   
   return (
-    <Stack initialRouteName={isAuthenticated? '(home)': '(authentication)'} >
-      <Stack.Screen
-        name='(home)' 
-        options={{ headerShown:false }}/>
-      <Stack.Screen 
-        name='(authentication)' 
-        options={{ headerShown:false }}/>
-    </Stack>
+    <SafeAreaView style={{flex:1}}>
+      <Slot />
+    </SafeAreaView>
   )
 }
 
 
-const RootLayout = () => {
+export default function RootLayout(){
   return (
     <AuthContextProvider>
-      <CoreStack/>
+      <InitialLayout />
     </AuthContextProvider>
   )
 }
-
-export default RootLayout;

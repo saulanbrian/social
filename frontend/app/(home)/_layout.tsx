@@ -6,7 +6,7 @@ const HomeLayout = () => {
   return (
     <Stack>
       <Stack.Screen name='index' options={{
-        headerTitle:'home'
+        headerTitle:'home',
       }} />
     </Stack>
   )
