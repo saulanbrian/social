@@ -5,3 +5,5 @@ export { default as CustomButton } from './button'
 export { default as CustomTextInput } from './textInput'
 
 export { default as CustomText } from './text'
+
+export { default as InputError } from './InputError'

@@ -3,7 +3,7 @@ import React from 'react'
 import { Colors } from '../../constants/Colors'
 
 type Props = ViewProps & {
-  children: ReactNode,
+  children: ReactNode;
 }
 
 export default function CustomView({ children, style, ...props } : Props) {

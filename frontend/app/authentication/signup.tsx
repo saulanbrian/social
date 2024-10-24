@@ -1,23 +1,35 @@
-import React, { useRef }  from 'react'
+import React, { useRef, useCallBack}  from 'react'
 import { View, Text, Pressable, TextInput } from 'react-native'
 import { useAuthContext } from '../../context/authentication'
-import AuthForm from '../../components/AuthForm'
+import AuthForm, { AuthFormRef } from '../../components/AuthForm'
 
-export default function SignupPage() {
-  
-  const usernameRef = useRef<TextInput | null>(null)
-  const passwordRef = useRef<TextInput | null>(null)
-  const passwordConfirmRef = useRef<TextInput | null>(null)
-  
+import api from '../../api'
 
+function SignupPage() {
+  
+  const { login } = useAuthContext()
+  const formRef = useRef<AuthFormRef | null>(null)
+  
+  async function handleSubmit() {
+    const { username, password } = formRef.current
+    if(username && password){
+      try{
+        const res = await api.post('auth/token/',{username,password})
+        console.log(res.data)
+  
+      }  catch(e){
+        console.log(e)
+      }
+    }
+  }
+  
   return (
     <AuthForm 
       method='signup'
-      usernameRef={usernameRef}
-      passwordRef={passwordRef}
-      passwordConfirmRef={passwordConfirmRef}
-      onSubmit={() => console.log('hi')}
+      ref={formRef}
+      onSubmit={handleSubmit}
       />
   )
 }
 
+export default SignupPage;

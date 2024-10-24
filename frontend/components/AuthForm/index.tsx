@@ -1,71 +1,113 @@
-import React, { useState } from 'react'
-import { StyleSheet, TouchableOpacity , Appearance, useColorScheme } from 'react-native'
+import React, { 
+  useState, 
+  forwardRef, 
+  Ref, 
+  useImperativeHandle
+} from 'react'
+
+import { 
+  StyleSheet, 
+  TouchableOpacity,
+  Appearance, 
+  useColorScheme,
+  ViewProps
+} from 'react-native'
+
 import { 
   CustomView as View, 
   CustomButton as Button,
   CustomTextInput as TextInput,
-  CustomText as Text
+  CustomText as Text,
+  InputError
 } from '../ui'
+
+import { Link, LinkProps } from 'expo-router'
+
+import ChangeMethodLink from './changeMethodLink'
+
 import { Colors } from '../../constants/Colors'
 
-type SignupProps = {
-  method:'signup',
-  passwordConfirmRef:React.RefObject<TextInput | null>
+import { FormInputErrorType, filterInputError,filterInputErrorsByField } from '../../utils/errors'
+
+
+export type AuthFormRef = {
+  username:string;
+  password:string;
+  passwordConfirm? : string
 }
 
-type BaseAuthProps = {
-  method:'login' | 'signup',   
-  usernameRef:React.RefObject<TextInput | null>,
-  passwordRef:React.RefObject<TextInput | null>,
-  onSubmit:() => void,
+type AuthFormProps = ViewProps & {
+  method:'login' | 'signup';
+  errors?: FormInputErrorType[];
+  onSubmit:() => void;
 }
 
-type AuthFormProps = 
-  | BaseAuthProps 
-  | ( SignupProps & BaseAuthProps )
-
-
-export default function AuthForm(props: AuthFormProps){
+function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
   
-  const {
-    method,
-    usernameRef,
-    passwordRef,
-    onSubmit
-  } = props;
+  const { method, style, onSubmit, errors, ...restProps } = props;
+  
+  const [username,setUsername] = useState<string>('')
+  const [password,setPassword] = useState<string>('')
+  const [passwordConfirm,setPasswordConfirm] = useState<string>('')
   
   const theme = useColorScheme()
   const buttonTextColor = theme === 'light'? Colors.dark.text: Colors.light.text
   
+  const { detail: detailErrors } = filterInputErrorsByField({
+    errors,
+    fields:['detail']
+  })
+  
+  useImperativeHandle(ref, () => {
+    return method === 'login'? {
+      username, 
+      password,
+    }: { username, password, passwordConfirm }
+  })
+  
   return (
-    <View style={styles.container}>
+    <View style={{...styles.container,...style}} {...restProps}>
       <TextInput 
-        ref={usernameRef}
+        value={username}
+        onChangeText={setUsername}
         placeholder='username' 
         style={styles.formInput}
         />
+      
       <TextInput 
-        ref={passwordRef}
+        value={password}
+        onChangeText={setPassword}
         placeholder='password'
         style={styles.formInput}
         secureTextEntry/>
       
       { method === 'signup' && (
         <TextInput
-          ref={(props as SignupProps).passwordConfirmRef}
+          value={passwordConfirm}
+          onChangeText={setPasswordConfirm}
           placeholder='re-enter your password' 
           style={styles.formInput}
           secureTextEntry/>
       ) }
-    
+      
+      <ChangeMethodLink method={method} style={{marginStart:22}} />
+      
+      { detailErrors && detailErrors.length >= 1 && (
+        <InputError 
+          style={{marginStart:26}}
+          message={detailErrors[0].message} />
+      ) }
       
       <Button style={styles.button} onPress={onSubmit}>
-        <Text style={[styles.buttonText,{color:buttonTextColor}]}>{ method }</Text>
+        <Text style={[styles.buttonText,{color:buttonTextColor}]}>
+          { method }
+        </Text>
       </Button>
     </View>
   )
 }
 
+export default forwardRef(AuthForm)
 
 const styles = StyleSheet.create({
   button:{
