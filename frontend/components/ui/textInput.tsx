@@ -2,20 +2,18 @@ import React, { forwardRef, Ref } from 'react'
 import {
   TextInput, 
   TextInputProps,
-  useColorScheme
 } from 'react-native'
 
-import { Colors } from '../../constants/Colors'
+import { useThemeContext } from '../../context/theme'
 
 const CustomTextInput = forwardRef<TextInput, TextInputProps>((
   {style,...props},ref) => {
   
-  const theme = useColorScheme()
-  const backgroundColor = theme === 'light' ? Colors.light.tint : Colors.dark.tint
+  const { theme } = useThemeContext()
   
   const defaultStyles = {
-    color: theme === 'light' ? Colors.light.tint : Colors.dark.tint,
-    borderColor: theme === 'light' ? Colors.light.tint : Colors.dark.tint,
+    color: theme.colors.tint,
+    borderColor: theme.colors.tint,
     borderWidth:1,
   }
   

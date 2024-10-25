@@ -7,6 +7,7 @@ const HomeLayout = () => {
     <Stack>
       <Stack.Screen name='index' options={{
         headerTitle:'home',
+        headerTitleAlign:'center',
       }} />
     </Stack>
   )

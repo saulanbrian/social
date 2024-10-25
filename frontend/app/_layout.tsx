@@ -1,9 +1,8 @@
 import React from 'react'
 import { Slot, useRouter } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { AuthContextProvider, useAuthContext } from '../context/authentication'
-
+import { ThemeContextProvider } from '../context/theme'
 
 function InitialLayout(){
   
@@ -17,17 +16,17 @@ function InitialLayout(){
   },[isLoading])
   
   return (
-    <SafeAreaView style={{flex:1}}>
       <Slot />
-    </SafeAreaView>
   )
 }
 
 
 export default function RootLayout(){
   return (
-    <AuthContextProvider>
-      <InitialLayout />
-    </AuthContextProvider>
+    <ThemeContextProvider>
+      <AuthContextProvider>
+        <InitialLayout />
+      </AuthContextProvider>
+    </ThemeContextProvider>
   )
 }

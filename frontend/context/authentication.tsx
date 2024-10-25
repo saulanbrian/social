@@ -2,7 +2,7 @@ import React, { createContext, useContext } from 'react'
 import { useRouter } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
 
-import { getRefreshToken } from '../utils/authentication'
+import { getRefreshToken, refreshToken } from '../utils/authentication'
 
 interface AuthContextType {
   isAuthenticated: boolean | null,
@@ -30,8 +30,9 @@ export const AuthContextProvider = ({ children }: ContextProp) => {
   const [isLoading,setIsLoading] = React.useState<boolean>(true)
   const [isAuthenticated,setIsAuthenticated] = React.useState<boolean | null>(null)
   
-  const login = React.useCallback(async() => {
-    await SecureStore.setItemAsync('refresh','dummy')
+  const login = React.useCallback(async({access,refresh}) => {
+    await SecureStore.setItemAsync('access',access)
+    await SecureStore.setItemAsync('refresh',refresh)
     setIsAuthenticated(true)
     router.replace('(home)/')
   },[isAuthenticated])

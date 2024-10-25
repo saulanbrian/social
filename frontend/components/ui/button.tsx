@@ -2,22 +2,25 @@ import React from 'react'
 import {
   TouchableOpacity,
   TouchableOpacityProps,
-  useColorScheme
 } from 'react-native'
 
-import { Colors } from '../../constants/Colors'
+import { useThemeContext } from '../../context/theme'
 
 type Props = TouchableOpacityProps & {
   children: React.ReactNode
 }
 
-export default function CustomButton({children,style,...props}: Props){
+export default function CustomTO({children,style,disabled,...props}: Props){
   
-  const theme = useColorScheme()
-  const backgroundColor = theme === 'light' ? Colors.light.tint : Colors.dark.tint
+  const { theme } = useThemeContext()
+  const backgroundColor = theme.colors.tint
+  const opacity = disabled && 0.5
   
   return (
-    <TouchableOpacity {...props} style={{ backgroundColor,...style}} >
+    <TouchableOpacity 
+      disabled={disabled}
+      style={{ backgroundColor,opacity,...style}}
+      {...props} >
       { children }
     </TouchableOpacity>
   )

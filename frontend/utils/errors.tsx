@@ -1,34 +1,34 @@
-export type FormInputErrorType = {
-  field:string;
-  message:string
+export type FormErrorType = {
+  error: object
 }
 
-//--------------------------------------//
-export function filterInputError({ errors, filter }: {
-  errors:FormInputErrorType[];
+// -------------------------------------- //
+type FormErrorFilterProps = FormErrorType &  {
   filter:string
-}){
-  
-  const filterResult = errors.some(({field}) => field === filter) ?
-    errors.filter(({field}) => field === filter) : null
-  return filterResult
 }
 
-//--------------------------------------//
-type FilterInputErrorsByFieldProps = {
-  errors:FormInputErrorType[];
-  fields: string[]
+function filterFormError({error,filter}:FormErrorFilterProps){
+  const result = Object.entries(error).filter(
+    ([field,message]) => field === filter)
+  return result
 }
 
-export const filterInputErrorsByField = (
-  {errors,fields}:FilterInputErrorsByFieldProps) => {
-  let result = {}
-  for(let filter of fields) {
-    const filterResult = errors.filter(
-      ({field}) => { 
-        return field === filter
-      })
-    result[filter] = filterResult
+
+// -------------------------------------- //
+type DestructureErrorProps = FormErrorType & {
+  keys:str[]
+}
+
+export function destructureFormErrorByKey({error,keys}:DestructureErrorProps){
+  let res = {}
+  const entries = Object.entries(error)
+  for(let key of keys){
+    entries.forEach(([field,message]) => {
+      if(field === key){
+        res[key] = Array.isArray(message)? message: [message,]
+      }
+  })
   }
-  return result 
+  return res 
 }
+

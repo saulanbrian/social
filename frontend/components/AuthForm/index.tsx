@@ -10,15 +10,17 @@ import {
   TouchableOpacity,
   Appearance, 
   useColorScheme,
-  ViewProps
+  ViewProps,
+  View as RegularView
 } from 'react-native'
 
 import { 
   CustomView as View, 
-  CustomButton as Button,
+  CustomTO,
   CustomTextInput as TextInput,
   CustomText as Text,
-  InputError
+  InputError,
+  ActivityIndicator
 } from '../ui'
 
 import { Link, LinkProps } from 'expo-router'
@@ -27,7 +29,10 @@ import ChangeMethodLink from './changeMethodLink'
 
 import { Colors } from '../../constants/Colors'
 
-import { FormInputErrorType, filterInputError,filterInputErrorsByField } from '../../utils/errors'
+import { 
+  FormErrorType, 
+  destructureFormErrorByKey
+} from '../../utils/errors'
 
 
 export type AuthFormRef = {
@@ -38,13 +43,22 @@ export type AuthFormRef = {
 
 type AuthFormProps = ViewProps & {
   method:'login' | 'signup';
-  errors?: FormInputErrorType[];
+  error:FormErrorType;
   onSubmit:() => void;
+  isPending:boolean
 }
 
 function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
   
-  const { method, style, onSubmit, errors, ...restProps } = props;
+  const {
+    method, 
+    style,
+    onSubmit,
+    error,
+    isPending,
+    ...restProps
+  } = props;
+  
   
   const [username,setUsername] = useState<string>('')
   const [password,setPassword] = useState<string>('')
@@ -53,10 +67,15 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
   const theme = useColorScheme()
   const buttonTextColor = theme === 'light'? Colors.dark.text: Colors.light.text
   
-  const { detail: detailErrors } = filterInputErrorsByField({
-    errors,
-    fields:['detail']
+  const {
+    detail: detailErrors,
+    username:usernameErrors,
+    password:passwordErrors
+  } = destructureFormErrorByKey({ 
+    error, 
+    keys:['detail','username','password'] 
   })
+  
   
   useImperativeHandle(ref, () => {
     return method === 'login'? {
@@ -64,6 +83,10 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
       password,
     }: { username, password, passwordConfirm }
   })
+  
+  const buttonDisabled = method === 'login'? (
+    Boolean(!username || !password) ):
+    Boolean(!username || !password || !passwordConfirm)
   
   return (
     <View style={{...styles.container,...style}} {...restProps}>
@@ -73,6 +96,12 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
         placeholder='username' 
         style={styles.formInput}
         />
+        
+      { usernameErrors && usernameErrors.length >= 1 && (
+        <InputError 
+          style={{marginStart:26}}
+          message={usernameErrors[0]} />
+      ) }
       
       <TextInput 
         value={password}
@@ -80,6 +109,12 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
         placeholder='password'
         style={styles.formInput}
         secureTextEntry/>
+      
+      { passwordErrors && passwordErrors.length >= 1 && (
+        <InputError 
+          style={{marginStart:26}}
+          message={passwordErrors[0]} />
+      ) }
       
       { method === 'signup' && (
         <TextInput
@@ -90,19 +125,35 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
           secureTextEntry/>
       ) }
       
+      { method === 'signup' && passwordErrors && passwordErrors.length >= 1 && (
+        <InputError 
+          style={{marginStart:26}}
+          message={passwordErrors[0]} />
+      ) }
+      
       <ChangeMethodLink method={method} style={{marginStart:22}} />
       
       { detailErrors && detailErrors.length >= 1 && (
         <InputError 
           style={{marginStart:26}}
-          message={detailErrors[0].message} />
+          message={detailErrors[0]} />
       ) }
       
-      <Button style={styles.button} onPress={onSubmit}>
-        <Text style={[styles.buttonText,{color:buttonTextColor}]}>
-          { method }
-        </Text>
-      </Button>
+      <CustomTO 
+        style={styles.button} 
+        onPress={onSubmit} 
+        disabled={isPending? true: buttonDisabled}>
+        { !isPending? (
+          <Text style={[styles.buttonText,{color:buttonTextColor}]}>
+            { method }
+          </Text>
+        ): (
+          <RegularView style={{margin:8}}>
+            <ActivityIndicator /> 
+          </RegularView>
+        ) }
+      </CustomTO>
+      
     </View>
   )
 }
@@ -128,6 +179,9 @@ const styles = StyleSheet.create({
     position:'relative',
     rowGap:12,
     paddingTop:64
+  },
+  disabledButton:{
+    opacity:0
   },
   formInput:{
     alignSelf: 'center',
