@@ -17,8 +17,9 @@ export const refreshToken = async(token:string) => {
   
   try{ 
     const res = await axios.post(`${API_URL}auth/token/refresh/`,{refresh:token})
-    console.log(res.data)
-    return res.data.refresh
+    await SecureStore.setItemAsync('access',res.data.access)
+    await SecureStore.setItemAsync('refresh',res.data.refresh)
+    return res.data
   }catch(e){
     console.log(e)
     return undefined

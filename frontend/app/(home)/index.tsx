@@ -4,12 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const HomePage = () => {
   
-  const { logout } = useAuthContext()
-  
   return (
-    <Pressable onPress={logout}>
-      <Text>you are at home. press here to logout</Text>
-    </Pressable>
+    <View>
+      <Text>home</Text>
+    </View>
   )
 }
 

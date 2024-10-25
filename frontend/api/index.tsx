@@ -24,7 +24,8 @@ api.interceptors.request.use(async(config) => {
       latestToken = access
     }else{
       const refresh = await getRefreshToken()
-      latestToken = refreshToken(refresh)
+      const { access } = await refreshToken(refresh)
+      latestToken = access
     }
   }
   

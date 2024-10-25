@@ -2,6 +2,7 @@ import React, { useRef, useCallBack, useState }  from 'react'
 import { View, Text, Pressable, TextInput } from 'react-native'
 import { useAuthContext } from '../../context/authentication'
 import AuthForm, { AuthFormRef } from '../../components/AuthForm'
+import { useRouter } from 'expo-router'
 
 import { FormErrorType } from '../../utils/errors'
 
@@ -9,7 +10,7 @@ import api from '../../api'
 
 function SignupPage() {
   
-  const { login } = useAuthContext()
+  const router = useRouter()
   const formRef = useRef<AuthFormRef | null>(null)
   const [error,setError] = useState<FormErrorType>({})
   const [isPending,setIsPending] = useState<boolean>(false)
@@ -21,6 +22,7 @@ function SignupPage() {
       try{
         setIsPending(true)
         const res = await api.post('user/register/',{username,password})
+        router.replace('/authentication/login')
       }catch(e){
         if(e.response && e.response.data){
           setError(e.response.data)
