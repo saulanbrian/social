@@ -1,10 +1,10 @@
-export type FormErrorType = {
-  error: object
-}
+export type FormErrorType = Record<string,string | string[]>
+
 
 // -------------------------------------- //
-type FormErrorFilterProps = FormErrorType &  {
+type FormErrorFilterProps = {
   filter:string
+  error:FormErrorType
 }
 
 function filterFormError({error,filter}:FormErrorFilterProps){
@@ -15,20 +15,23 @@ function filterFormError({error,filter}:FormErrorFilterProps){
 
 
 // -------------------------------------- //
-type DestructureErrorProps = FormErrorType & {
-  keys:str[]
+type DestructureErrorProps = {
+  error:FormErrorType;
+  keys:string[]
 }
 
 export function destructureFormErrorByKey({error,keys}:DestructureErrorProps){
-  let res = {}
+
+  let res:Record<string,string[]> = {};
   const entries = Object.entries(error)
   for(let key of keys){
-    entries.forEach(([field,message]) => {
-      if(field === key){
-        res[key] = Array.isArray(message)? message: [message,]
-      }
+  entries.forEach(([field,message]) => {
+    if(field === key){
+      res[key] = Array.isArray(message)? message: [message,]
+    }
   })
   }
-  return res 
-}
+
+  return res
+} 
 

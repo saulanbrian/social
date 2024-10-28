@@ -14,12 +14,18 @@ export default function CustomTO({children,style,disabled,...props}: Props){
   
   const { theme } = useThemeContext()
   const backgroundColor = theme.colors.tint
-  const opacity = disabled && 0.5
+  const opacity = disabled? 0.5: 1
   
   return (
     <TouchableOpacity 
       disabled={disabled}
-      style={{ backgroundColor,opacity,...style}}
+      style={[
+        { 
+          backgroundColor,
+          opacity:opacity,
+         },
+        style
+      ]}
       {...props} >
       { children }
     </TouchableOpacity>

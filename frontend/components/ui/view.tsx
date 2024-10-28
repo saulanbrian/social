@@ -4,7 +4,7 @@ import { useThemeContext } from '../../context/theme'
 
 
 type Props = ViewProps & {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export default function CustomView({ children, style, ...props } : Props) {
@@ -13,7 +13,7 @@ export default function CustomView({ children, style, ...props } : Props) {
   const backgroundColor = theme.colors.background
   
   return (
-    <View style={{backgroundColor,...style }} {...props} >
+    <View style={[{backgroundColor},style]} {...props} >
       { children }
     </View>
   )

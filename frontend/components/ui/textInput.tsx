@@ -7,7 +7,7 @@ import {
 import { useThemeContext } from '../../context/theme'
 
 const CustomTextInput = forwardRef<TextInput, TextInputProps>((
-  {style,...props},ref) => {
+  {style,...props}, ref) => {
   
   const { theme } = useThemeContext()
   

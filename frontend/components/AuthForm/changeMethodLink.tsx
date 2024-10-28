@@ -15,7 +15,7 @@ function ChangeMethodLink({method,style,...props}:MethodLinkProps) {
     <View style={style}>
       <Link replace asChild href={redirectPath}>
         <TouchableOpacity>
-        <Text> { text } </Text>
+          <Text> { text } </Text>
         </TouchableOpacity>
       </Link>
     </View>

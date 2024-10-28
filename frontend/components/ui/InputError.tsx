@@ -6,8 +6,7 @@ type InputErrorProps = TextProps & {
   message: string;
 }
 
-export default function InputError(
-  { message, style, ...props}: ErrorProps ) {
+export default function InputError({ message, style, ...props}: InputErrorProps ) {
     
   return (
     <Text {...props} style={[styles.text,style]}>

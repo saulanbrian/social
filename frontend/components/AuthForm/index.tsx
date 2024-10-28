@@ -43,12 +43,12 @@ export type AuthFormRef = {
 
 type AuthFormProps = ViewProps & {
   method:'login' | 'signup';
-  error:FormErrorType;
   onSubmit:() => void;
+  error: FormErrorType | null;
   isPending:boolean
 }
 
-function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
+function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef>){
   
   const {
     method, 
@@ -71,10 +71,7 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
     detail: detailErrors,
     username:usernameErrors,
     password:passwordErrors
-  } = destructureFormErrorByKey({ 
-    error, 
-    keys:['detail','username','password'] 
-  })
+  } = error !== null? destructureFormErrorByKey({ error ,keys:['detail','username','password'] }): {}
   
   
   useImperativeHandle(ref, () => {
@@ -89,7 +86,7 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef | null>){
     Boolean(!username || !password || !passwordConfirm)
   
   return (
-    <View style={{...styles.container,...style}} {...restProps}>
+    <View style={[{...styles.container},style]} {...restProps}>
       <TextInput 
         value={username}
         onChangeText={setUsername}

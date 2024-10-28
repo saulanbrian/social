@@ -4,11 +4,17 @@ import * as SecureStore from 'expo-secure-store'
 
 import { getRefreshToken, refreshToken } from '../utils/authentication'
 
+
+type LoginProps = {
+  access:string,
+  refresh:string
+}
+
 interface AuthContextType {
   isAuthenticated: boolean | null;
   setIsAuthenticated: (authState:boolean) => void;
   isLoading:boolean;
-  login: () => void;
+  login: ({access,refresh}:LoginProps) => void;
   logout: () => void;
 }
 
@@ -30,18 +36,18 @@ export const AuthContextProvider = ({ children }: ContextProp) => {
   const [isLoading,setIsLoading] = React.useState<boolean>(true)
   const [isAuthenticated,setIsAuthenticated] = React.useState<boolean | null>(null)
   
-  const login = React.useCallback(async({access,refresh}) => {
+  const login = React.useCallback(async({access,refresh}: LoginProps) => {
     await SecureStore.setItemAsync('access',access)
     await SecureStore.setItemAsync('refresh',refresh)
     setIsAuthenticated(true)
-    router.replace('(home)/')
+    router.replace('/(home)/')
   },[isAuthenticated])
   
   const logout = React.useCallback(async() => {
     await SecureStore.deleteItemAsync('refresh')
     await SecureStore.deleteItemAsync('access')
     setIsAuthenticated(false)
-    router.replace('authentication/')
+    router.replace({pathname:'/authentication'})
   },[isAuthenticated]) 
   
   

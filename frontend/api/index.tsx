@@ -16,16 +16,18 @@ api.interceptors.request.use(async(config) => {
   
   const access = await getAccessToken()
   
-  let latestToken:string;
+  let latestToken:string | null = null;
   
   if(access){
     const decoded = jwtDecode(access)
-    if(Date.now() / 1000 < decoded.exp){
-      latestToken = access
-    }else{
-      const refresh = await getRefreshToken()
-      const { access } = await refreshToken(refresh)
-      latestToken = access
+    if(decoded.exp){
+      if(Date.now() / 1000 < decoded.exp){
+        latestToken = access
+      }else{
+        const refresh = await getRefreshToken()
+        const { access } = refresh? await refreshToken(refresh): null
+        latestToken = access
+      }
     }
   }
   

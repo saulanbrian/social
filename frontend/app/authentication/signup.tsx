@@ -1,4 +1,4 @@
-import React, { useRef, useCallBack, useState }  from 'react'
+import React, { useRef, useState }  from 'react'
 import { View, Text, Pressable, TextInput } from 'react-native'
 import { useAuthContext } from '../../context/authentication'
 import AuthForm, { AuthFormRef } from '../../components/AuthForm'
@@ -12,18 +12,18 @@ function SignupPage() {
   
   const router = useRouter()
   const formRef = useRef<AuthFormRef | null>(null)
-  const [error,setError] = useState<FormErrorType>({})
+  const [error,setError] = useState<FormErrorType | null>(null)
   const [isPending,setIsPending] = useState<boolean>(false)
   
   async function handleSubmit() {
-    const { username, password, passwordConfirm } = formRef.current
+    const { username, password, passwordConfirm } = formRef.current as AuthFormRef
     
     if(password == passwordConfirm){
       try{
         setIsPending(true)
         const res = await api.post('user/register/',{username,password})
         router.replace('/authentication/login')
-      }catch(e){
+      }catch(e:any){
         if(e.response && e.response.data){
           setError(e.response.data)
         }
