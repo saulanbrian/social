@@ -1,6 +1,6 @@
 import { ViewProps, TouchableOpacity, View } from 'react-native' 
 import { Link } from 'expo-router'
-import { CustomText as Text } from '../ui'
+import { ThemedText } from '../ui'
 
 type MethodLinkProps = ViewProps & {
   method:string;
@@ -15,7 +15,7 @@ function ChangeMethodLink({method,style,...props}:MethodLinkProps) {
     <View style={style}>
       <Link replace asChild href={redirectPath}>
         <TouchableOpacity>
-          <Text> { text } </Text>
+          <ThemedText> { text } </ThemedText>
         </TouchableOpacity>
       </Link>
     </View>

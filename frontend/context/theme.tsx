@@ -12,12 +12,10 @@ type ThemeContextType = {
   theme: { 
     colorScheme: 'light' | 'dark',
     colors:{
-      text: string,
-      background: string,
-      tint: string,
-      icon: string,
-      tabIconDefault: string,
-      tabIconSelected: string,
+      primary:string,
+      secondary:string,
+      tint:string,
+      text:string
     }
   }
 }

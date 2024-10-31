@@ -11,16 +11,15 @@ import {
   Appearance, 
   useColorScheme,
   ViewProps,
-  View as RegularView
+  View 
 } from 'react-native'
 
 import { 
-  CustomView as View, 
-  CustomTO,
-  CustomTextInput as TextInput,
-  CustomText as Text,
-  InputError,
-  ActivityIndicator
+  ThemedActivityIndicator,
+  ThemedView,
+  ThemedTextInput,
+  ThemedText,
+  InputError
 } from '../ui'
 
 import { Link, LinkProps } from 'expo-router'
@@ -33,6 +32,7 @@ import {
   FormErrorType, 
   destructureFormErrorByKey
 } from '../../utils/errors'
+import { useThemeContext } from '@/context/theme'
 
 
 export type AuthFormRef = {
@@ -64,8 +64,7 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef>){
   const [password,setPassword] = useState<string>('')
   const [passwordConfirm,setPasswordConfirm] = useState<string>('')
   
-  const theme = useColorScheme()
-  const buttonTextColor = theme === 'light'? Colors.dark.text: Colors.light.text
+  const { theme } = useThemeContext()
   
   const {
     detail: detailErrors,
@@ -86,8 +85,8 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef>){
     Boolean(!username || !password || !passwordConfirm)
   
   return (
-    <View style={[{...styles.container},style]} {...restProps}>
-      <TextInput 
+    <ThemedView style={[{...styles.container},style]} {...restProps}>
+      <ThemedTextInput 
         value={username}
         onChangeText={setUsername}
         placeholder='username' 
@@ -95,12 +94,10 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef>){
         />
         
       { usernameErrors && usernameErrors.length >= 1 && (
-        <InputError 
-          style={{marginStart:26}}
-          message={usernameErrors[0]} />
+        <InputError style={{marginStart:26}} message={usernameErrors[0]} />
       ) }
       
-      <TextInput 
+      <ThemedTextInput 
         value={password}
         onChangeText={setPassword}
         placeholder='password'
@@ -108,13 +105,11 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef>){
         secureTextEntry/>
       
       { passwordErrors && passwordErrors.length >= 1 && (
-        <InputError 
-          style={{marginStart:26}}
-          message={passwordErrors[0]} />
+        <InputError style={{marginStart:26}} message={passwordErrors[0]} />
       ) }
       
       { method === 'signup' && (
-        <TextInput
+        <ThemedTextInput
           value={passwordConfirm}
           onChangeText={setPasswordConfirm}
           placeholder='re-enter your password' 
@@ -123,35 +118,36 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef>){
       ) }
       
       { method === 'signup' && passwordErrors && passwordErrors.length >= 1 && (
-        <InputError 
-          style={{marginStart:26}}
-          message={passwordErrors[0]} />
+        <InputError style={{marginStart:26}} message={passwordErrors[0]} />
       ) }
       
       <ChangeMethodLink method={method} style={{marginStart:22}} />
       
       { detailErrors && detailErrors.length >= 1 && (
-        <InputError 
-          style={{marginStart:26}}
-          message={detailErrors[0]} />
+        <InputError style={{marginStart:26}} message={detailErrors[0]} />
       ) }
       
-      <CustomTO 
-        style={styles.button} 
-        onPress={onSubmit} 
-        disabled={isPending? true: buttonDisabled}>
+      <TouchableOpacity style={styles.button} onPress={onSubmit} disabled={isPending? true: buttonDisabled}>
         { !isPending? (
-          <Text style={[styles.buttonText,{color:buttonTextColor}]}>
+          <ThemedText style={
+            [
+              styles.buttonText,
+              {
+                backgroundColor:theme.colors.secondary,
+                opacity: isPending || buttonDisabled? 0.5 : 1
+              }
+            ]
+          }>
             { method }
-          </Text>
+          </ThemedText>
         ): (
-          <RegularView style={{margin:8}}>
-            <ActivityIndicator /> 
-          </RegularView>
+          <View style={{margin:8}}>
+            <ThemedActivityIndicator /> 
+          </View>
         ) }
-      </CustomTO>
+      </TouchableOpacity>
       
-    </View>
+    </ThemedView>
   )
 }
 
@@ -162,14 +158,15 @@ const styles = StyleSheet.create({
     position:'absolute',
     bottom:0,
     width:'100%',
-    padding:16,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   buttonText: {
     textTransform: 'uppercase',
     fontSize:28,
     fontWeight: '400',
+    flex:1,
+    width:'100%',
+    padding:16,
+    textAlign:'center'
   },
   container:{
     flex:1,

@@ -11,7 +11,7 @@ function InitialLayout(){
   
   React.useEffect(() => {
     if(!isLoading){
-      router.replace(isAuthenticated? '(home)':'authentication')
+      router.replace(isAuthenticated? '/(home)':'/authentication')
     }
   },[isLoading])
   

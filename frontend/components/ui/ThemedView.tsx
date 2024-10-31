@@ -10,7 +10,7 @@ type Props = ViewProps & {
 export default function CustomView({ children, style, ...props } : Props) {
   
   const { theme } = useThemeContext()
-  const backgroundColor = theme.colors.background
+  const backgroundColor = theme.colors.primary
   
   return (
     <View style={[{backgroundColor},style]} {...props} >

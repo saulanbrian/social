@@ -1,8 +1,5 @@
 import React, { forwardRef, Ref } from 'react'
-import {
-  TextInput, 
-  TextInputProps,
-} from 'react-native'
+import {  TextInput,  TextInputProps } from 'react-native'
 
 import { useThemeContext } from '../../context/theme'
 
@@ -12,7 +9,7 @@ const CustomTextInput = forwardRef<TextInput, TextInputProps>((
   const { theme } = useThemeContext()
   
   const defaultStyles = {
-    color: theme.colors.tint,
+    color: theme.colors.text,
     borderColor: theme.colors.tint,
     borderWidth:1,
   }
