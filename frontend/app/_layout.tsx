@@ -1,22 +1,29 @@
 import React from 'react'
-import { Slot, useRouter } from 'expo-router'
+import { Slot, useRouter, Stack } from 'expo-router'
 
 import { AuthContextProvider, useAuthContext } from '../context/authentication'
-import { ThemeContextProvider } from '../context/theme'
+import { ThemeContextProvider, useThemeContext } from '../context/theme'
+
 
 function InitialLayout(){
   
-  const { isAuthenticated, isLoading } = useAuthContext()
-  const router = useRouter()
-  
-  React.useEffect(() => {
-    if(!isLoading){
-      router.replace(isAuthenticated? '/(home)':'/authentication')
-    }
-  },[isLoading])
+  const { theme } = useThemeContext()
   
   return (
-      <Slot />
+    <Stack>
+      <Stack.Screen name='index' options={{
+        headerShown:false
+      }}/>
+      <Stack.Screen name='(home)' options={{
+        headerTitle:'home',
+        headerStyle:{
+          backgroundColor:theme.colors.secondary
+        }
+      }}/>
+      <Stack.Screen name='authentication' options={{
+        headerShown:false
+      }}/>
+    </Stack>
   )
 }
 

@@ -1,19 +1,20 @@
-import { ViewProps, View } from 'react-native'
+import { ViewProps, View, StyleSheet } from 'react-native'
 import React from 'react'
 import { useThemeContext } from '../../context/theme'
 
 
 type Props = ViewProps & {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  secondary?: boolean
 }
 
-export default function CustomView({ children, style, ...props } : Props) {
+export default function CustomView({ children, style, secondary, ...props } : Props) {
   
   const { theme } = useThemeContext()
-  const backgroundColor = theme.colors.primary
+  const backgroundColor = secondary? theme.colors.secondary: theme.colors.primary
   
   return (
-    <View style={[{backgroundColor},style]} {...props} >
+    <View style={[{ backgroundColor },style]} {...props} >
       { children }
     </View>
   )
