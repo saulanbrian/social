@@ -8,14 +8,20 @@ const tintColorDark = '#fff';
 
 export const Colors = {
   light: {
-    primary:'#E4DFFD',
-    secondary:'#937FF7',
+    background:{
+      default:'#E4DFFD',
+      card:'#d4cdf4ff'
+    },
+    primary:'#937FF7',
     tint:'#6A4FF4',
-    text:'#333333'
+    text:'#363636ff'
   },
   dark: {
-    primary:'#1E1E1E',
-    secondary:'#3B2E5B',
+    background:{
+      default:'#1E1E1E',
+      card:'#2a2a2aff'
+    },
+    primary:'#3B2E5B',
     tint:'#A46FF4',
     text:'#E0E0E0'
   },

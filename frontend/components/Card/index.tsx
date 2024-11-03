@@ -16,6 +16,7 @@ const Card = ( { children, style, ...props } : Props ) => {
       style={
         [
           { borderColor: theme.colors.text },
+          { backgroundColor: theme.colors.background.card },
           styles.card,
           style
         ]
@@ -28,7 +29,6 @@ const Card = ( { children, style, ...props } : Props ) => {
 const styles = {
   card:{
     borderWidth:1,
-    borderRadius:8,
   }
 }
 

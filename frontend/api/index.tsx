@@ -5,7 +5,7 @@ import { getRefreshToken, getAccessToken, refreshToken} from '../utils/authentic
 const API_URL = process.env.EXPO_PUBLIC_API_URL
 
 const api = axios.create({
-  baseURL:API_URL,
+  baseURL:`${API_URL}/`,
   headers:{
     'Accept': 'application/json',
     'Content-Type':'application/json'

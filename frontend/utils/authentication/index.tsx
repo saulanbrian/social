@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as SecureStore from 'expo-secure-store'
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL
+import { API_URL } from '../../constants/api'
 
 export const getRefreshToken = async() => {
   const token = await SecureStore.getItemAsync('refresh')
@@ -16,7 +16,7 @@ export const getAccessToken = async() => {
 export const refreshToken = async(token:string) => {
   
   try{ 
-    const res = await axios.post(`${API_URL}auth/token/refresh/`,{refresh:token})
+    const res = await axios.post(`${API_URL}/auth/token/refresh/`,{refresh:token})
     await SecureStore.setItemAsync('access',res.data.access)
     await SecureStore.setItemAsync('refresh',res.data.refresh)
     return res.data

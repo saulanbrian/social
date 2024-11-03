@@ -4,6 +4,9 @@ from django.contrib.auth.hashers import make_password
 
 from user.models import CustomUser 
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
 class AuthUserSerializer(serializers.ModelSerializer):
   
   class Meta:
@@ -29,3 +32,18 @@ class AuthUserSerializer(serializers.ModelSerializer):
   def validate_password(self,value):
     check_password_validity(value)
     return value
+    
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+  
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['username'] = user.username
+        if user.profile_picture:
+            token['profile_picture'] = user.profile_picture.url
+
+        return token
+  
+    

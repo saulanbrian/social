@@ -133,7 +133,8 @@ function AuthForm(props:AuthFormProps,ref:Ref<AuthFormRef>){
             [
               styles.buttonText,
               {
-                backgroundColor:theme.colors.secondary,
+                backgroundColor:theme.colors.primary,
+                fontWeight:600,
                 opacity: isPending || buttonDisabled? 0.5 : 1
               }
             ]

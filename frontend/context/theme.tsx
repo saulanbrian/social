@@ -12,8 +12,11 @@ type ThemeContextType = {
   theme: { 
     colorScheme: 'light' | 'dark',
     colors:{
+      background:{
+        default: string,
+        card:string,
+      }
       primary:string,
-      secondary:string,
       tint:string,
       text:string
     }

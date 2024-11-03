@@ -1,15 +1,12 @@
-import { View, Text } from 'react-native';
+import { ThemedView, ThemedText } from '../../components/ui'
 
 
-interface Props {
-  // Define your props here
-}
-
-const Feed = (props: Props) => {
+const Feed = () => {
+  
   return (
-    <View>
-      <Text>FirstTab</Text>
-    </View>
+    <ThemedView style={{flex:1}}>
+      <ThemedText>sjsjahhs</ThemedText>
+    </ThemedView>
   );
 };
 

@@ -1,8 +1,14 @@
 import React, { createContext, useContext } from 'react'
 import { useRouter } from 'expo-router'
+
 import * as SecureStore from 'expo-secure-store'
+import { useUserStore } from '../stores/user'
+
+import { jwtDecode } from 'jwt-decode'
 
 import { getRefreshToken, refreshToken } from '../utils/authentication'
+
+import * as SplashScreen from 'expo-splash-screen'
 
 
 type LoginProps = {
@@ -32,21 +38,27 @@ interface ContextProp {
 
 export const AuthContextProvider = ({ children }: ContextProp) => {
   
-  const router = useRouter()
   const [isLoading,setIsLoading] = React.useState<boolean>(true)
   const [isAuthenticated,setIsAuthenticated] = React.useState<boolean | null>(null)
+  const router = useRouter()
+  const { setProfileURL, setUsername } = useUserStore()
   
   const login = React.useCallback(async({access,refresh}: LoginProps) => {
     await SecureStore.setItemAsync('access',access)
     await SecureStore.setItemAsync('refresh',refresh)
+    const decodedToken = jwtDecode(access)
+    setUsername(decodedToken.username)
+    setProfileURL(decodedToken.profile_picture)
     setIsAuthenticated(true)
-    router.replace('/(home)/')
+    router.replace('/(home)/feed')
   },[isAuthenticated])
   
   const logout = React.useCallback(async() => {
     await SecureStore.deleteItemAsync('refresh')
     await SecureStore.deleteItemAsync('access')
+    await setUsername(null)
     setIsAuthenticated(false)
+    setProfileURL(null)
     router.replace({pathname:'/authentication'})
   },[isAuthenticated]) 
   

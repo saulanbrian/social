@@ -30,13 +30,20 @@ const HomeLayout = () => {
           jusitfyContent:'center'
         },
         tabBarStyle:{
-          bottom:4,
-          width:'90%',
+          bottom:0,
+          width:'100%',
           alignSelf:'center',
           jusitfyContent:'center',
-          padding:8,
-          borderRadius:8
+          paddingVertical:8,
+          backgroundColor:theme.colors.primary,
+          overflow:'hidden',
+          position:'absolute',
         },
+        tabBarIndicatorStyle:{
+          backgroundColor:theme.colors.text,
+          height:4
+        },
+        tabBarActiveTintColor:theme.colors.text,
         headerTitleShown:false,
         tabBarShowLabel:false,
         tabBarShowIcon:true,
@@ -45,7 +52,7 @@ const HomeLayout = () => {
           let iconName: string = ''
           
           route.name === 'feed' ? (
-            iconName = focused ? 'rocket' : 'rocket-outline'
+            iconName = focused ? 'planet' : 'planet-outline'
           ): route.name === 'profile' ? (
             iconName = focused ? 'person-circle' : 'person-circle-outline'
           ): iconName = focused ? 'notifications-sharp' : 'notifications-outline'

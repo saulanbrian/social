@@ -46,7 +46,7 @@ export default function Index(){
         <TouchableOpacity 
           style={
             [
-              { backgroundColor: theme.colors.secondary },
+              { backgroundColor: theme.colors.primary },
               styles.button
             ]
           } 

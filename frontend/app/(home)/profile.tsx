@@ -1,15 +1,25 @@
-import { View, Text } from 'react-native';
+import { ThemedView, ThemedText } from '../../components/ui'
 
+import { useAuthContext } from  '../../context/authentication'
+import { useUserStore } from '../../stores/user'
 
-interface Props {
-  // Define your props here
-}
+import { Image } from 'expo-image'
 
-const Profile = (props: Props) => {
+const Profile = () => {
+  
+  const { username, profileURL } = useUserStore()
+  const { logout } = useAuthContext()
+  
   return (
-    <View>
-      <Text>Profile</Text>
-    </View>
+    <ThemedView style={{flex:1}}>
+      <ThemedText onPress={logout}>hi { username }</ThemedText>
+      <Image 
+        style={{height:200,width:200}}
+        source={profileURL}
+        priority='high'
+        cachePolicy='memory-disk'
+        />
+    </ThemedView>
   );
 };
 
