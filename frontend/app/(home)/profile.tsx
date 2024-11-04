@@ -20,7 +20,13 @@ const Profile = () => {
   
   const { username, profileURL, setProfileURL, id } = useUserStore()
   const { mutate: updateProfile, data, isSuccess, isPending } = useUpdateUserMutation(id as string | number)
-  
+
+  useEffect(() => {
+    if(isSuccess) {
+      setProfileURL(data.profile_picture)
+    }
+  }, [isSuccess])
+
   const handlePress = async() => { 
     const { assets, canceled } = await ImagePicker.launchImageLibraryAsync({
       allowsEditing:true,
@@ -42,12 +48,6 @@ const Profile = () => {
 
     }
   }
-
-  useEffect(() => {
-    if(isSuccess) {
-      setProfileURL(data.profile_picture)
-    }
-  }, [isSuccess])
 
   return (
     <ThemedView style={styles.container}>
