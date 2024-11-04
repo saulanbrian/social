@@ -47,9 +47,10 @@ const HomeLayout = () => {
         headerTitleShown:false,
         tabBarShowLabel:false,
         tabBarShowIcon:true,
-        tabBarIcon:({ focused, color, size }) => {
+        tabBarIcon:({ focused, color }) => {
           
-          let iconName: string = ''
+          let iconName:
+          'planet' | 'planet-outline' | 'person-circle' | 'person-circle-outline' | 'notifications-sharp' | 'notifications-outline'
           
           route.name === 'feed' ? (
             iconName = focused ? 'planet' : 'planet-outline'

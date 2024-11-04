@@ -4,11 +4,14 @@ import { useRouter } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
 import { useUserStore } from '../stores/user'
 
-import { jwtDecode } from 'jwt-decode'
-
+import { jwtDecode, } from 'jwt-decode'
+import { CustomJwtTokenPayload } from '../utils/authentication'
+ 
 import { getRefreshToken, refreshToken } from '../utils/authentication'
 
 import * as SplashScreen from 'expo-splash-screen'
+
+import { API_URL } from '@/constants/api'
 
 
 type LoginProps = {
@@ -41,35 +44,48 @@ export const AuthContextProvider = ({ children }: ContextProp) => {
   const [isLoading,setIsLoading] = React.useState<boolean>(true)
   const [isAuthenticated,setIsAuthenticated] = React.useState<boolean | null>(null)
   const router = useRouter()
-  const { setProfileURL, setUsername } = useUserStore()
+  const { setProfileURL, setUsername, setId } = useUserStore()
+
   
   const login = React.useCallback(async({access,refresh}: LoginProps) => {
+
     await SecureStore.setItemAsync('access',access)
     await SecureStore.setItemAsync('refresh',refresh)
-    const decodedToken = jwtDecode(access)
+
+    const decodedToken: CustomJwtTokenPayload = jwtDecode(access)
+
+    setId(decodedToken.id)
     setUsername(decodedToken.username)
-    setProfileURL(decodedToken.profile_picture)
+    if (decodedToken.profile_picture != null) {
+      console.log(decodedToken.profile_picture)
+      setProfileURL( API_URL + decodedToken.profile_picture)
+    }
+
     setIsAuthenticated(true)
     router.replace('/(home)/feed')
   },[isAuthenticated])
   
+  
   const logout = React.useCallback(async() => {
+
     await SecureStore.deleteItemAsync('refresh')
     await SecureStore.deleteItemAsync('access')
-    await setUsername(null)
-    setIsAuthenticated(false)
+
+    setUsername(null)
     setProfileURL(null)
+
+    setIsAuthenticated(false)
     router.replace({pathname:'/authentication'})
   },[isAuthenticated]) 
   
   
   React.useEffect(() => {
-    async function checkAuth(){
+    async function authenticate(){
       const token = await getRefreshToken()
       setIsAuthenticated(token? true: false)
       setIsLoading(false)
     }
-    checkAuth()
+    authenticate()
   },[])
   
   return (

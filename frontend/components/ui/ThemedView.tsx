@@ -5,13 +5,12 @@ import { useThemeContext } from '../../context/theme'
 
 type Props = ViewProps & {
   children?: React.ReactNode;
-  secondary?: boolean
 }
 
-export default function CustomView({ children, style, secondary, ...props } : Props) {
+export default function CustomView({ children, style, ...props } : Props) {
   
   const { theme } = useThemeContext()
-  const backgroundColor = secondary? theme.colors.secondary: theme.colors.background.default
+  const backgroundColor = theme.colors.background.default
   
   return (
     <View style={[{ backgroundColor },style]} {...props} >

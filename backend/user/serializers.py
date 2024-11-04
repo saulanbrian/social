@@ -7,6 +7,12 @@ from user.models import CustomUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
+class UserSerializer(serializers.ModelSerializer):
+   class Meta:
+      model = CustomUser
+      fields = ('id','username','profile_picture')
+      
+
 class AuthUserSerializer(serializers.ModelSerializer):
   
   class Meta:
@@ -40,10 +46,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
+        token['id'] = user.id
         token['username'] = user.username
         if user.profile_picture:
             token['profile_picture'] = user.profile_picture.url
 
         return token
   
+
     

@@ -1,7 +1,16 @@
 import axios from 'axios'
 import * as SecureStore from 'expo-secure-store'
+import { JwtPayload } from 'jwt-decode'
 
 import { API_URL } from '../../constants/api'
+
+
+export interface CustomJwtTokenPayload extends JwtPayload {
+  id:string | number;
+  username: string
+  profile_picture: string;
+}
+
 
 export const getRefreshToken = async() => {
   const token = await SecureStore.getItemAsync('refresh')

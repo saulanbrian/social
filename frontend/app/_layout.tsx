@@ -9,6 +9,12 @@ import { ThemeContextProvider, useThemeContext } from '../context/theme'
 
 import * as NavigationBar from 'expo-navigation-bar'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+
+
+const queryClient = new QueryClient()
+
 
 function InitialLayout(){
   
@@ -16,9 +22,7 @@ function InitialLayout(){
   
   return (
     <Stack>
-      <Stack.Screen name='index' options={{
-        headerShown:false
-      }}/>
+      <Stack.Screen name='index' options={{ headerShown:false }}/>
       <Stack.Screen name='(home)' options={{
         headerTitle:() => {
           return <ThemedText style={styles.headerText}>Home</ThemedText>
@@ -27,9 +31,7 @@ function InitialLayout(){
           backgroundColor:theme.colors.primary
         }
       }}/>
-      <Stack.Screen name='authentication' options={{
-        headerShown:false
-      }}/>
+      <Stack.Screen name='authentication' options={{ headerShown:false }}/>
     </Stack>
   )
 }
@@ -54,7 +56,9 @@ export default function RootLayout(){
   return (
     <ThemeContextProvider>
       <AuthContextProvider>
-        <InitialLayout />
+        <QueryClientProvider client={queryClient}>
+          <InitialLayout />
+        </QueryClientProvider>
       </AuthContextProvider>
     </ThemeContextProvider>
   )

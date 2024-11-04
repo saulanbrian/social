@@ -21,7 +21,6 @@ function LoginPage() {
       const res = await api.post('auth/token/',{username,password})
       login({access:res.data.access,refresh:res.data.refresh})
     }catch(e:any){
-      console.log(e)
       if(e.response && e.response.data){
         setError(e.response.data)
       }
