@@ -7,7 +7,7 @@ import { useUserStore } from '../../stores/user'
 import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, Alert} from 'react-native'
 import api from '@/api'
 
 import { API_URL } from '@/constants/api'
@@ -20,13 +20,7 @@ const Profile = () => {
   
   const { username, profileURL, setProfileURL, id } = useUserStore()
   const { mutate: updateProfile, data, isSuccess, isPending } = useUpdateUserMutation(id as string | number)
-
-  useEffect(() => {
-    if(isSuccess) {
-      setProfileURL(data.profile_picture)
-    }
-  }, [isSuccess])
-
+  
   const handlePress = async() => { 
     const { assets, canceled } = await ImagePicker.launchImageLibraryAsync({
       allowsEditing:true,
@@ -49,10 +43,14 @@ const Profile = () => {
     }
   }
 
+  useEffect(() => {
+    if(isSuccess) {
+      setProfileURL(data.profile_picture)
+    }
+  }, [isSuccess])
+
   return (
     <ThemedView style={styles.container}>
-
-      <ThemedText>{ id }</ThemedText>
       
       <TouchableOpacity style={styles.imageContainer} onPress={handlePress}>
         <Image 
@@ -62,6 +60,7 @@ const Profile = () => {
           cachePolicy='memory-disk'
           />
       </TouchableOpacity> 
+      <ThemedText style={styles.username}>{ username }</ThemedText>
 
     </ThemedView>
   );
@@ -86,7 +85,14 @@ const styles = StyleSheet.create({
      marginTop:20,
      overflow:'hidden',
      justifyContent:'center',
-     alignItems:'center'
+     alignItems:'center',
+     backgroundColor:'red'
+  },
+  username:{
+    textAlign:'center',
+    margin:8,
+    fontSize:20,
+    fontWeight:600
   }
 })
 
