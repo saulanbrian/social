@@ -16,7 +16,7 @@ class PosListCreateAPIView(ListCreateAPIView):
   serializer_class = PostSerializer
   parser_classes = [MultiPartParser,FormParser]
   pagination_class = PostPagination
-  queryset = Post.objects.all()
+  queryset = Post.objects.all().order_by('author__id')
   
   
   def perform_create(self,serializer):

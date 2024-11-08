@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { ThemedView, ThemedText } from '../../components/ui'
+import { ThemedView, ThemedText, Avatar } from '../../components/ui'
 
 import { useAuthContext } from  '../../context/authentication'
 import { useUserStore } from '../../stores/user'
@@ -51,16 +51,19 @@ const Profile = () => {
 
   return (
     <ThemedView style={styles.container}>
-      
-      <TouchableOpacity style={styles.imageContainer} onPress={handlePress}>
-        <Image 
-          style={styles.image}
-          source={!!profileURL ? profileURL  : require('../../assets/images/profile.png')}
-          priority='high'
-          cachePolicy='memory-disk'
+    
+        <Avatar 
+          size={200}
+          style={styles.imageContainer}
+          onPress={handlePress}
+          source={profileURL}
+          imageProps={{
+            priority:'high',
+            cachePolicy:'memory-disk'
+          }}
           />
-      </TouchableOpacity> 
-      <ThemedText style={styles.username}>{ username }</ThemedText>
+        
+        <ThemedText style={styles.username}>{ username }</ThemedText>
 
     </ThemedView>
   );
@@ -72,27 +75,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 8,
   },
-  image:{
-    height:200,
-    width:200,
-  },
   imageContainer:{
-     borderRadius:360,
-     width:200,
-     height:200,
      alignSelf:'center',
-     padding:10,
-     marginTop:20,
-     overflow:'hidden',
      justifyContent:'center',
      alignItems:'center',
-     backgroundColor:'red'
+     position:'relative',
   },
   username:{
     textAlign:'center',
-    margin:8,
+    marginVertical:8,
     fontSize:20,
-    fontWeight:600
+    fontWeight:600,
   }
 })
 

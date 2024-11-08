@@ -37,7 +37,7 @@ const HomeLayout = () => {
           paddingVertical:8,
           backgroundColor:theme.colors.primary,
           overflow:'hidden',
-          position:'absolute',
+          position:'fixed',
         },
         tabBarIndicatorStyle:{
           backgroundColor:theme.colors.text,
