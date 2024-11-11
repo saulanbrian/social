@@ -37,7 +37,7 @@ const Feed = () => {
         estimatedItemSize={500}
         pullToRefresh
         contentContainerStyle={{
-          padding:4
+          
         }}
         renderItem={({item}) => {
           return <Post {...item} style={styles.post} />

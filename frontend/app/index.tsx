@@ -23,7 +23,7 @@ export default function Index(){
   
   React.useEffect(() => {
     if(!isLoading){
-      const page = isAuthenticated? '/(home)/feed' : '/authentication'
+      const page = isAuthenticated? '/(tabs)/feed' : '/authentication'
       setInitialPage(page)
     }
   },[isLoading])

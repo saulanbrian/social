@@ -62,7 +62,7 @@ export const AuthContextProvider = ({ children }: ContextProp) => {
     }
 
     setIsAuthenticated(true)
-    router.replace('/(home)/feed')
+    router.replace('/(tabs)/feed')
   },[isAuthenticated])
   
   

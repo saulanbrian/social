@@ -23,7 +23,7 @@ function InitialLayout(){
   return (
     <Stack>
       <Stack.Screen name='index' options={{ headerShown:false }}/>
-      <Stack.Screen name='(home)' options={{
+      <Stack.Screen name='(tabs)' options={{
         headerTitle:() => {
           return <ThemedText style={styles.headerText}>Home</ThemedText>
         },
