@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import PermissionDenied
@@ -24,3 +24,8 @@ class PosListCreateAPIView(ListCreateAPIView):
       raise PermissionDenied('login required')
     else:
       serializer.save(author=self.request.user)
+      
+      
+class PostRetrieveAPIView(RetrieveAPIView):
+  serializer_class = PostSerializer
+  queryset = Post.objects.all()

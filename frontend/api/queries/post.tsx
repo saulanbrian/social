@@ -16,7 +16,19 @@ export const useGetPosts = () => {
         return pages.length + 1
       }
       return undefined
-    }
+    },
+    staleTime: 5 * 60 * 1000
   })
 }
 
+
+export const useGetPost = (id:string,enabled:boolean) => {
+  return useQuery({
+    queryKey:['posts',id],
+    queryFn: async() => {
+      const res = await api.get(`posts/${id}`)
+      return res.data
+    },
+    enabled:enabled
+  })
+}

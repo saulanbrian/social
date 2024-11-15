@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
 import { ThemedText } from '../components/ui'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Slot, useRouter, Stack } from 'expo-router'
 
@@ -11,7 +12,7 @@ import * as NavigationBar from 'expo-navigation-bar'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-
+import { StatusBar } from 'expo-status-bar'
 
 const queryClient = new QueryClient()
 
@@ -21,7 +22,13 @@ function InitialLayout(){
   const { theme } = useThemeContext()
   
   return (
-    <Stack>
+    <>
+    <StatusBar transculent />
+    <Stack screenOptions={{
+      cardStyle:{
+        paddingTop:50
+      }
+    }}>
       <Stack.Screen name='index' options={{ headerShown:false }}/>
       <Stack.Screen name='(tabs)' options={{
         headerTitle:() => {
@@ -29,10 +36,15 @@ function InitialLayout(){
         },
         headerStyle:{
           backgroundColor:theme.colors.primary
-        }
+        },
+        headerShadowVisible:false
       }}/>
+      <Stack.Screen name='post' options={{
+        headerShown:false
+      }} />
       <Stack.Screen name='authentication' options={{ headerShown:false }}/>
     </Stack>
+    </>
   )
 }
 

@@ -1,3 +1,5 @@
+import { NavigationContainer } from '@react-navigation/native';
+
 import { useThemeContext } from '@/context/theme'
 import { useAuthContext } from '@/context/authentication'
 import { Stack, Redirect } from 'expo-router' 
@@ -20,7 +22,9 @@ const HomeLayout = () => {
   if(!isAuthenticated) return <Redirect href={'/authentication'} />
   
   return (
+    <NavigationContainer>
     <Tabs.Navigator
+      headerTransparent={true}
       initialRouteName='feed'
       tabBarPosition='bottom'
       tabBarLabelShown={false}
@@ -44,7 +48,6 @@ const HomeLayout = () => {
           height:4
         },
         tabBarActiveTintColor:theme.colors.text,
-        headerTitleShown:false,
         tabBarShowLabel:false,
         tabBarShowIcon:true,
         tabBarIcon:({ focused, color }) => {
@@ -65,6 +68,7 @@ const HomeLayout = () => {
       <Tabs.Screen name='notifications' component={NotificationsPage}/>
       <Tabs.Screen name='profile' component={ProfilePage}/>
     </Tabs.Navigator>
+    </NavigationContainer>
   )
 }
 

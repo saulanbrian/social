@@ -4,7 +4,7 @@ const AuthenticationLayout = () => {
   
   return (
     <Stack initialRouteName='login' screenOptions={{
-      headerShown:false,
+      headerShown:true,
     }}>
       <Stack.Screen name='login' />
       <Stack.Screen name='signup' />
