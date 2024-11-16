@@ -22,13 +22,12 @@ export const useGetPosts = () => {
 }
 
 
-export const useGetPost = (id:string,enabled:boolean) => {
+export const useGetPost = (id:string) => {
   return useQuery({
     queryKey:['posts',id],
     queryFn: async() => {
       const res = await api.get(`posts/${id}`)
       return res.data
     },
-    enabled:enabled
   })
 }

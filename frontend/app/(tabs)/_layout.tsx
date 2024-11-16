@@ -22,7 +22,6 @@ const HomeLayout = () => {
   if(!isAuthenticated) return <Redirect href={'/authentication'} />
   
   return (
-    <NavigationContainer>
     <Tabs.Navigator
       headerTransparent={true}
       initialRouteName='feed'
@@ -68,7 +67,6 @@ const HomeLayout = () => {
       <Tabs.Screen name='notifications' component={NotificationsPage}/>
       <Tabs.Screen name='profile' component={ProfilePage}/>
     </Tabs.Navigator>
-    </NavigationContainer>
   )
 }
 

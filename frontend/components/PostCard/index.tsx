@@ -1,4 +1,5 @@
 import { Card, Avatar,ThemedText, TouchableIcon } from '../ui'
+import PostActions from './actions'
 import { StyleSheet, View, ViewProps,} from 'react-native'
 import { Image } from 'expo-image'
 import Ionicons  from '@expo/vector-icons/Ionicons'
@@ -58,30 +59,7 @@ const PostCard = ({ post, style,imageShown=true, ...props} : PostProps) => {
       </View>
       
       <Card.Footer style={styles.footer}>
-        <TouchableIcon 
-          name='heart-outline' 
-          color={theme.colors.text}
-          size={24}
-          title={'like'}
-          style={styles.action}
-          onPress={() => containerRef.current?.measure((x,y,width,height) => {
-            console.log(width)
-          })}
-          />
-        <TouchableIcon 
-          name='chatbubble-outline' 
-          color={theme.colors.text}
-          size={22}
-          title={'comment'}
-          style={[styles.action,{
-            marginRight:12
-          }]}/>
-        <TouchableIcon 
-          name='repeat-outline' 
-          color={theme.colors.text}
-          size={28}
-          title={'repost'}
-          style={styles.action}/>
+        <PostActions postId={post.id} is_liked={post.is_liked}/>
       </Card.Footer>
       
     </Card>
@@ -89,11 +67,8 @@ const PostCard = ({ post, style,imageShown=true, ...props} : PostProps) => {
 }
 
 const styles = StyleSheet.create({
-  action:{
-    flex:1
-  },
   caption:{
-    fontSize:16,
+    fontSize:14,
   },
   card:{
     overflow:'clipped'
@@ -107,18 +82,18 @@ const styles = StyleSheet.create({
     fontSize:12
   },
   footer:{
-    justifyContent:'center',
     flex:1,
   },
   image:{
     contentFit:'cover',
     aspectRatio:1,
     borderRadius:2,
-    
+    maxHeight:300
   },
   username:{
-    fontSize:20,
-    fontWeight:700
+    fontSize:16,
+    fontWeight:700,
+    paddingTop:2
   }
 })
 

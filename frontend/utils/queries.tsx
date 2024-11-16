@@ -6,10 +6,8 @@ type InfiniteQueryPage = {
 }
 
 type InfiniteQueryData = {
-  data: {
-    pageParams: number[];
-    pages: InfiniteQueryPage[];
-  }
+  pageParams: number[];
+  pages: InfiniteQueryPage[];
 }
 
 export const summarizeQueryPagesResult = (data:InfiniteQueryData) => {

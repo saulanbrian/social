@@ -22,26 +22,20 @@ import { summarizeQueryPagesResult } from '../../utils/queries.tsx'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL
 
-const MainContainer = ({ cachedPost, fallbackId }) => {
+const PostDetailPage = () => {
   
-  const [enabled, setEnabled] = useState(false)
-  const { 
-    data:newlyFetchedPost,
-    isLoading,
-    status
-  } = useGetPost(fallbackId,enabled)
-  const post = cachedPost || newlyFetchedPost 
+  const queryClient = useQueryClient()
   const { theme } = useThemeContext()
-  const { height } = Dimensions.get('window')
-  
-  useEffect(() => {
-    if(!post) {
-      setEnabled(true)
-    }
-  },[])
+  const { id } = useLocalSearchParams()
+  const { data:post, isFetching, status } = useGetPost(id)
   
   return !!post ? (
-    <ScrollView style={{flex:1,minHeight:height}}>
+    <ScrollView style={
+      [
+        styles.container,
+        { backgroundColor:theme.colors.background.default } 
+      ]
+    }>
     
       { post.image && (
         <Image 
@@ -52,15 +46,17 @@ const MainContainer = ({ cachedPost, fallbackId }) => {
       <PostCard post={post} imageShown={false}/>
       
     </ScrollView>
-  ): isLoading? (
+  ): isFetching? (
     <ThemedActivityIndicator style={styles.indicator}/>
   ): status === 'error' &&(
     <ThemedText>an errror has occured</ThemedText>
   )
 }
 
-
 const styles = StyleSheet.create({
+  container:{
+    minHeight:Dimensions.get('window').height,
+  },
   image:{
     contentFit:'contain',
     aspectRatio:1,
@@ -71,20 +67,5 @@ const styles = StyleSheet.create({
   },
   
 })
-
-
-const PostDetailPage = () => {
-  
-  const queryClient = useQueryClient()
-  const { id } = useLocalSearchParams()
-  const cachedPosts = queryClient.getQueryData(['posts'])
-  const cachedPost = cachedPosts? summarizeQueryPagesResult(cachedPosts).find(post => post.id === id): undefined
-  
-  return (
-    <ThemedView style={{flex:1}}>
-      <MainContainer cachedPost={cachedPost} fallbackId={id}/>
-    </ThemedView>
-  )
-}
 
 export default PostDetailPage;
