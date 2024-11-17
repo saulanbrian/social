@@ -28,34 +28,33 @@ const PostCard = ({ post, style,imageShown=true, ...props} : PostProps) => {
     <Card style={[styles.card, style]} {...props} ref={containerRef} >
     
       <Card.Header>
-        <Avatar 
-          size={48}
-          source={ API_URL + post.author_profile} />
-        <View>
+      
+        <Avatar size={48} source={ API_URL + post.author_profile} />
+        
+        <View style={{marginLeft:4}}>
           <ThemedText style={styles.username}>
             { post.author_username } 
           </ThemedText>
-          <ThemedText style={styles.date}>
-            6h ago
-          </ThemedText>
+          <ThemedText style={styles.date}>6h ago</ThemedText>
         </View>
+        
       </Card.Header>
       
       <View style={styles.content} >
-      { post.caption && (
-        <ThemedText style={styles.caption}>
-          { post.caption }
-        </ThemedText>
-      ) } 
-      
-      { post.image && imageShown && (
-        <Image 
-          source={post.image}
-          style={[
-            { width: containerWidth },
-            styles.image
-          ]}/>
-      ) }
+        { post.caption && (
+          <ThemedText style={styles.caption}>
+            { post.caption }
+          </ThemedText>
+        ) } 
+        
+        { post.image && imageShown && (
+          <Image 
+            source={post.image}
+            style={[
+              { width: containerWidth },
+              styles.image
+            ]}/>
+        ) }
       </View>
       
       <Card.Footer style={styles.footer}>
@@ -85,9 +84,10 @@ const styles = StyleSheet.create({
     flex:1,
   },
   image:{
-    contentFit:'cover',
+    contentFit:'fill',
     aspectRatio:1,
     borderRadius:2,
+    maxWidth:200,
     maxHeight:300
   },
   username:{

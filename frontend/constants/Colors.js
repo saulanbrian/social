@@ -15,7 +15,8 @@ exports.Colors = {
         },
         primary: '#937FF7',
         tint: '#6A4FF4',
-        text: '#363636ff'
+        text: '#363636ff',
+        tabBarIcon: '#F5F5FF'
     },
     dark: {
         background: {
@@ -24,6 +25,7 @@ exports.Colors = {
         },
         primary: '#3B2E5B',
         tint: '#A46FF4',
-        text: '#E0E0E0'
+        text: '#E0E0E0',
+        tabBarIcon: '#E0E0E0'
     },
 };

@@ -36,17 +36,17 @@ const HomeLayout = () => {
           bottom:0,
           width:'100%',
           alignSelf:'center',
-          jusitfyContent:'center',
+          justifyContent:'center',
           paddingVertical:8,
           backgroundColor:theme.colors.primary,
           overflow:'hidden',
           position:'fixed',
         },
         tabBarIndicatorStyle:{
-          backgroundColor:theme.colors.text,
+          backgroundColor:theme.colors.tabBarIcon,
           height:4
         },
-        tabBarActiveTintColor:theme.colors.text,
+        tabBarActiveTintColor:theme.colors.tabBarIcon,
         tabBarShowLabel:false,
         tabBarShowIcon:true,
         tabBarIcon:({ focused, color }) => {

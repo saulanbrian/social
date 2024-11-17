@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     position:'relative',
   },
   separator:{
-    height:0.5
+    height:2
   }
 })
 

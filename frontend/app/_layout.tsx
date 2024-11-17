@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Text } from 'react-native'
 import { ThemedText } from '../components/ui'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -32,7 +32,16 @@ function InitialLayout(){
       <Stack.Screen name='index' options={{ headerShown:false }}/>
       <Stack.Screen name='(tabs)' options={{
         headerTitle:() => {
-          return <ThemedText style={styles.headerText}>Home</ThemedText>
+          return (
+            <Text style={
+              [
+                styles.headerText,
+                {
+                  color:theme.colors.tabBarIcon
+                }
+              ]
+            }>Home</Text>
+          )
         },
         headerStyle:{
           backgroundColor:theme.colors.primary

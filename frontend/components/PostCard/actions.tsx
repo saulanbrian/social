@@ -41,7 +41,7 @@ const PostActions = ({ postId, is_liked}: Props) => {
      <TouchableIcon 
         name='chatbubble-outline' 
         color={theme.colors.text}
-        size={24}
+        size={20}
         title={'comment'}
         style={{
           marginRight:16,
