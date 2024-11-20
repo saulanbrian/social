@@ -7,4 +7,5 @@ urlpatterns = [
   path('<pk>',views.PostRetrieveAPIView.as_view()),
   path('<pk>/like',views.like_post),
   path('<pk>/unlike',views.unlike_post),
+  path('<pk>/comments',views.PostCommentListCreateAPIView.as_view())
 ]

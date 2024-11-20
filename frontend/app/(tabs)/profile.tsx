@@ -24,7 +24,6 @@ const Profile = () => {
   const handlePress = async() => { 
     const { assets, canceled } = await ImagePicker.launchImageLibraryAsync({
       allowsEditing:true,
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
     })
 
     if(!canceled && assets.length >= 1){

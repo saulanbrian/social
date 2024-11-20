@@ -9,8 +9,9 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Post
+from comment.models import Comment
 from .serializers import PostSerializer
-
+from comment.serializers import CommentSerializer
 
 class PostPagination(PageNumberPagination):
   page_size = 20
@@ -62,3 +63,13 @@ def unlike_post(request,pk):
   post.save()
   serializer = PostSerializer(post,context={'request':request})
   return Response(serializer.data,status=status.HTTP_200_OK)
+  
+  
+class PostCommentListCreateAPIView(ListCreateAPIView):
+  serializer_class = CommentSerializer
+  queryset = Comment.objects.all()
+  
+  def perform_create(self, serializer):
+    if not self.request.user.is_authenticated:
+      raise PermissionDenied()
+    serializer.save(author=self.request.user)

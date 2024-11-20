@@ -33,8 +33,8 @@ const Feed = () => {
           }}
           renderItem={({ item: post }) => {
             return (
-              <Pressable onPress={() => router.push(`/post/${post.id}`) }>
-                <PostCard post={post} style={styles.post} imageShown={true}/>
+              <Pressable onPress={() => router.push(`/post/${post.id}`) } style={{flex:1}}>
+                <PostCard post={post} imageShown={true}/>
               </Pressable>
             )
           }}

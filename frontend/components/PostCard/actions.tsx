@@ -12,15 +12,8 @@ type Props = {
 const PostActions = ({ postId, is_liked}: Props) => {
   
   const { theme } = useThemeContext()
-  const {
-    mutate:likePost,
-    likingPost, 
-    status:likeStatus
-  } = useLikePost()
-  const { 
-    mutate:unlikePost,
-    isPending:unlikingPost,
-    status:unlikeStatus
+  const { mutate:likePost, likingPost, status:likeStatus } = useLikePost()
+  const { mutate:unlikePost, isPending:unlikingPost, status:unlikeStatus
   } = useUnlikePost()
   
   
@@ -42,7 +35,7 @@ const PostActions = ({ postId, is_liked}: Props) => {
         name='chatbubble-outline' 
         color={theme.colors.text}
         size={20}
-        title={'comment'}
+        title={'comments'}
         style={{
           marginRight:16,
           ...styles.action
