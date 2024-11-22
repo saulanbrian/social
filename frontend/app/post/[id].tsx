@@ -5,19 +5,25 @@ import {
   Avatar,
   Card,
   FlatInput,
-  TouchableIcon
+  TouchableIcon,
 } from '../../components/ui'
 import PostCard from '../../components/PostCard'
-
-import { StyleSheet, ScrollView, Dimensions, View } from 'react-native'
+import InfiniteCommentsFlashList from '../../components/InfiniteCommentsFlashList'
+import { 
+  StyleSheet,
+  ScrollView,
+  Dimensions, 
+  View,
+  Keyboard
+} from 'react-native'
 import { Image } from 'expo-image'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { useGetPost } from '../../api/queries/post'
-import { useGetComments } from '../../api/queries/comments'
 import { useQueryClient } from '@tanstack/react-query'
+import { useAddComment } from '../../api/interactions/comments'
 import { useLocalSearchParams } from 'expo-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useThemeContext } from '../../context/theme'
 import { useUserStore } from '../../stores/user'
 
@@ -31,26 +37,35 @@ const PostDetailPage = () => {
   const queryClient = useQueryClient()
   const { theme } = useThemeContext()
   const { id } = useLocalSearchParams()
-  const {
-    data: post, 
-    isFetching: loadingPost,
-    status: postStatus 
-  } = useGetPost(id)
-  const { 
-    data: comments, 
-    isFetching: loadingComments, 
-    status: commentsStatus
-  } = useGetComments(id)
+  const { data:post, isFetching, status: postStatus } = useGetPost(id)
+  const [comment, setComment] = useState<string>(null)
+  const { mutate:postComment, isPending, status:commentStatus } = useAddComment(id)
+  const [commentBoxHeight,setCommentBoxHeight] = useState<number>(null)
+  
   const { profileURL } = useUserStore()
   
+  useEffect(() => {
+    if(commentStatus === 'success'){
+      setComment(null)
+    }
+  },[commentStatus])
+  
+  const handleSendComment = () => {
+    Keyboard.dismiss()
+    if(!isPending && comment) {
+      postComment(comment)
+    }
+  }
+  
+  const handleCommentBoxLayout = (e) => {
+    if(!commentBoxHeight){
+      setCommentBoxHeight(e.nativeEvent.layout.height)
+    }
+  }
+  
   return !!post ? (
-    <View style={{flex:1,position:'relative'}}>
-      <ScrollView style={
-        [
-          styles.container,
-          { backgroundColor:theme.colors.background.default } 
-        ]
-      }>
+    <ThemedView style={{flex:1,position:'relative'}}>
+      <ScrollView>
       
         { post.image && (
           <Image 
@@ -59,33 +74,35 @@ const PostDetailPage = () => {
         ) }
         
         <PostCard post={post} imageShown={false}/>
-        
-        { comments && comments.map(comment => {
-          return <ThemedText> { comment.text } </ThemedText>
-        } )}
-        
+        <ThemedText style={styles.commentSectionHeader}>
+          newest first
+        </ThemedText>
+        <InfiniteCommentsFlashList 
+          contentContainerStyle={{paddingBottom:commentBoxHeight}}
+          postId={id} />
       </ScrollView>
       
-      <ThemedView style={
-        [
-          { backgroundColor:theme.colors.background.default },
-          styles.commentBoxContainer,
-        ]
-      }>
+      <ThemedView 
+        style={styles.commentBoxContainer} 
+        onLayout={handleCommentBoxLayout}>
         <TouchableIcon 
           name={'folder-open'} 
           color={theme.colors.tint}
           size={28}/>
         <Avatar source={profileURL} size={36} />
-        <FlatInput placeholder={'comment'} style={styles.commentInput}/>
+        <FlatInput
+          value={comment}
+          onChangeText={setComment}
+          placeholder={'comment'} style={styles.commentInput}/>
         <TouchableIcon 
           name={'send'} 
           color={theme.colors.tint}
-          size={24}/>
+          size={24}
+          onPress={handleSendComment}/>
       </ThemedView>
         
-    </View>
-  ): loadingPost? (
+    </ThemedView>
+  ): isFetching? (
     <ThemedActivityIndicator style={styles.indicator}/>
   ): postStatus === 'error' &&(
     <ThemedText>an errror has occured</ThemedText>
@@ -111,6 +128,13 @@ const styles = StyleSheet.create({
     fontSize:16,
     flex:1,
     overflow:'auto'
+  },
+  commentSectionHeader:{
+    fontSize:16,
+    fontWeight:400,
+    marginTop:24,
+    marginBottom:8,
+    marginLeft:8
   },
   image:{
     contentFit:'fill',

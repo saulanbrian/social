@@ -63,13 +63,18 @@ def unlike_post(request,pk):
   post.save()
   serializer = PostSerializer(post,context={'request':request})
   return Response(serializer.data,status=status.HTTP_200_OK)
-  
-  
-class PostCommentListCreateAPIView(ListCreateAPIView):
-  serializer_class = CommentSerializer
-  queryset = Comment.objects.all()
-  
-  def perform_create(self, serializer):
-    if not self.request.user.is_authenticated:
-      raise PermissionDenied()
-    serializer.save(author=self.request.user)
+
+
+@permission_classes([IsAuthenticated])
+@api_view(['POST'])
+def add_comment(request,pk):
+  print(pk)
+  post = get_object_or_404(Post,pk=pk)
+  serializer = CommentSerializer(data=request.data)
+  if serializer.is_valid():
+    serializer.save(
+      post=post,
+      author=request.user
+    )
+    return Response(serializer.data,status=status.HTTP_201_CREATED)
+  return Response(serializer.errors,status=status.HTTTP_400_BAD_REQUEST)

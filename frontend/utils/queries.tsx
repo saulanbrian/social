@@ -12,8 +12,10 @@ type InfiniteQueryData = {
 
 export const summarizeQueryPagesResult = (data:InfiniteQueryData) => {
   let res: any[] = []
-  for (let page of data.pages){
-    res.push(...page.results)
+  if (data.pages && data.pages.length >= 1){
+    for (let page of data.pages){
+      res.push(...page.results)
+    }
   }
   return res
 }

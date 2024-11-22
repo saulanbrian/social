@@ -10,6 +10,14 @@ class CommentSerializer(serializers.ModelSerializer):
   class Meta:
     model = Comment 
     fields = ('id','text','author_profile','author_username')
+    extra_kwargs = {
+      'author_username':{
+        'read_only':True
+      },
+      'author_profile':{
+        'read_only':True
+      }
+    }
     
     
   def get_author_profile(self,obj):
