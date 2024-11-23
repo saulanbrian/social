@@ -1,20 +1,20 @@
 import { Avatar, ThemedText, ThemedView } from '../ui'
 import { StyleSheet } from 'react-native'
-import CommentProps from '../../types/comment'
+import CommentType from '../../types/comment'
 
 
-
+const API_URL = process.env.EXPO_PUBLIC_API_URL
 
 const Comment = ({
   id,
   text,
   author_profile,
   author_username
-}: CommentProps) => {
+}: CommentType) => {
   return (
     <ThemedView style={styles.container}>
     
-      <Avatar source={author_profile} size={40}/> 
+      <Avatar source={ API_URL + author_profile} size={40}/> 
       
       <ThemedView style={{flex:1}}>
         <ThemedText style={styles.username}>

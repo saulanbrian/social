@@ -1,20 +1,29 @@
+import React from 'react'
 import { FlashList, FlashListProps } from '@shopify/flash-list'
-import { ThemedText } from '../ui' 
+import { ThemedText, ThemedView } from '../ui' 
 import { TouchableOpacity } from 'react-native'
 import Comment from '../Comment'
+import CommentType from '../../types/comment'
 
 import { useGetInfiniteComments } from '../../api/queries/comments'
 import { summarizeQueryPagesResult } from '../../utils/queries'
 import { useThemeContext} from '../../context/theme'
 
+
 type Props = FlashListProps & {
   postId: string
 }
 
-const InfiniteCommentsFlashList = ({postId,...props}:Props) => {
+export type InfiniteCommentsFlashListRef = {
+  comments:CommentType[]
+}
+
+const InfiniteCommentsFlashList = (props:Props,ref:React.Ref<InfiniteCommentsFlashListRef>) => {
+  
+  const { postId, ...restProps } = props
   
   const {
-    data:comments, 
+    data, 
     status,
     isFetching,
     isFetchingNextPage,
@@ -24,15 +33,22 @@ const InfiniteCommentsFlashList = ({postId,...props}:Props) => {
   
   const { theme } = useThemeContext()
   
+  const comments = data? summarizeQueryPagesResult(data): []
+  
+  React.useImperativeHandle(ref,() => {
+    return { comments } 
+  })
+  
+  
   return !!comments? (
     <FlashList 
-      data={summarizeQueryPagesResult(comments)}
+      data={comments}
       keyExtractor={(comment) => comment.id }
       renderItem={({ item: comment }) => {
         return <Comment {...comment} key={comment.id} />
       }}
       estimatedItemSize={200}
-      { ...props }
+      { ...restProps }
       ListFooterComponent={() => {
         return hasNextPage && (
         <TouchableOpacity onPress={fetchNextPage}>
@@ -46,6 +62,15 @@ const InfiniteCommentsFlashList = ({postId,...props}:Props) => {
         </TouchableOpacity>
         )
       }}
+      ListEmptyComponent={() => {
+        return (
+          <ThemedView style={{height:'100%',justifyContent:'center'}}>
+            <ThemedText style={{alignSelf:'center',opacity:0.6}}>
+              no comments yet
+            </ThemedText>
+          </ThemedView>
+        )
+      }}
       />
   ): isFetching && !isFetchingNextPage ? (
     <ThemedText>loading...</ThemedText>
@@ -54,4 +79,4 @@ const InfiniteCommentsFlashList = ({postId,...props}:Props) => {
   )
 }
 
-export default InfiniteCommentsFlashList
+export default React.forwardRef(InfiniteCommentsFlashList)

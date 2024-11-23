@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { StyleSheet, Dimensions } from 'react-native'
-import { useRouter } from 'expo-router'
+import { useRouter, usePathname } from 'expo-router'
 import { useThemeContext } from '../../context/theme'
 import { ThemedView, ThemedText, ThemedActivityIndicator } from '../../components/ui'
 import { FlashList } from '@shopify/flash-list'
@@ -14,11 +14,23 @@ import { summarizeQueryPagesResult } from '../../utils/queries'
 const Feed = () => {
   
   const { fetchNextPage, hasNextPage, data, status, isFetching} = useGetPosts()
+  const [postClickDisabled,setPostClickDisabled] = useState(false)
   const { width, height } = Dimensions.get('window')
   const { theme } = useThemeContext()
   const router = useRouter()
+  const pathname = usePathname()
+  
   
   const posts = data? summarizeQueryPagesResult(data): undefined
+  
+  const handlePress = (id:string) => {
+    setPostClickDisabled(true)
+    router.navigate(`/post/${id}`)
+  }
+  
+  useEffect(() => {
+    setPostClickDisabled(false)
+  },[pathname])
 
   return (
     <ThemedView style={{flex:1, width:width}}>
@@ -33,7 +45,10 @@ const Feed = () => {
           }}
           renderItem={({ item: post }) => {
             return (
-              <Pressable onPress={() => router.push(`/post/${post.id}`) } style={{flex:1}}>
+              <Pressable 
+                onPress={() => handlePress(post.id)} 
+                style={{flex:1}}
+                disabled={postClickDisabled}>
                 <PostCard post={post} imageShown={true}/>
               </Pressable>
             )

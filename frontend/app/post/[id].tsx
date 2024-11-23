@@ -8,7 +8,7 @@ import {
   TouchableIcon,
 } from '../../components/ui'
 import PostCard from '../../components/PostCard'
-import InfiniteCommentsFlashList from '../../components/InfiniteCommentsFlashList'
+import InfiniteCommentsFlashList, { InfiniteCommentsFlashListRef } from '../../components/InfiniteCommentsFlashList'
 import { 
   StyleSheet,
   ScrollView,
@@ -37,11 +37,15 @@ const PostDetailPage = () => {
   const queryClient = useQueryClient()
   const { theme } = useThemeContext()
   const { id } = useLocalSearchParams()
-  const { data:post, isFetching, status: postStatus } = useGetPost(id)
-  const [comment, setComment] = useState<string>(null)
-  const { mutate:postComment, isPending, status:commentStatus } = useAddComment(id)
-  const [commentBoxHeight,setCommentBoxHeight] = useState<number>(null)
   
+  const { data:post, isFetching, status: postStatus } = useGetPost(id)
+  const { mutate:postComment, isPending, status:commentStatus } = useAddComment(id)
+  
+  const [comment, setComment] = useState<string>(null)
+  const [commentBoxHeight,setCommentBoxHeight] = useState<number>(null)
+  const [screenMounted,setScreenMounted] = useState(false)
+  
+  const commentsRef = useRef<InfiniteCommentsFlashListRef>(null)
   const { profileURL } = useUserStore()
   
   useEffect(() => {
@@ -65,21 +69,25 @@ const PostDetailPage = () => {
   
   return !!post ? (
     <ThemedView style={{flex:1,position:'relative'}}>
-      <ScrollView>
-      
+    
+      <ScrollView onLayout={() => setScreenMounted(true)}>
         { post.image && (
           <Image 
             source={{ uri: post.image }} 
             style={[styles.image,]}/>
         ) }
-        
         <PostCard post={post} imageShown={false}/>
-        <ThemedText style={styles.commentSectionHeader}>
-          newest first
-        </ThemedText>
-        <InfiniteCommentsFlashList 
-          contentContainerStyle={{paddingBottom:commentBoxHeight}}
-          postId={id} />
+        { commentsRef.current?.comments.length >= 1 && (
+          <ThemedText style={styles.commentSectionHeader}>
+            all comments
+          </ThemedText>
+        ) }
+        { screenMounted && (
+          <InfiniteCommentsFlashList 
+            contentContainerStyle={{paddingBottom:commentBoxHeight}}
+            postId={id}
+            ref={commentsRef}/>
+        ) }
       </ScrollView>
       
       <ThemedView 
@@ -132,8 +140,8 @@ const styles = StyleSheet.create({
   commentSectionHeader:{
     fontSize:16,
     fontWeight:400,
-    marginTop:24,
-    marginBottom:8,
+    marginTop:20,
+    marginBottom:12,
     marginLeft:8
   },
   image:{

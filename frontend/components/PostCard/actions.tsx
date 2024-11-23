@@ -1,8 +1,10 @@
 import { TouchableIcon } from '../ui'
 import { View, StyleSheet } from 'react-native'
 
+
 import { useThemeContext } from '../../context/theme'
 import { useLikePost, useUnlikePost } from '../../api/interactions/post'
+import { useRouter, usePathname } from 'expo-router'
 
 type Props = {
   postId:string;
@@ -15,7 +17,8 @@ const PostActions = ({ postId, is_liked}: Props) => {
   const { mutate:likePost, likingPost, status:likeStatus } = useLikePost()
   const { mutate:unlikePost, isPending:unlikingPost, status:unlikeStatus
   } = useUnlikePost()
-  
+  const router = useRouter()
+  const pathname = usePathname()
   
   const handleLike = () => {
     is_liked? unlikePost(postId): likePost(postId)
