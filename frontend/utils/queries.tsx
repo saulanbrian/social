@@ -19,3 +19,30 @@ export const summarizeQueryPagesResult = (data:InfiniteQueryData) => {
   }
   return res
 }
+
+
+type InfiniteQueryUpdaterParams = {
+  data:InfiniteQueryData;
+  id: string;
+  updateField: object;
+}
+
+export const updateInfiniteQuerySingleResultById = ({
+  data,
+  id,
+  updateField
+}:InfiniteQueryUpdaterParams ) => {
+  
+  return {
+    ...data,
+    pages:data.pages.map(page => ({
+      ...page,
+      results:page.results.map(result => {
+        return result.id === id? ({
+          ...result,
+          ...updateField
+        }): result
+      })
+    }))
+  }
+}
