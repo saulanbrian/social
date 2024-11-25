@@ -29,7 +29,6 @@ const FlatInput = forwardRef<TextInput,TextInputProps>((
 const styles = StyleSheet.create({
   input:{
     borderRadius:4,
-    opacity:0.7
   }
 })
 

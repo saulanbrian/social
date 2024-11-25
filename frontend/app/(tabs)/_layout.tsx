@@ -1,16 +1,22 @@
 import { NavigationContainer } from '@react-navigation/native';
-
-import { useThemeContext } from '@/context/theme'
-import { useAuthContext } from '@/context/authentication'
 import { Stack, Redirect } from 'expo-router' 
-
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 import ProfilePage  from './profile'
 import Feed  from './feed'
 import NotificationsPage from './notifications'
 
-import Ionicons from '@expo/vector-icons/Ionicons'
+import * as SecureStore from 'expo-secure-store'
+
+import { useThemeContext } from '@/context/theme'
+import { useAuthContext } from '@/context/authentication'
+import { useEffect } from 'react'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { refreshToken, getAccessToken, getRefreshToken,  } from '../../utils/authentication'
+import { jwtDecode } from 'jwt-decode'
+
+
+const WEBSOCKET_URL = process.env.EXPO_PUBLIC_WS_URL
 
 const Tabs = createMaterialTopTabNavigator()
 
@@ -20,6 +26,7 @@ const HomeLayout = () => {
   const { isAuthenticated } = useAuthContext()
   
   if(!isAuthenticated) return <Redirect href={'/authentication'} />
+
   
   return (
     <Tabs.Navigator

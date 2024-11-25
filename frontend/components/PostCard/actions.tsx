@@ -14,12 +14,10 @@ type Props = {
 const PostActions = ({ postId, is_liked}: Props) => {
   
   const { theme } = useThemeContext()
-  const { mutate:likePost, likingPost, status:likeStatus } = useLikePost()
+  const { mutate:likePost, isPending:likingPost, status:likeStatus } = useLikePost()
   const { mutate:unlikePost, isPending:unlikingPost, status:unlikeStatus
   } = useUnlikePost()
-  const router = useRouter()
-  const pathname = usePathname()
-  
+
   const handleLike = () => {
     is_liked? unlikePost(postId): likePost(postId)
   }
@@ -33,6 +31,7 @@ const PostActions = ({ postId, is_liked}: Props) => {
         title={'like'}
         style={styles.action}
         onPress={handleLike}
+        disabled={ likingPost || unlikingPost }
         />
      <TouchableIcon 
         name='chatbubble-outline' 

@@ -49,7 +49,8 @@ function InitialLayout(){
         headerShadowVisible:false
       }}/>
       <Stack.Screen name='post' options={{
-        headerShown:false
+        headerShown:false,
+        animationForReplace:'pop',
       }} />
       <Stack.Screen name='authentication' options={{ headerShown:false }}/>
     </Stack>

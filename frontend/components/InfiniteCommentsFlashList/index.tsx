@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { FlashList, FlashListProps } from '@shopify/flash-list'
 import { ThemedText, ThemedView } from '../ui' 
 import { TouchableOpacity } from 'react-native'
@@ -15,7 +15,8 @@ type Props = FlashListProps & {
 }
 
 export type InfiniteCommentsFlashListRef = {
-  comments:CommentType[]
+  comments:CommentType[],
+  isLoading:boolean
 }
 
 const InfiniteCommentsFlashList = (props:Props,ref:React.Ref<InfiniteCommentsFlashListRef>) => {
@@ -33,10 +34,10 @@ const InfiniteCommentsFlashList = (props:Props,ref:React.Ref<InfiniteCommentsFla
   
   const { theme } = useThemeContext()
   
-  const comments = data? summarizeQueryPagesResult(data): []
+  const comments = useMemo(() => data? summarizeQueryPagesResult(data): [],[data,postId])
   
   React.useImperativeHandle(ref,() => {
-    return { comments } 
+    return { comments, isLoading: isFetching } 
   })
   
   

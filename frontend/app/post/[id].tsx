@@ -23,7 +23,7 @@ import { useGetPost } from '../../api/queries/post'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAddComment } from '../../api/interactions/comments'
 import { useLocalSearchParams } from 'expo-router'
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useThemeContext } from '../../context/theme'
 import { useUserStore } from '../../stores/user'
 
@@ -38,12 +38,12 @@ const PostDetailPage = () => {
   const { theme } = useThemeContext()
   const { id } = useLocalSearchParams()
   
-  const { data:post, isFetching, status: postStatus } = useGetPost(id)
+  const { data, isFetching, status: postStatus } = useGetPost(id)
+  const post = useMemo(() => data, [id,data])
   const { mutate:postComment, isPending, status:commentStatus } = useAddComment(id)
   
   const [comment, setComment] = useState<string>(null)
   const [commentBoxHeight,setCommentBoxHeight] = useState<number>(null)
-  const [screenMounted,setScreenMounted] = useState(false)
   
   const commentsRef = useRef<InfiniteCommentsFlashListRef>(null)
   const { profileURL } = useUserStore()
@@ -66,28 +66,22 @@ const PostDetailPage = () => {
       setCommentBoxHeight(e.nativeEvent.layout.height)
     }
   }
-  
-  return !!post ? (
-    <ThemedView style={{flex:1,position:'relative'}}>
-    
-      <ScrollView onLayout={() => setScreenMounted(true)}>
+
+  return (
+  <ThemedView style={{flex:1,position:'relative'}}>
+    { !!post ? (
+    <React.Fragment>
+      <ScrollView>
         { post.image && (
           <Image 
             source={{ uri: post.image }} 
             style={[styles.image,]}/>
         ) }
         <PostCard post={post} imageShown={false}/>
-        { commentsRef.current?.comments.length >= 1 && (
-          <ThemedText style={styles.commentSectionHeader}>
-            all comments
-          </ThemedText>
-        ) }
-        { screenMounted && (
-          <InfiniteCommentsFlashList 
-            contentContainerStyle={{paddingBottom:commentBoxHeight}}
-            postId={id}
-            ref={commentsRef}/>
-        ) }
+        <InfiniteCommentsFlashList 
+          contentContainerStyle={{paddingBottom:commentBoxHeight,paddingTop:12}}
+          postId={id}
+          ref={commentsRef}/>
       </ScrollView>
       
       <ThemedView 
@@ -101,21 +95,29 @@ const PostDetailPage = () => {
         <FlatInput
           value={comment}
           onChangeText={setComment}
-          placeholder={'comment'} style={styles.commentInput}/>
+          placeholder={'comment'} 
+          style={
+            [
+              styles.commentInput,
+              { opacity: !comment? 0.7: 1}
+            ]
+          }/>
         <TouchableIcon 
           name={'send'} 
           color={theme.colors.tint}
           size={24}
           onPress={handleSendComment}/>
       </ThemedView>
-        
-    </ThemedView>
+    
+    </React.Fragment>
+
   ): isFetching? (
     <ThemedActivityIndicator style={styles.indicator}/>
   ): postStatus === 'error' &&(
     <ThemedText>an errror has occured</ThemedText>
-  )
-}
+  ) }
+  </ThemedView>
+)}
 
 const styles = StyleSheet.create({
   container:{

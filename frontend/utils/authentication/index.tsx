@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store'
 import { JwtPayload } from 'jwt-decode'
 
 import { API_URL } from '../../constants/api'
-
+import { jwtDecode } from 'jwt-decode'
 
 export interface CustomJwtTokenPayload extends JwtPayload {
   id:string | number;
@@ -33,4 +33,22 @@ export const refreshToken = async(token:string) => {
     console.log(e)
     return undefined
   }
+}
+
+
+export const getValidAccessTokenAutoSave = async() => {
+  
+  let token:string | null = null 
+  const access = await getAccessToken()
+  
+  if(jwtDecode(access).exp > Date.now() / 1000){
+    token = access
+  }else{
+    const refresh = await getRefreshToken()
+    const tokens = await refreshToken(refresh)
+    token = tokens.access
+  }
+  
+  return token 
+  
 }

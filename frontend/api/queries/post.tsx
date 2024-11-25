@@ -17,7 +17,7 @@ export const useGetPosts = () => {
       }
       return undefined
     },
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
   })
 }
 

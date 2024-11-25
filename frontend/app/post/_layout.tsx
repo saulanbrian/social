@@ -12,6 +12,9 @@ const PostStack = () => {
       headerStyle:{
         backgroundColor:theme.colors.background.card
       },
+      cardStyle:{
+          backgroundColor:'red'
+        }
     }}>
       <Stack.Screen name='[id]' options={{
         title:'post'
