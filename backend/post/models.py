@@ -1,7 +1,9 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
 import uuid
 
 from user.models import CustomUser
+from like.models import Like
 
 def construct_path(instance,filename):
   return 'users/{0}/posts_images/{1}'.format(instance.author.username,filename)
@@ -11,4 +13,5 @@ class Post(models.Model):
   author = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='posts')
   caption = models.CharField(max_length=1000)
   image = models.ImageField(upload_to=construct_path,null=True)
-  likes = models.ManyToManyField(CustomUser,related_name='liked_posts')
+  likes = GenericRelation(Like)
+  

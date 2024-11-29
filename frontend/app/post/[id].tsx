@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     padding:12,
     fontSize:16,
     flex:1,
-    overflow:'auto'
+    overflow:'hidden'
   },
   commentSectionHeader:{
     fontSize:16,

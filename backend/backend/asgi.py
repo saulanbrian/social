@@ -4,7 +4,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from .middleware import JwtAuthMiddleware
 
-from notification.routing import notification_ws_urlpatterns
+from  .routing import websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 
@@ -13,7 +13,7 @@ application = ProtocolTypeRouter({
     "websocket": AllowedHostsOriginValidator(
         JwtAuthMiddleware(
             URLRouter(
-                notification_ws_urlpatterns
+                websocket_urlpatterns
             )
         )
     ),

@@ -19,7 +19,9 @@ export type InfiniteCommentsFlashListRef = {
   isLoading:boolean
 }
 
-const InfiniteCommentsFlashList = (props:Props,ref:React.Ref<InfiniteCommentsFlashListRef>) => {
+const InfiniteCommentsFlashList = React.memo(
+  React.forwardRef<InfiniteCommentsFlashListRef,FlashListProps>(
+  (props,ref) => {
   
   const { postId, ...restProps } = props
   
@@ -78,6 +80,6 @@ const InfiniteCommentsFlashList = (props:Props,ref:React.Ref<InfiniteCommentsFla
   ): status === 'error' && (
     <ThemedText>an error has occured</ThemedText>
   )
-}
+}))
 
-export default React.forwardRef(InfiniteCommentsFlashList)
+export default InfiniteCommentsFlashList

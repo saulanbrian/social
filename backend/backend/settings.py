@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'post.apps.PostConfig',
     'comment.apps.CommentConfig',
-    'notification.apps.NotificationConfig'
+    'notification.apps.NotificationConfig',
+    'like.apps.LikeConfig'
 ]
 
 MIDDLEWARE = [

@@ -7,6 +7,7 @@ import { Slot, useRouter, Stack } from 'expo-router'
 
 import { AuthContextProvider, useAuthContext } from '../context/authentication'
 import { ThemeContextProvider, useThemeContext } from '../context/theme'
+import { GlobalSocketContextProvider } from '../context/socket'
 
 import * as NavigationBar from 'expo-navigation-bar'
 
@@ -76,12 +77,14 @@ export default function RootLayout(){
   },[])
   
   return (
-    <ThemeContextProvider>
-      <AuthContextProvider>
-        <QueryClientProvider client={queryClient}>
-          <InitialLayout />
-        </QueryClientProvider>
-      </AuthContextProvider>
-    </ThemeContextProvider>
+    <AuthContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <GlobalSocketContextProvider>
+          <ThemeContextProvider>
+            <InitialLayout />
+          </ThemeContextProvider>
+        </GlobalSocketContextProvider>
+      </QueryClientProvider>
+    </AuthContextProvider>
   )
 }
