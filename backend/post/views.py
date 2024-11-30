@@ -10,7 +10,6 @@ from rest_framework import status
 
 from .models import Post
 from comment.models import Comment
-from like.models import Like
 from django.contrib.contenttypes.models import ContentType
 
 from .serializers import PostSerializer
@@ -49,14 +48,8 @@ class PostRetrieveAPIView(RetrieveAPIView):
 @permission_classes([IsAuthenticated])
 @api_view(['POST'])
 def like_post(request,pk):
-  post = get_object_or_404(Post,pk=pk)
-  like = Like.objects.create(
-    user=request.user,
-    content_type=ContentType.objects.get_for_model(Post),
-    object_id=post.id
-  )
-  post.likes.add(like)
-  post.save()
+  post = get_object_or_404(Post.objects.prefetch_related('likes'),pk=pk)
+  post.likes.add(request.user)
   serializer = PostSerializer(post,context={'request':request})
   return Response(serializer.data,status=status.HTTP_200_OK)
 
@@ -65,14 +58,8 @@ def like_post(request,pk):
 @api_view(['POST'])
 def unlike_post(request,pk):
   post = get_object_or_404(Post,pk=pk)
-  like = Like.objects.filter(
-    user=request.user,
-    content_type=ContentType.objects.get_for_model(Post),
-    object_id=post.id
-  ).first()
-  if like:
-    like.delete()
-  serializer = PostSerializer(post,context={'request':request})
+  post.likes.remove(request.user)
+  serializer = PostSerializer(post)
   return Response(serializer.data,status=status.HTTP_200_OK)
 
 
