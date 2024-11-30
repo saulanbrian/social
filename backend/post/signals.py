@@ -13,14 +13,15 @@ def handle_notification(sender,action,pk_set,instance,**kwargs):
     post = Post.objects.get(pk=instance.pk)
     for pk in pk_set:
       user = CustomUser.objects.get(pk=pk)
-
-      Notification.objects.create(
-        message=f'{user.username} liked your post',
-        receiver=post.author,
-        target=post,
-        actor=user,
-        notification_type='like'
-      )
+      
+      if pk != post.author.id:
+        Notification.objects.create(
+          message=f'{user.username} liked your post',
+          receiver=post.author,
+          target=post,
+          actor=user,
+          notification_type='like'
+        )
       
   elif action == 'post_remove':
     post_notifications = Notification.objects.filter(

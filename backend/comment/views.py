@@ -23,4 +23,4 @@ class CommentListAPIView(ListAPIView):
   def get_queryset(self):
     post_id = self.request.query_params.get('post')
     post = get_object_or_404(Post.objects.prefetch_related('comments'),pk=post_id)
-    return post.comments.all().order_by('id')
+    return post.comments.all().order_by('date_time_created')

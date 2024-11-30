@@ -14,4 +14,4 @@ class Post(models.Model):
   caption = models.CharField(max_length=1000)
   image = models.ImageField(upload_to=construct_path,null=True)
   likes = models.ManyToManyField(CustomUser,related_name='posts_liked')
-  
+  date_time_created = models.DateTimeField(auto_now_add=True)

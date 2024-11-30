@@ -44,11 +44,11 @@ class Notification(models.Model):
     on_delete=models.CASCADE
   )
   
+  is_read = models.BooleanField(default=False)
+  
+  date_time_created = models.DateTimeField(auto_now_add=True)
+  
+  def mark_as_read(self):
+    self.is_read = True
+    self.save()
 
-
-
-
-# class PostNotification(models.Model):
-#   message = models.TextField()
-#   receiver = models.ForeignKey(CustomUser, on_delete=models.CASCADE,related_name='post_notifications')
-#   post = models.ForeignKey(Post,related_name='post_notifications',on_delete=models.CASCADE)

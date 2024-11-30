@@ -1,5 +1,6 @@
 import React,{ createContext, useContext, useState } from 'react'
 import { getValidAccessTokenAutoSave } from '../utils/authentication'
+import {Alert} from 'react-native'
 
 const WEBSOCKET_URL = process.env.EXPO_PUBLIC_WS_URL
 
@@ -26,18 +27,27 @@ export const GlobalSocketContextProvider = ({ children }: Props) => {
 
   React.useEffect(() => {
     
+    let socket: WebSocket | null = null
+    
     const connect = async() => {
       const token = await getValidAccessTokenAutoSave()
-      const ws = new WebSocket(`${WEBSOCKET_URL}?token=${token}`)
+      socket = new WebSocket(`${WEBSOCKET_URL}?token=${token}`)
       
-      ws.onopen = () => {
+      socket.onopen = () => {
         setIsConnected(true)
       }
       
-      ws.onclose = () => {
+      socket.onclose = () => {
         setIsConnected(false)
         
         setTimeout(connect,5000)
+      }
+      
+      socket.onmessage = (e) => {
+        setTimeout(() => {
+          console.log(e)
+          Alert.alert('notifiication received')
+        },10000)
       }
       
     }
