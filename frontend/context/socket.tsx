@@ -1,11 +1,13 @@
-import React,{ createContext, useContext, useState } from 'react'
+import React,{ createContext, useContext, useState, useEffect} from 'react'
+import { useAuthenticatedWebSocket } from '../hooks/socket'
+import { useQueryClient } from '@tanstack/react-query'
 import { getValidAccessTokenAutoSave } from '../utils/authentication'
-import {Alert} from 'react-native'
+import { infiniteQueryAppendResultAtTop } from '../utils/queries'
 
 const WEBSOCKET_URL = process.env.EXPO_PUBLIC_WS_URL
 
 type GlobalSocketContextType = {
-  connected:boolean,
+  
 }
 
 const GlobalSocketContext = createContext<GlobalSocketContextType | null>(null)
@@ -23,46 +25,42 @@ type Props = {
 
 
 export const GlobalSocketContextProvider = ({ children }: Props) => {
-  const [connected,setIsConnected] = useState(false)
-
-  React.useEffect(() => {
-    
-    let socket: WebSocket | null = null
-    
-    const connect = async() => {
-      const token = await getValidAccessTokenAutoSave()
-      socket = new WebSocket(`${WEBSOCKET_URL}?token=${token}`)
-      
-      socket.onopen = () => {
-        setIsConnected(true)
-      }
-      
-      socket.onclose = () => {
-        setIsConnected(false)
-        
-        setTimeout(connect,5000)
-      }
+  const queryClient = useQueryClient()
+  const { socket, isConnected } = useAuthenticatedWebSocket(WEBSOCKET_URL)
+  
+  const appendToNotification = (data) => {
+    queryClient.setQueryData(['notifications'], oldData => {
+      const newData = infiniteQueryAppendResultAtTop({
+        data:oldData,
+        newData: data
+      })
+      return newData
+    })
+  }
+  
+  useEffect(() => {
+    if(socket){
       
       socket.onmessage = (e) => {
-        setTimeout(() => {
-          console.log(e)
-          Alert.alert('notifiication received')
-        },10000)
+        const data = JSON.parse(e.data)
+
+        switch(data.type){
+          case 'notification':
+            appendToNotification(data.data)
+        }
       }
       
+      socket.onopen = (e) => {
+        console.log('open')
+      }
     }
-    
-    connect()
-    
-    return () => { 
-      if(socket) socket.close()
-    }
-    
-  },[])
+  },[socket])
+
 
   return (
-    <GlobalSocketContext.Provider value={{connected}}>
+    <GlobalSocketContext.Provider value={{}}>
       { children } 
     </GlobalSocketContext.Provider>
   )
 }
+

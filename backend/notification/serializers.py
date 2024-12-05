@@ -13,6 +13,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     model = Notification
     fields = (
       'id',
+      'is_read',
       'notification_type',
       'target_type',
       'target_id',
@@ -20,7 +21,8 @@ class NotificationSerializer(serializers.ModelSerializer):
       'date_time_created',
       'actor_id',
       'actor_username',
-      'actor_profile'
+      'actor_profile',
+      'previewed'
     )
     
   def get_actor_id(self,obj):

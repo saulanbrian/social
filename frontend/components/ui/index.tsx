@@ -15,3 +15,5 @@ export { default as Card } from './Card'
 export { default as TouchableIcon } from './TouchableIcon'
 
 export { default as FlatInput } from './FlatInput'
+
+export { default as TabBarIcon } from './TabBarIcon'

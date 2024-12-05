@@ -14,7 +14,8 @@ urlpatterns = [
     path('auth/token/refresh/',TokenRefreshView.as_view()),
     path('user/',include('user.urls')),
     path('posts/',include('post.urls')),
-    path('comments/',include('comment.urls'))
+    path('comments/',include('comment.urls')),
+    path('notifications/',include('notification.urls'))
 ] 
 
 if settings.DEBUG:

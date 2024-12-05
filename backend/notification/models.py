@@ -48,6 +48,8 @@ class Notification(models.Model):
   
   date_time_created = models.DateTimeField(auto_now_add=True)
   
+  previewed = models.BooleanField(default=False)
+  
   def mark_as_read(self):
     self.is_read = True
     self.save()
