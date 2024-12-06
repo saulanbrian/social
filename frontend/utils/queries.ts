@@ -47,6 +47,35 @@ export const updateInfiniteQuerySingleResultById = <T>({
   }
 }
 
+type MultipleResultUpdaterProps<T> = {
+  data:InfiniteQueryData<T>,
+  updateField:Partial<T>,
+  item_ids:(string | number)[]
+}
+
+
+export const infinitQueryUpdateMultipleResults = <T>({
+  data,
+  updateField,
+  item_ids
+}:MultipleResultUpdaterProps<T>): InfiniteQueryData<T> => {
+  
+  return {
+    ...data,
+    pages:data.pages.map(page => ({
+      ...page,
+      results:page.results.map(result => {
+        if(item_ids.includes(result.id)){
+          return {
+            ...result,
+            ...updateField,
+          }
+        }else return result
+      })
+    }))
+  }
+}
+
 
 type QueryResultsUpdaterProps<T> = {
   data:InfiniteQueryData<T>;

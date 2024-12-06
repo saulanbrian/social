@@ -20,7 +20,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.infiniteQueryAppendResultAtTop = exports.infiniteQueryUpdateAllResults = exports.updateInfiniteQuerySingleResultById = exports.summarizeQueryPagesResult = void 0;
+exports.infiniteQueryAppendResultAtTop = exports.infiniteQueryUpdateAllResults = exports.infinitQueryUpdateMultipleResults = exports.updateInfiniteQuerySingleResultById = exports.summarizeQueryPagesResult = void 0;
 var summarizeQueryPagesResult = function (data) {
     var res = [];
     if (data.pages && data.pages.length >= 1) {
@@ -39,6 +39,17 @@ var updateInfiniteQuerySingleResultById = function (_a) {
             }) })); }) });
 };
 exports.updateInfiniteQuerySingleResultById = updateInfiniteQuerySingleResultById;
+var infinitQueryUpdateMultipleResults = function (_a) {
+    var data = _a.data, updateField = _a.updateField, item_ids = _a.item_ids;
+    return __assign(__assign({}, data), { pages: data.pages.map(function (page) { return (__assign(__assign({}, page), { results: page.results.map(function (result) {
+                if (item_ids.includes(result.id)) {
+                    return __assign(__assign({}, result), updateField);
+                }
+                else
+                    return result;
+            }) })); }) });
+};
+exports.infinitQueryUpdateMultipleResults = infinitQueryUpdateMultipleResults;
 var infiniteQueryUpdateAllResults = function (_a) {
     var data = _a.data, updateField = _a.updateField;
     return __assign(__assign({}, data), { pages: data.pages.map(function (page) { return (__assign(__assign({}, page), { results: page.results.map(function (result) { return (__assign(__assign({}, result), updateField)); }) })); }) });

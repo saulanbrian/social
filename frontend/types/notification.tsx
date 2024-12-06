@@ -1,5 +1,5 @@
 export type Notification = {
-  id:string;
+  id:string | number;
   is_read:boolean;
   notification_type:string;
   target_type:string;

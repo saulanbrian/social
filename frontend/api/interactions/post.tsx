@@ -8,9 +8,8 @@ import {
 import api from '../index'
 
 
-export const useLikePost = () => {
+const usePostUpdater = () => {
   
-  const [postId,setPostId] = useState<string | null>(null)
   const queryClient = useQueryClient()
   
   const likePost = (id:string) => {
@@ -53,6 +52,20 @@ export const useLikePost = () => {
     
   }
   
+  return {
+    likePost, 
+    unlikePost
+  }
+}
+
+
+
+export const useLikePost = () => {
+  
+  const [postId,setPostId] = useState<string | null>(null)
+  const { likePost, unlikePost } = usePostUpdater()
+  
+  
   return useMutation({
     mutationFn: async(id:string) => {
       likePost(id)
@@ -71,47 +84,7 @@ export const useLikePost = () => {
 export const useUnlikePost = () => {
   
   const [postId,setPostId] = useState<string | null>(null)
-  const queryClient  = useQueryClient()
-  
-  const likePost = (id:string) => {
-    
-    queryClient.setQueryData(['posts'], (data) => {
-      const updatedData = updateInfiniteQuerySingleResultById({
-        data:data,
-        id:id,
-        updateField: { is_liked:true }
-      })
-      return updatedData
-    })
-    
-    queryClient.setQueryData(['posts',id],post =>{
-      return {
-        ...post,
-        is_liked:true
-      }
-    })
-    
-  }
-  
-  const unlikePost = (id:string) => {
-    
-    queryClient.setQueryData(['posts'], (data) => {
-      const updatedData = updateInfiniteQuerySingleResultById({
-        data:data,
-        id:id,
-        updateField: { is_liked:false }
-      })
-      return updatedData
-    })
-    
-    queryClient.setQueryData(['posts',id],post =>{
-      return {
-        ...post,
-        is_liked:false
-      }
-    })
-    
-  }
+  const { likePost, unlikePost } = usePostUpdater()
   
   return useMutation({
     mutationFn:async(id:string) => {

@@ -1,34 +1,108 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
+import { useState } from 'react'
 import api from '../index'
 import { Notification } from '../../types/notification'
-import { infiniteQueryUpdateAllResults } from '../../utils/queries'
+import { 
+  infiniteQueryUpdateAllResults,
+  infinitQueryUpdateMultipleResults,
+  updateInfiniteQuerySingleResultById
+} from '../../utils/queries'
 
-export const useMarkNotificationsAsPreviewed = () => {
+
+const useNotificationUpdater = ()=> {
   
   const queryClient = useQueryClient()
   
-  const markAllNotificationsAsPreviewed = () => {
+  const markNotificationsAsPreviewed = (ids: (string | number)[]) => {
     queryClient.setQueryData(['notifications'], data => {
-      const updatedData = infiniteQueryUpdateAllResults<Notification>({
+      const updatedData = infinitQueryUpdateMultipleResults<Notification>({
         data:data,
-        updateField:{
-          previewed:true
-        }
+        updateField:{ previewed:true },
+        item_ids:ids
       })
       return updatedData
     })
   }
   
+  const markNotificationAsRead = (id: string | number) => {
+    queryClient.setQueryData(['notifications'], data => {
+      const updatedData = updateInfiniteQuerySingleResultById<Notification>({
+        data,
+        id,
+        updateField: { is_read:true }
+      })
+      return updatedData
+    })
+  }
+  
+  const markNotificationAsUnRead = (id: string | number) => {
+    queryClient.setQueryData(['notifications'], data => {
+      const updatedData = updateInfiniteQuerySingleResultById<Notification>({
+        data,
+        id,
+        updateField: { is_read:false }
+      })
+      return updatedData
+    })
+  }
+   
+  return { 
+    markNotificationsAsPreviewed,
+    markNotificationAsRead,
+    markNotificationAsUnRead,
+  }
+  
+}
+
+
+export const useMarkNotificationsAsPreviewed = () => {
+  
+  const {
+    markNotificationsAsPreviewed,
+  }  = useNotificationUpdater()
+  const [notificationIds,setNotificationIds] = useState<(string | number)[]>([])
+  
+  
   return useMutation({
-    mutationFn:async(ids:number[]) => {
-      const res = await api.post('notifications/preview',{ notification_ids: ids})
+    mutationFn:async(ids:(string | number)[]) => {
+      setNotificationIds(ids)
+      const res = await api.post(
+        'notifications/preview',
+        { notification_ids: ids}
+      )
       return res.data
     },
     onSuccess:() => {
-      markAllNotificationsAsPreviewed()
-    }
+      markNotificationsAsPreviewed(notificationIds)
+    },
   })
 }
 
+
+export const useReadNotification = () => {
+  
+  const {
+    markNotificationAsRead,
+    markNotificationAsUnRead
+  } = useNotificationUpdater()
+  const [notificationId,setNotificationId] = useState<string | number | null>(null)
+  
+  return useMutation({
+    mutationFn:async(id:string | number) => {
+      console.log('read ',id)
+      setNotificationId(id)
+      markNotificationAsRead(id)
+      const res = await api.post(
+        'notifications/mark_as_read',
+        { notification_id: id }
+      )
+      console.log(res.data)
+      return res.data
+    },
+    onError:(e) => {
+      console.log(e)
+      markNotificationAsUnRead(notificationId)
+    }
+  })
+}
 
