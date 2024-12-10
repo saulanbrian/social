@@ -7,13 +7,14 @@ import {
   FlatInput,
   TouchableIcon,
 } from '../../components/ui'
-import PostCard from '../../components/PostCard'
+import { PostCard, ErrorBoundary } from '../../components'
 import InfiniteCommentsFlashList, { InfiniteCommentsFlashListRef } from '../../components/InfiniteCommentsFlashList'
 import { 
   StyleSheet,
   ScrollView,
   Dimensions, 
   View,
+  ViewProps,
   Keyboard
 } from 'react-native'
 import { Image } from 'expo-image'
@@ -23,7 +24,14 @@ import { useGetPost } from '../../api/queries/post'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAddComment } from '../../api/interactions/comments'
 import { useLocalSearchParams } from 'expo-router'
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import React, { 
+  useState,
+  useEffect,
+  useRef, 
+  useMemo,
+  forwardRef,
+  Suspense 
+} from 'react'
 import { useThemeContext } from '../../context/theme'
 import { useUserStore } from '../../stores/user'
 
@@ -34,90 +42,111 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL
 
 const PostDetailPage = () => {
   
-  const queryClient = useQueryClient()
-  const { theme } = useThemeContext()
   const { id } = useLocalSearchParams()
+  const [status,setStatus] = useState<string>('loading')
+
+  return (
+    <ThemedView style={{flex:1,position:'relative'}}>
+      <Suspense fallback={<ThemedActivityIndicator />}>
+        <PostDetail id={id} onLoad={() => setStatus('success')}/>
+      </Suspense>
+      <CommentBoxContainer id={id} fetchStatus={status}/>
+    </ThemedView>
+  )
+}
+
+
+type PostDetailProps = {
+  id:string,
+  onLoad:() => void
+}
+
+
+const PostDetail = ({ id, onLoad }: PostDetailProps) => {
   
-  const { data, isFetching, status: postStatus } = useGetPost(id)
-  const post = useMemo(() => data, [id,data])
-  const { mutate:postComment, isPending, status:commentStatus } = useAddComment(id)
-  
-  const [comment, setComment] = useState<string>(null)
-  const [commentBoxHeight,setCommentBoxHeight] = useState<number>(null)
-  
-  const commentsRef = useRef<InfiniteCommentsFlashListRef>(null)
-  const { profileURL } = useUserStore()
+  const { data:post, status } = useGetPost(id)
   
   useEffect(() => {
-    if(commentStatus === 'success'){
-      setComment(null)
+    if(status === 'success'){
+      onLoad()
     }
-  },[commentStatus])
+  },[status])
+  
+  return (
+    <ScrollView>
+      <PostImage uri={ post.image  } />
+      <PostCard post={post} imageShown={false} />
+      <InfiniteCommentsFlashList 
+        contentContainerStyle={{
+          paddingBottom:70,
+          paddingTop:12
+        }}
+        postId={id} />
+    </ScrollView>
+  )
+}
+
+const PostImage = ({ uri }: { uri: string | null }) => {
+  return uri? (
+    <Image source={{ uri:uri }} style={styles.image} />
+  ): null
+}
+
+
+type CommentBoxContainerProps = {
+  id:string;
+  fetchStatus:string
+}
+
+
+const CommentBoxContainer = ({ 
+  id,
+  fetchStatus
+}: CommentBoxContainerProps ) => {
+  
+  const { profileURL } = useUserStore()
+  const { theme } = useThemeContext()
+  const { mutate: send, isPending, status } = useAddComment(id)
+  const [comment,setComment] = useState<string | null>(null)
   
   const handleSendComment = () => {
     Keyboard.dismiss()
-    if(!isPending && comment) {
-      postComment(comment)
+    if(!isPending && comment && fetchStatus === 'success'){
+      send(comment)
     }
   }
   
-  const handleCommentBoxLayout = (e) => {
-    if(!commentBoxHeight){
-      setCommentBoxHeight(e.nativeEvent.layout.height)
+  useEffect(() => {
+    if(status === 'success'){
+      setComment(null)
     }
-  }
-
+  },[status])
+  
   return (
-  <ThemedView style={{flex:1,position:'relative'}}>
-    { !!post ? (
-    <React.Fragment>
-      <ScrollView>
-        { post.image && (
-          <Image 
-            source={{ uri: post.image }} 
-            style={[styles.image,]}/>
-        ) }
-        <PostCard post={post} imageShown={false}/>
-        <InfiniteCommentsFlashList 
-          contentContainerStyle={{paddingBottom:commentBoxHeight,paddingTop:12}}
-          postId={id}
-          ref={commentsRef}/>
-      </ScrollView>
-      
-      <ThemedView 
-        style={styles.commentBoxContainer} 
-        onLayout={handleCommentBoxLayout}>
-        <TouchableIcon 
-          name={'folder-open'} 
-          color={theme.colors.tint}
-          size={28}/>
-        <Avatar source={profileURL} size={36} />
-        <FlatInput
-          value={comment}
-          onChangeText={setComment}
-          placeholder={'comment'} 
-          style={
-            [
-              styles.commentInput,
-              { opacity: !comment? 0.7: 1}
-            ]
-          }/>
-        <TouchableIcon 
-          name={'send'} 
-          color={theme.colors.tint}
-          size={24}
-          onPress={handleSendComment}/>
-      </ThemedView>
-    
-    </React.Fragment>
-
-  ): isFetching? (
-    <ThemedActivityIndicator style={styles.indicator}/>
-  ): postStatus === 'error' &&(
-    <ThemedText>an errror has occured</ThemedText>
-  ) }
-  </ThemedView>
-)}
+    <ThemedView style={styles.commentBoxContainer}>
+      <TouchableIcon 
+        name={'folder-open'} 
+        color={theme.colors.tint}
+        size={28}/>
+      <Avatar source={profileURL} size={36} />
+      <FlatInput
+        value={comment}
+        onChangeText={setComment}
+        placeholder={'comment'} 
+        style={
+          [
+            styles.commentInput,
+            { opacity: !comment? 0.7: 1}
+          ]
+        }/>
+      <TouchableIcon 
+        name={'send'} 
+        color={theme.colors.tint}
+        size={24}
+        onPress={handleSendComment}/>
+    </ThemedView>
+  )
+}
 
 const styles = StyleSheet.create({
   container:{
@@ -131,7 +160,8 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     width:'100%',
     gap:8,
-    alignItems:'center'
+    alignItems:'center',
+    height:70
   },
   commentInput:{
     padding:12,
@@ -157,4 +187,4 @@ const styles = StyleSheet.create({
   
 })
 
-export default PostDetailPage;
+export default React.memo(PostDetailPage)

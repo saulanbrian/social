@@ -6,12 +6,14 @@ type AvatarProps = TouchableOpacityProps & {
   source: string;
   size: number;
   imageProps?: ImageProps;
+  shape?: 'circle' | 'square'
 }
 
 const Avatar = ({
   source,
   size,
   imageProps,
+  shape='circle',
   style,
   ...props
 }: AvatarProps) => {
@@ -27,7 +29,13 @@ const Avatar = ({
       <Image 
         placeholder={require('../../assets/images/profile.png')}
         source={{ uri: source }} 
-        style={[styles.image,{ height:size, width:size }]}
+        style={
+          [
+            shape === 'circle'? styles.circle: styles.square,
+            { height:size, width:size },
+          ]
+        }
+        cachePolicy='memory-disk'
         {...imageProps} />
     </TouchableOpacity>
   )
@@ -36,11 +44,13 @@ const Avatar = ({
 
 const styles = StyleSheet.create({
   container:{
-    borderRadius:360,
     overflow:'hidden'
   },
-  image:{
+  circle:{
     borderRadius:360
+  },
+  square:{
+    borderRadius:8
   }
 })
 

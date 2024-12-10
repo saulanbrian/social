@@ -24,11 +24,12 @@ def handle_notification(sender,action,pk_set,instance,**kwargs):
         )
       
   elif action == 'post_remove':
-    post_notifications = Notification.objects.filter(
+    post_like_notifications = Notification.objects.filter(
       target_type=ContentType.objects.get_for_model(Post),
-      target_id=instance.pk
+      target_id=instance.pk,
+      notification_type='like'
     )
-    for notification in post_notifications:
+    for notification in post_like_notifications:
       if notification.actor.id in pk_set:
         notification.delete()
       

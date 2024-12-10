@@ -12,13 +12,12 @@ const API_URL = process.env.VITE_API_URL
 
 type Props = {
   notification:NotificationType,
-  target_link:string
 }
 
 const Notification = ({
-  notification,
-  target_link
+  notification
 }:Props) => {
+
   
   const { theme } = useThemeContext()
   const message = notification.message.split(' ').filter((word, i) => i !== 0 ).join(' ').trim()
@@ -27,29 +26,44 @@ const Notification = ({
   
   
   const handlePress = () => {
-    router.navigate(target_link)
+    const url = generateUrl()
+    router.navigate(url)
     markAsRead(notification.id)
   }
   
+  const generateUrl = () => {
+    switch(notification.target_type){
+      case 'post':
+        return `/post/${notification.target_id}`
+      case 'comment':
+        return `/comment/${notification.target_id}`
+    }
+  }
+  
+  
   return (
     <TouchableOpacity onPress={handlePress}>
-      <Card style={
-        [
-          styles.container,
-          notification.is_read && ({
-            backgroundColor:theme.colors.background.default
-          }) 
-        ]
-      }>
-        <Avatar source={API_URL + notification.actor_profile} size={50}/>
+      <Card
+        style={
+          [
+            styles.container,
+            notification.is_read && ({
+              backgroundColor:theme.colors.background.default
+            }) 
+          ]
+        }
+      >
+        <Avatar 
+          source={API_URL + notification.actor_profile} 
+          size={50}/>
         
           <ThemedText style={styles.username}>
             { notification.actor_username }
           </ThemedText>
+          
           <ThemedText style={{flex:1}}>
             {message}
           </ThemedText>
-        
       </Card>
     </TouchableOpacity>
   )

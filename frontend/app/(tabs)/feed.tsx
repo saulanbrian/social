@@ -40,16 +40,13 @@ const Feed = () => {
           keyExtractor={(post) => post.id}
           onEndReached={fetchNextPage}
           estimatedItemSize={500}
-          contentContainerStyle={{
-            
-          }}
           renderItem={({ item: post }) => {
             return (
               <Pressable 
                 onPress={() => handlePress(post.id)} 
                 style={{flex:1}}
                 disabled={postClickDisabled}>
-                <PostCard post={post} imageShown={true}/>
+                <PostCard post={post}/>
               </Pressable>
             )
           }}

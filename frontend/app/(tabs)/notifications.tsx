@@ -31,14 +31,7 @@ const Notifications = () => {
       ))
     }
   },[freshNotifications]))
-  
-  const generateLink = (notification) => {
-    let url: string;
-    switch(notification.target_type){
-      case 'post' || 'comment':
-        return `/post/${notification.target_id}`
-    }
-  }
+
 
   return (
     <ThemedView style={{flex:1}}>
@@ -49,8 +42,7 @@ const Notifications = () => {
           renderItem={({item:notification}) => (
             <Notification 
               key={notification.id} 
-              notification={notification}
-              target_link={generateLink(notification)}/>
+              notification={notification}/>
           )}
           ListFooterComponent={() => (
             <ThemedText style={styles.footer}>

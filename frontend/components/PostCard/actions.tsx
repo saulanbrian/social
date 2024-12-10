@@ -8,10 +8,10 @@ import { useRouter, usePathname } from 'expo-router'
 
 type Props = {
   postId:string;
-  is_liked:boolean
+  is_liked:boolean;
 }
 
-const PostActions = ({ postId, is_liked}: Props) => {
+const PostActions = ({ postId, is_liked }: Props) => {
   
   const { theme } = useThemeContext()
   const { mutate:likePost, isPending:likingPost, status:likeStatus } = useLikePost()
@@ -27,8 +27,7 @@ const PostActions = ({ postId, is_liked}: Props) => {
      <TouchableIcon 
         name={is_liked? 'heart-sharp':'heart-outline'}
         color={is_liked? theme.colors.tint: theme.colors.text}
-        size={24}
-        title={'like'}
+        size={26}
         style={styles.action}
         onPress={handleLike}
         disabled={ likingPost || unlikingPost }
@@ -36,19 +35,25 @@ const PostActions = ({ postId, is_liked}: Props) => {
      <TouchableIcon 
         name='chatbubble-outline' 
         color={theme.colors.text}
-        size={20}
-        title={'comments'}
-        style={{
-          marginRight:16,
-          ...styles.action
-        }}
+        size={22}
+        style={styles.action}
         />
      <TouchableIcon 
-        name='repeat-outline' 
+        name='paper-plane-outline' 
+        color={theme.colors.text}
+        size={22}
+        style={styles.action}
+        />
+     <TouchableIcon 
+        name='bookmark-outline' 
         color={theme.colors.text}
         size={24}
-        title={'repost'}
-        style={styles.action}
+        style={
+          [
+            styles.action,
+            { marginLeft:'auto' }
+          ]
+        }
         />
     </View>
   )
@@ -57,12 +62,12 @@ const PostActions = ({ postId, is_liked}: Props) => {
 
 const styles = StyleSheet.create({
   action:{
-    flex:1
+    
   },
   container:{
     flex:1,
     flexDirection:'row',
-    
+    gap:6
   }
 })
 

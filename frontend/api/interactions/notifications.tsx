@@ -89,14 +89,12 @@ export const useReadNotification = () => {
   
   return useMutation({
     mutationFn:async(id:string | number) => {
-      console.log('read ',id)
       setNotificationId(id)
       markNotificationAsRead(id)
       const res = await api.post(
         'notifications/mark_as_read',
         { notification_id: id }
       )
-      console.log(res.data)
       return res.data
     },
     onError:(e) => {

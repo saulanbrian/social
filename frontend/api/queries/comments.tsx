@@ -24,3 +24,16 @@ export const useGetInfiniteComments = (postId:string) => {
     }
   })
 }
+
+
+export const useGetComment = (id:string) => {
+  return useQuery({
+    queryKey:['comments',id],
+    queryFn:async() => {
+      const res = await api.get(`comments/${id}`)
+      return res.data
+    },
+    suspense:true,
+    useErrorBoundary:true
+  })
+}

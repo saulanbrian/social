@@ -7,6 +7,7 @@ import CommentType from '../../types/comment'
 
 import { useGetInfiniteComments } from '../../api/queries/comments'
 import { summarizeQueryPagesResult } from '../../utils/queries'
+import { useRouter } from 'expo-router'
 import { useThemeContext} from '../../context/theme'
 
 
@@ -35,6 +36,7 @@ const InfiniteCommentsFlashList = React.memo(
   } = useGetInfiniteComments(postId)
   
   const { theme } = useThemeContext()
+  const router = useRouter()
   
   const comments = useMemo(() => data? summarizeQueryPagesResult(data): [],[data,postId])
   
@@ -42,13 +44,21 @@ const InfiniteCommentsFlashList = React.memo(
     return { comments, isLoading: isFetching } 
   })
   
+  const handlePress = (id) => {
+    router.push(`/post/${postId}/comments/${id}`)
+  }
+  
   
   return !!comments? (
     <FlashList 
       data={comments}
       keyExtractor={(comment) => comment.id }
       renderItem={({ item: comment }) => {
-        return <Comment {...comment} key={comment.id} />
+        return (
+          <TouchableOpacity onPress={() => handlePress(comment.id)}>
+            <Comment {...comment} key={comment.id} />
+          </TouchableOpacity>
+        )
       }}
       estimatedItemSize={200}
       { ...restProps }
@@ -82,4 +92,4 @@ const InfiniteCommentsFlashList = React.memo(
   )
 }))
 
-export default InfiniteCommentsFlashList
+export default React.memo(InfiniteCommentsFlashList)

@@ -15,8 +15,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { StatusBar } from 'expo-status-bar'
 
-const queryClient = new QueryClient()
 
+const queryClient = new QueryClient()
 
 function InitialLayout(){
   
@@ -24,47 +24,39 @@ function InitialLayout(){
   
   return (
     <>
-    <StatusBar transculent />
-    <Stack screenOptions={{
-      cardStyle:{
-        paddingTop:50
-      }
-    }}>
-      <Stack.Screen name='index' options={{ headerShown:false }}/>
-      <Stack.Screen name='(tabs)' options={{
-        headerTitle:() => {
-          return (
-            <Text style={
-              [
-                styles.headerText,
-                {
-                  color:theme.colors.tabBarIcon
-                }
-              ]
-            }>Home</Text>
-          )
-        },
+      <StatusBar transculent />
+      <Stack screenOptions={{
         headerStyle:{
-          backgroundColor:theme.colors.primary
-        },
-        headerShadowVisible:false
-      }}/>
-      <Stack.Screen name='post' options={{
-        headerShown:false,
-        animationForReplace:'pop',
-      }} />
-      <Stack.Screen name='authentication' options={{ headerShown:false }}/>
-    </Stack>
+          backgroundColor:theme.colors.background.card
+        }
+      }}>
+        <Stack.Screen name='index' options={{ headerShown:false }}/>
+        <Stack.Screen name='(tabs)' options={{
+          headerTitle:'Home',
+          headerTitleStyle:{
+            fontSize:24,
+            fontWeight:'700',
+            color:theme.colors.tabBarIcon
+          },
+          headerStyle:{
+            backgroundColor:theme.colors.primary
+          },
+          headerShadowVisible:false
+        }}/>
+        <Stack.Screen name='post/[id]' options={{
+          headerTitle:'post',
+          animationForReplace:'pop',
+        }} />
+        <Stack.Screen name='comment/[id]' options={{
+          headerTitle:'comment',
+          animationForReplace:'pop'
+        }}/>
+        <Stack.Screen name='authentication' options={{ headerShown:false }}/>
+      </Stack>
     </>
   )
 }
 
-const styles = StyleSheet.create({
-  headerText:{
-    fontSize:24,
-    fontWeight:700
-  }
-})
 
 export default function RootLayout(){
   

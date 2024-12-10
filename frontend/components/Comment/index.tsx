@@ -11,6 +11,7 @@ const Comment = ({
   author_profile,
   author_username
 }: CommentType) => {
+  
   return (
     <ThemedView style={styles.container}>
     
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     padding:8,
     gap:8,
-    flex:1
+    flex:1,
   },
   header:{
     flex:1,

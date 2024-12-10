@@ -41,12 +41,17 @@ export const getValidAccessTokenAutoSave = async() => {
   let token:string | null = null 
   const access = await getAccessToken()
   
-  if(jwtDecode(access).exp > Date.now() / 1000){
+  if(access && jwtDecode(access).exp > Date.now() / 1000){
     token = access
   }else{
-    const refresh = await getRefreshToken()
-    const tokens = await refreshToken(refresh)
-    token = tokens.access
+    try{
+      const refresh = await getRefreshToken()
+      const tokens = await refreshToken(refresh)
+      token = tokens.access
+    }
+    catch(e){
+      console.log(e)
+    }
   }
   
   return token 

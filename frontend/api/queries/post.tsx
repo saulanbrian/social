@@ -29,5 +29,6 @@ export const useGetPost = (id:string) => {
       const res = await api.get(`posts/${id}`)
       return res.data
     },
+    suspense:true
   })
 }
