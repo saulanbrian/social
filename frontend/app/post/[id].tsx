@@ -8,6 +8,7 @@ import {
   TouchableIcon,
 } from '../../components/ui'
 import { PostCard, ErrorBoundary } from '../../components'
+import BottomInputBox,{ BottomInputBoxRef } from '../../components/BottomInputBox'
 import InfiniteCommentsFlashList, { InfiniteCommentsFlashListRef } from '../../components/InfiniteCommentsFlashList'
 import { 
   StyleSheet,
@@ -15,7 +16,8 @@ import {
   Dimensions, 
   View,
   ViewProps,
-  Keyboard
+  Keyboard,
+  KeyboardAvoidingView,
 } from 'react-native'
 import { Image } from 'expo-image'
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -30,6 +32,7 @@ import React, {
   useRef, 
   useMemo,
   forwardRef,
+  useCallback,
   Suspense 
 } from 'react'
 import { useThemeContext } from '../../context/theme'
@@ -65,6 +68,9 @@ type PostDetailProps = {
 const PostDetail = ({ id, onLoad }: PostDetailProps) => {
   
   const { data:post, status } = useGetPost(id)
+  const [keyboardHeight,setKeyboardHeight] = useState<number>(0)
+  const [scrollHeight,setScrollHeight] = useState<number>(0)
+  const scrollRef = useRef<ScrollView | null>(null)
   
   useEffect(() => {
     if(status === 'success'){
@@ -72,16 +78,45 @@ const PostDetail = ({ id, onLoad }: PostDetailProps) => {
     }
   },[status])
   
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', e => {
+      setKeyboardHeight(e.endCoordinates.height)
+    })
+    
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide', e => {
+      setKeyboardHeight(0)
+    })
+    
+    return () => {
+      keyboardDidShowListener.remove()
+      keyboardDidHideListener.remove()
+    }
+  },[])
+  
+  useEffect(() => {
+    if(scrollRef.current){ 
+      scrollRef.current.scrollTo({ y: scrollHeight + keyboardHeight  })
+    }
+  },[keyboardHeight])
+
+  const handleMomentumScrollEnd = (e) => {
+    setScrollHeight(e.nativeEvent.contentOffset.y)
+  }
+  
   return (
-    <ScrollView>
+    <ScrollView 
+      ref={scrollRef}
+      onMomentumScrollEnd={handleMomentumScrollEnd}
+      >
       <PostImage uri={ post.image  } />
       <PostCard post={post} imageShown={false} />
       <InfiniteCommentsFlashList 
         contentContainerStyle={{
-          paddingBottom:70,
           paddingTop:12
         }}
         postId={id} />
+      <View style={{height:70}} />
     </ScrollView>
   )
 }
@@ -104,70 +139,33 @@ const CommentBoxContainer = ({
   fetchStatus
 }: CommentBoxContainerProps ) => {
   
-  const { profileURL } = useUserStore()
-  const { theme } = useThemeContext()
   const { mutate: send, isPending, status } = useAddComment(id)
-  const [comment,setComment] = useState<string | null>(null)
+  const commentRef = useRef<BottomInputBox | null>(null)
   
   const handleSendComment = () => {
     Keyboard.dismiss()
-    if(!isPending && comment && fetchStatus === 'success'){
-      send(comment)
+    if(!isPending && !!commentRef.current?.text && fetchStatus === 'success'){
+      send(commentRef.current.text)
     }
   }
   
   useEffect(() => {
     if(status === 'success'){
-      setComment(null)
+      commentRef.current.clearInput()
     }
   },[status])
   
   return (
-    <ThemedView style={styles.commentBoxContainer}>
-      <TouchableIcon 
-        name={'folder-open'} 
-        color={theme.colors.tint}
-        size={28}/>
-      <Avatar source={profileURL} size={36} />
-      <FlatInput
-        value={comment}
-        onChangeText={setComment}
-        placeholder={'comment'} 
-        style={
-          [
-            styles.commentInput,
-            { opacity: !comment? 0.7: 1}
-          ]
-        }/>
-      <TouchableIcon 
-        name={'send'} 
-        color={theme.colors.tint}
-        size={24}
-        onPress={handleSendComment}/>
-    </ThemedView>
+    <BottomInputBox 
+      placeholder={'comment'} 
+      ref={commentRef}
+      handleSend={handleSendComment}/>
   )
 }
 
 const styles = StyleSheet.create({
   container:{
     minHeight:Dimensions.get('window').height,
-  },
-  commentBoxContainer:{
-    padding:12,
-    position:'absolute',
-    bottom:0,
-    flex:1,
-    flexDirection:'row',
-    width:'100%',
-    gap:8,
-    alignItems:'center',
-    height:70
-  },
-  commentInput:{
-    padding:12,
-    fontSize:16,
-    flex:1,
-    overflow:'hidden'
   },
   commentSectionHeader:{
     fontSize:16,

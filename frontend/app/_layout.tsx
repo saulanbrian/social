@@ -28,7 +28,8 @@ function InitialLayout(){
       <Stack screenOptions={{
         headerStyle:{
           backgroundColor:theme.colors.background.card
-        }
+        },
+        headerTintColor:theme.colors.text
       }}>
         <Stack.Screen name='index' options={{ headerShown:false }}/>
         <Stack.Screen name='(tabs)' options={{

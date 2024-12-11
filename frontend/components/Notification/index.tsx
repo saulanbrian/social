@@ -8,7 +8,7 @@ import { useReadNotification} from '../../api/interactions/notifications'
 import { Notification as NotificationType } from '../../types/notification'
 
 
-const API_URL = process.env.VITE_API_URL
+const API_URL = process.env.EXPO_PUBLIC_API_URL
 
 type Props = {
   notification:NotificationType,

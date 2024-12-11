@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   caption:{
     marginLeft:4,
     marginTop:4,
-    marginBottom:8
+    marginBottom:8,
   },
   card:{
     overflow:'clipped',
