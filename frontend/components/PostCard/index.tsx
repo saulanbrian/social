@@ -4,7 +4,7 @@ import { StyleSheet, View, ViewProps,} from 'react-native'
 import { Image } from 'expo-image'
 import Ionicons  from '@expo/vector-icons/Ionicons'
 
-import { Post } from '../../types'
+import { Post } from '../../types/post'
 
 import React, { useRef } from 'react'
 import { useThemeContext } from '../../context/theme'
@@ -48,7 +48,7 @@ const PostCard = ({
 
 
 type PostImageProps = {
-  source:string;
+  source:string | null;
   shown:boolean;
 }
 
@@ -77,18 +77,11 @@ const PostHeader = ({
   
   return (
     <View style={styles.header}>
-      <Avatar 
-        shape={'square'}
-        size={42} 
-        source={ API_URL + authorProfile} />
+      <Avatar shape={'square'} size={42} source={ API_URL + authorProfile} />
         
       <View style={{ gap:2 }}>
-        <ThemedText style={styles.username}>
-          { authorUsername } 
-        </ThemedText>
-        <ThemedText style={styles.date}>
-          6 hours ago
-        </ThemedText>
+        <ThemedText style={styles.username}>{ authorUsername }</ThemedText>
+        <ThemedText style={styles.date}>6 hours ago</ThemedText>
       </View>
       
       <TouchableIcon 
@@ -100,14 +93,15 @@ const PostHeader = ({
           position:'absolute',
           right:0,
           top:2
-        }}/>
+        }}
+        />
         
     </View>
   )
 }
 
 
-const PostCaption = ({caption}:{ caption: string }) => {
+const PostCaption = ({caption}:{ caption: string | null }) => {
   return (
     <ThemedText style={styles.caption}>
       { caption }
@@ -126,7 +120,6 @@ const styles = StyleSheet.create({
     marginBottom:8,
   },
   card:{
-    overflow:'clipped',
     padding:12,
   },
   date:{
@@ -156,23 +149,3 @@ const styles = StyleSheet.create({
 export default React.memo(PostCard)
 
 
-// <Card style={[styles.card, style]} {...props} >
-//       <Card.Header>
-//         <PostHeader 
-//           authorProfile={post.author_profile}
-//           authorUsername={post.author_username} />
-//       </Card.Header>
-//       
-//       <View style={styles.content} >
-//         <PostCaption caption={post.caption}/>
-//         <PostImage source={post.image} shown={imageShown} />
-//       </View>
-//       
-//       { !preview &&  (
-//         <Card.Footer style={styles.footer}>
-//           <PostActions 
-//             is_liked={post.is_liked} 
-//             postId={post.id}/>
-//         </Card.Footer>
-//       ) } 
-//     </Card>

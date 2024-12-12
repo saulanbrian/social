@@ -2,8 +2,13 @@ import { forwardRef } from 'react'
 import { useThemeContext } from '../../context/theme'
 import { TextInputProps, TextInput, StyleSheet } from 'react-native'
 
-const FlatInput = forwardRef<TextInput,TextInputProps>((
-  {style, ...props }, ref ) => {
+
+type CustomTextIputProps = Omit<TextInputProps, 'value'> & {
+  value: string | null
+}
+
+const FlatInput = forwardRef<TextInput,CustomTextIputProps>((
+  { style, value, ...props }, ref ) => {
     
   const { theme } = useThemeContext()
   

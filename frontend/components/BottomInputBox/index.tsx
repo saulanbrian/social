@@ -6,7 +6,7 @@ import { useThemeContext } from '../../context/theme'
 import { useUserStore } from '../../stores/user'
 
 export type BottomInputBoxRef = {
-  text:string;
+  text:string | null;
   clearInput:() => void;
 }
 

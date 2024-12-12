@@ -1,20 +1,31 @@
-import { ThemedView, ThemedText } from '../../components/ui'
+import { ThemedView, ThemedText, ThemedActivityIndicator } from '../../components/ui'
 import { Notification } from '../../components'
 import { FlashList, FlashListProps } from '@shopify/flash-list'
 import { StyleSheet } from 'react-native'
 
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback, useState, Suspense } from 'react'
 import { useGetInfiniteNotifications } from '../../api/queries/notification'
 import { useUpdateContext } from '../../context/update'
 import { useFocusEffect } from '@react-navigation/native'
 import { summarizeQueryPagesResult } from  '../../utils/queries'
 import { useMarkNotificationsAsPreviewed } from '../../api/interactions/notifications'
+import { Notification as NotificationType } from '@/types/notification'
 
-const Notifications = () => {
+
+const NotificationPage = () => {
+  return (
+    <Suspense fallback={<ThemedActivityIndicator />}>
+      <NotificationList />
+    </Suspense>
+  )
+}
+
+const NotificationList = () => {
   
   const { data: notifications, status } = useGetInfiniteNotifications()
   const { freshNotifications, setFreshNotifications } = useUpdateContext()
   const { mutate:markNotificationsAsPreviewed } = useMarkNotificationsAsPreviewed()
+  
   
   useEffect(() => {
     if(notifications){
@@ -38,7 +49,7 @@ const Notifications = () => {
       { status === 'success' && (
         <FlashList 
           data={summarizeQueryPagesResult(notifications)}
-          keyExtractor={(notification) => notification.id}
+          keyExtractor={(notification) => notification.id.toString()}
           renderItem={({item:notification}) => (
             <Notification 
               key={notification.id} 
@@ -59,6 +70,8 @@ const Notifications = () => {
     </ThemedView>
   )
 }
+
+
 
 
 const styles = StyleSheet.create({

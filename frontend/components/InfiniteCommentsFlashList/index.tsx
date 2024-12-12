@@ -11,7 +11,7 @@ import { useRouter } from 'expo-router'
 import { useThemeContext} from '../../context/theme'
 
 
-type Props = FlashListProps & {
+type Props = Omit<FlashListProps<unknown>,'data' | 'renderItem'> & {
   postId: string
 }
 
@@ -21,10 +21,10 @@ export type InfiniteCommentsFlashListRef = {
 }
 
 const InfiniteCommentsFlashList = React.memo(
-  React.forwardRef<InfiniteCommentsFlashListRef,FlashListProps>(
-  (props,ref) => {
+  React.forwardRef<InfiniteCommentsFlashListRef,Props>(
+    (props,ref) => {
   
-  const { postId, ...restProps } = props
+  const { postId,...restProps } =  props
   
   const {
     data, 
@@ -37,42 +37,31 @@ const InfiniteCommentsFlashList = React.memo(
   
   const { theme } = useThemeContext()
   const router = useRouter()
-  
-  const comments = useMemo(() => data? summarizeQueryPagesResult(data): [],[data,postId])
-  
+    
   React.useImperativeHandle(ref,() => {
-    return { comments, isLoading: isFetching } 
+    return { comments:summarizeQueryPagesResult(data), isLoading: isFetching } 
   })
   
-  const handlePress = (id) => {
-    router.push(`/post/${postId}/comments/${id}`)
-  }
   
   
-  return !!comments? (
+  return (
     <FlashList 
-      data={comments}
+      data={summarizeQueryPagesResult(data)}
       keyExtractor={(comment) => comment.id }
-      renderItem={({ item: comment }) => {
-        return (
-          <TouchableOpacity onPress={() => handlePress(comment.id)}>
-            <Comment {...comment} key={comment.id} />
-          </TouchableOpacity>
-        )
-      }}
+      renderItem={({ item: comment }) => <Comment {...comment} key={comment.id} /> }
       estimatedItemSize={200}
       { ...restProps }
       ListFooterComponent={() => {
         return hasNextPage && (
-        <TouchableOpacity onPress={fetchNextPage}>
-          <ThemedText style={{
-            fontSize:16,
-            color:theme.colors.tint,
-            margin:8
-          }}>
-            show more
-          </ThemedText>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => fetchNextPage()}>
+            <ThemedText style={{
+              fontSize:16,
+              color:theme.colors.tint,
+              margin:8
+            }}>
+              show more
+            </ThemedText>
+          </TouchableOpacity>
         )
       }}
       ListEmptyComponent={() => {
@@ -84,11 +73,7 @@ const InfiniteCommentsFlashList = React.memo(
           </ThemedView>
         )
       }}
-      />
-  ): isFetching && !isFetchingNextPage ? (
-    <ThemedText>loading...</ThemedText>
-  ): status === 'error' && (
-    <ThemedText>an error has occured</ThemedText>
+    />
   )
 }))
 

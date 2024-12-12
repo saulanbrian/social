@@ -18,7 +18,7 @@ const TouchableIcon = ({
   style,
   fontSize,
   ...props
-}) => {
+}: Props) => {
   return (
     <TouchableOpacity 
       style={[styles.container,style]}

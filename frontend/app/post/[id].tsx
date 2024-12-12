@@ -38,7 +38,7 @@ import React, {
 import { useThemeContext } from '../../context/theme'
 import { useUserStore } from '../../stores/user'
 
-import { summarizeQueryPagesResult } from '../../utils/queries.tsx'
+import { summarizeQueryPagesResult } from '@/utils/queries'
 
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL
@@ -111,11 +111,13 @@ const PostDetail = ({ id, onLoad }: PostDetailProps) => {
       >
       <PostImage uri={ post.image  } />
       <PostCard post={post} imageShown={false} />
+      <Suspense fallback={<ThemedActivityIndicator />}>
       <InfiniteCommentsFlashList 
         contentContainerStyle={{
           paddingTop:12
         }}
         postId={id} />
+      </Suspense>
       <View style={{height:70}} />
     </ScrollView>
   )
@@ -140,7 +142,7 @@ const CommentBoxContainer = ({
 }: CommentBoxContainerProps ) => {
   
   const { mutate: send, isPending, status } = useAddComment(id)
-  const commentRef = useRef<BottomInputBox | null>(null)
+  const commentRef = useRef<BottomInputBoxRef | null>(null)
   
   const handleSendComment = () => {
     Keyboard.dismiss()
@@ -151,7 +153,7 @@ const CommentBoxContainer = ({
   
   useEffect(() => {
     if(status === 'success'){
-      commentRef.current.clearInput()
+      commentRef.current?.clearInput()
     }
   },[status])
   
@@ -175,7 +177,6 @@ const styles = StyleSheet.create({
     marginLeft:8
   },
   image:{
-    contentFit:'fill',
     aspectRatio:1,
   },
   indicator:{

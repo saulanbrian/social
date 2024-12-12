@@ -1,16 +1,18 @@
-type InfiniteQueryPage<T> = {
+import { InfiniteData } from "@tanstack/react-query";
+
+export type InfiniteQueryPage<T> = {
   count:number;
   next:string | null;
   previous: string | null;
   results: T[]
 }
 
-type InfiniteQueryData<T> = {
+export type InfiniteQueryData<T> = {
   pageParams: number[];
   pages: InfiniteQueryPage<T>[];
 }
 
-export const summarizeQueryPagesResult = <T>(data:InfiniteQueryData<T>):T[] => {
+export const summarizeQueryPagesResult = <T>(data:InfiniteData<InfiniteQueryPage<T>>):T[] => {
   let res: T[] = []
   if (data.pages && data.pages.length >= 1){
     for (let page of data.pages){

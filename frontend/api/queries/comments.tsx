@@ -1,10 +1,12 @@
-import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { useSuspenseQuery, useSuspenseInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import api from '../index'
+import { InfiniteQueryPage } from '@/utils/queries'
+import Comment from '@/types/comment'
 
 
 export const useGetInfiniteComments = (postId:string) => {
   
-  return useInfiniteQuery({
+  return useSuspenseInfiniteQuery<InfiniteQueryPage<Comment>>({
     queryKey:['posts',postId,'comments'],
     queryFn: async({ pageParam }) => {
       const res = await api.get(`comments/`,{
@@ -27,13 +29,11 @@ export const useGetInfiniteComments = (postId:string) => {
 
 
 export const useGetComment = (id:string) => {
-  return useQuery({
+  return useSuspenseQuery<Comment>({
     queryKey:['comments',id],
     queryFn:async() => {
       const res = await api.get(`comments/${id}`)
       return res.data
     },
-    suspense:true,
-    useErrorBoundary:true
   })
 }

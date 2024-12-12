@@ -29,7 +29,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     return obj.actor.id
     
   def get_actor_profile(self,obj):
-    return obj.actor.profile_picture.url
+    return obj.actor.profile_picture.url if obj.actor.profile_picture else None
     
   def get_actor_username(self,obj):
     return obj.actor.username

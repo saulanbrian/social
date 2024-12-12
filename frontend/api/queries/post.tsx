@@ -1,17 +1,18 @@
-import { useQuery, useInfiniteQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useSuspenseInfiniteQuery, useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { Post } from '@/types/post'
 
 import api from '../index'
 
 
 export const useGetPosts = () => {
-  return useInfiniteQuery({
+  return useSuspenseInfiniteQuery({
     queryKey:['posts'],
     queryFn:async({ pageParam }) => {
       const res = await api.get(`posts/?page=${pageParam}`)
       return res.data
     },
     initialPageParam:1,
-    getNextPageParam:(lastPage,pages) => {
+    getNextPageParam:(lastPage,pages) => { 
       if(lastPage && lastPage.next){
         return pages.length + 1
       }
@@ -23,12 +24,11 @@ export const useGetPosts = () => {
 
 
 export const useGetPost = (id:string) => {
-  return useQuery({
+  return useSuspenseQuery<Post>({
     queryKey:['posts',id],
     queryFn: async() => {
       const res = await api.get(`posts/${id}`)
       return res.data
-    },
-    suspense:true
+    }
   })
 }
