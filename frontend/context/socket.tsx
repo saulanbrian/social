@@ -3,6 +3,8 @@ import { useAuthenticatedWebSocket } from '../hooks/socket'
 import { useQueryClient } from '@tanstack/react-query'
 import { getValidAccessTokenAutoSave } from '../utils/authentication'
 import { infiniteQueryAppendResultAtTop } from '../utils/queries'
+import { useNotificationUpdater } from '@/api/interactions/notifications'
+import { Notification } from '@/types/notification'
 
 const WEBSOCKET_URL = process.env.EXPO_PUBLIC_WS_URL
 
@@ -26,17 +28,10 @@ type Props = {
 
 export const GlobalSocketContextProvider = ({ children }: Props) => {
   const queryClient = useQueryClient()
-  const { socket, isConnected } = useAuthenticatedWebSocket(WEBSOCKET_URL)
+  const { socket, isConnected } = useAuthenticatedWebSocket(WEBSOCKET_URL as string)
+
+  const { appendNotificationAtTop } = useNotificationUpdater()
   
-  const appendToNotification = (data) => {
-    queryClient.setQueryData(['notifications'], oldData => {
-      const newData = infiniteQueryAppendResultAtTop({
-        data:oldData,
-        newData: data
-      })
-      return newData
-    })
-  }
   
   useEffect(() => {
     if(socket){
@@ -46,7 +41,8 @@ export const GlobalSocketContextProvider = ({ children }: Props) => {
 
         switch(data.type){
           case 'notification':
-            appendToNotification(data.data)
+            appendNotificationAtTop(data.data as Notification)
+            break
         }
       }
       

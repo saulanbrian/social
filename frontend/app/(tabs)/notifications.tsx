@@ -12,7 +12,8 @@ import { useMarkNotificationsAsPreviewed } from '../../api/interactions/notifica
 import { Notification as NotificationType } from '@/types/notification'
 
 
-const NotificationPage = () => {
+const NotificationPage = () =>{
+
   return (
     <Suspense fallback={<ThemedActivityIndicator />}>
       <NotificationList />
@@ -22,7 +23,7 @@ const NotificationPage = () => {
 
 const NotificationList = () => {
   
-  const { data: notifications, status } = useGetInfiniteNotifications()
+  const { data: notifications, status, fetchNextPage, isFetchingNextPage } = useGetInfiniteNotifications()
   const { freshNotifications, setFreshNotifications } = useUpdateContext()
   const { mutate:markNotificationsAsPreviewed } = useMarkNotificationsAsPreviewed()
   
@@ -45,33 +46,15 @@ const NotificationList = () => {
 
 
   return (
-    <ThemedView style={{flex:1}}>
-      { status === 'success' && (
-        <FlashList 
-          data={summarizeQueryPagesResult(notifications)}
-          keyExtractor={(notification) => notification.id.toString()}
-          renderItem={({item:notification}) => (
-            <Notification 
-              key={notification.id} 
-              notification={notification}/>
-          )}
-          ListFooterComponent={() => (
-            <ThemedText style={styles.footer}>
-              you're all caught up
-            </ThemedText>
-          )}
-          ListEmptyComponent={() => (
-            <ThemedText style={styles.emptyMessage}>
-              no notifications yet
-            </ThemedText>
-            )
-          }/>
-      ) }
-    </ThemedView>
+    <FlashList
+      data={summarizeQueryPagesResult(notifications)}
+      keyExtractor={notification => notification.id.toString()}
+      renderItem={({item: notification}) => <Notification key={notification.id} notification={notification}/>}
+      onEndReached={fetchNextPage}   
+      ListFooterComponent={ isFetchingNextPage ? <ThemedActivityIndicator /> : <ThemedText>no more notifications available</ThemedText>}
+    />
   )
 }
-
-
 
 
 const styles = StyleSheet.create({
@@ -86,4 +69,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Notifications;
+export default NotificationPage;

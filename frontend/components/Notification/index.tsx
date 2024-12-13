@@ -2,7 +2,7 @@ import { ThemedView, ThemedText, Avatar, Card } from '../../components/ui'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 import { useCallback } from 'react'
-import { useRouter } from 'expo-router'
+import { Href, useRouter } from 'expo-router'
 import { useThemeContext } from '../../context/theme'
 import { useReadNotification} from '../../api/interactions/notifications'
 import { Notification as NotificationType } from '../../types/notification'
@@ -27,7 +27,7 @@ const Notification = ({
   
   const handlePress = () => {
     const url = generateUrl()
-    router.navigate(url)
+    if(url) router.navigate(url as Href<string>)
     markAsRead(notification.id)
   }
   
@@ -38,6 +38,7 @@ const Notification = ({
       case 'comment':
         return `/comment/${notification.target_id}`
     }
+    return null
   }
   
   

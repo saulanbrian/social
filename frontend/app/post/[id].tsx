@@ -18,6 +18,9 @@ import {
   ViewProps,
   Keyboard,
   KeyboardAvoidingView,
+  NativeEventEmitter,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
 } from 'react-native'
 import { Image } from 'expo-image'
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -51,9 +54,9 @@ const PostDetailPage = () => {
   return (
     <ThemedView style={{flex:1,position:'relative'}}>
       <Suspense fallback={<ThemedActivityIndicator />}>
-        <PostDetail id={id} onLoad={() => setStatus('success')}/>
+        <PostDetail id={id as string } onLoad={() => setStatus('success')}/>
       </Suspense>
-      <CommentBoxContainer id={id} fetchStatus={status}/>
+      <CommentBoxContainer id={id as string} fetchStatus={status}/>
     </ThemedView>
   )
 }
@@ -100,7 +103,7 @@ const PostDetail = ({ id, onLoad }: PostDetailProps) => {
     }
   },[keyboardHeight])
 
-  const handleMomentumScrollEnd = (e) => {
+  const handleMomentumScrollEnd = (e:NativeSyntheticEvent<NativeScrollEvent>) => {
     setScrollHeight(e.nativeEvent.contentOffset.y)
   }
   
@@ -112,11 +115,11 @@ const PostDetail = ({ id, onLoad }: PostDetailProps) => {
       <PostImage uri={ post.image  } />
       <PostCard post={post} imageShown={false} />
       <Suspense fallback={<ThemedActivityIndicator />}>
-      <InfiniteCommentsFlashList 
-        contentContainerStyle={{
-          paddingTop:12
-        }}
-        postId={id} />
+        <InfiniteCommentsFlashList 
+          contentContainerStyle={{
+            paddingTop:12
+          }}
+          postId={id} />
       </Suspense>
       <View style={{height:70}} />
     </ScrollView>

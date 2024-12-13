@@ -7,10 +7,7 @@ export type InfiniteQueryPage<T> = {
   results: T[]
 }
 
-export type InfiniteQueryData<T> = {
-  pageParams: number[];
-  pages: InfiniteQueryPage<T>[];
-}
+
 
 export const summarizeQueryPagesResult = <T>(data:InfiniteData<InfiniteQueryPage<T>>):T[] => {
   let res: T[] = []
@@ -24,16 +21,16 @@ export const summarizeQueryPagesResult = <T>(data:InfiniteData<InfiniteQueryPage
 
 
 type InfiniteQueryUpdaterParams<T> = {
-  data:InfiniteQueryData<T>;
-  id: string;
+  data:InfiniteData<InfiniteQueryPage<T>>;
+  id: string | number;
   updateField: Partial<T>;
 }
 
-export const updateInfiniteQuerySingleResultById = <T>({
+export const updateInfiniteQuerySingleResultById = <T extends { id: string | number }>({
   data,
   id,
   updateField
-}:InfiniteQueryUpdaterParams<T>): InfiniteQueryData<T> => {
+}:InfiniteQueryUpdaterParams<T>): InfiniteData<InfiniteQueryPage<T>> => {
   
   return {
     ...data,
@@ -50,17 +47,17 @@ export const updateInfiniteQuerySingleResultById = <T>({
 }
 
 type MultipleResultUpdaterProps<T> = {
-  data:InfiniteQueryData<T>,
+  data:InfiniteData<InfiniteQueryPage<T>>,
   updateField:Partial<T>,
   item_ids:(string | number)[]
 }
 
 
-export const infinitQueryUpdateMultipleResults = <T>({
+export const infinitQueryUpdateMultipleResults = <T extends { id:string | number }>({
   data,
   updateField,
   item_ids
-}:MultipleResultUpdaterProps<T>): InfiniteQueryData<T> => {
+}:MultipleResultUpdaterProps<T>): InfiniteData<InfiniteQueryPage<T>> => {
   
   return {
     ...data,
@@ -80,14 +77,14 @@ export const infinitQueryUpdateMultipleResults = <T>({
 
 
 type QueryResultsUpdaterProps<T> = {
-  data:InfiniteQueryData<T>;
+  data:InfiniteData<InfiniteQueryPage<T>>;
   updateField:Partial<T>
 }
 
-export const infiniteQueryUpdateAllResults = <T>({
+export const infiniteQueryUpdateAllResults = <T extends { id: string | number }>({
   data,
   updateField
-}:QueryResultsUpdaterProps<T>):InfiniteQueryData<T> => {
+}:QueryResultsUpdaterProps<T>):InfiniteData<InfiniteQueryPage<T>> => {
   
   
   return  {
@@ -104,21 +101,21 @@ export const infiniteQueryUpdateAllResults = <T>({
 }
 
 
-type InfiniteQueryAppenderProps = {
-  data: InfiniteQueryData<unknown>,
-  newData: unknown
+type InfiniteQueryAppenderProps<T> = {
+  data: InfiniteData<InfiniteQueryPage<T>>,
+  dataToAppend: T
 }
 
-export const infiniteQueryAppendResultAtTop = ({
+export const infiniteQueryAppendResultAtTop = <T>({
   data,
-  newData
-}:InfiniteQueryAppenderProps): InfiniteQueryData<unknown> => {
+  dataToAppend
+}:InfiniteQueryAppenderProps<T>): InfiniteData<InfiniteQueryPage<T>> => {
   
   return {
     ...data,
-    pages:data.pages.map((page,i) => ({
+    pages: data.pages.map((page, i) => ({
       ...page,
-      results: [i === 0 && newData, ...page.results]
+      results:[i === 0 && dataToAppend , ...page.results].filter(Boolean) as T[]
     }))
   }
   

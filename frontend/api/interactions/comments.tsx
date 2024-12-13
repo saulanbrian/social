@@ -1,31 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../index'
-import { infiniteQueryAppendResultAtTop } from '../../utils/queries'
+import { infiniteQueryAppendResultAtTop, InfiniteQueryPage } from '../../utils/queries'
+import Comment from '@/types/comment'
 
 
 const useCommentsUpdater = () => {
   
   const queryClient = useQueryClient()
   
-  const appendAtTop = (comment,postId) => {
-    queryClient.setQueryData(['posts',postId,'comments'],(data) => {
-      const updatedData = infiniteQueryAppendResultAtTop({
-        data,
-        newData:comment
-      })
-      return updatedData
+  const appendCommentAtTop = (comment:Comment,postId:string) => {
+    queryClient.setQueryData<InfiniteData<InfiniteQueryPage<Comment>>>(['posts',postId,'comments'],data => {
+      if(data){
+        const updatedData = infiniteQueryAppendResultAtTop({
+          data,
+          dataToAppend:comment
+        })
+        return updatedData
+      }
     })
   }
   
   return {
-    appendAtTop
+    appendCommentAtTop
   }
 }
 
 
 export const useAddComment = (postId:string,) => {
   
-  const { appendAtTop } = useCommentsUpdater()
+  const { appendCommentAtTop } = useCommentsUpdater()
   
   return useMutation({
     mutationFn: async(text:string) => {
@@ -33,7 +36,7 @@ export const useAddComment = (postId:string,) => {
       return res.data
     },
     onSuccess:(comment) => {
-      appendAtTop(comment,postId)
+      appendCommentAtTop(comment,postId)
     },
     onError:(e) => {
       console.log(e)

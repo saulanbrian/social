@@ -18,7 +18,8 @@ type ThemeContextType = {
       }
       primary:string,
       tint:string,
-      text:string
+      text:string,
+      tabBarIcon:string
     }
   }
 }

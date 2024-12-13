@@ -12,7 +12,7 @@ const CommentPage = () => {
   return (
     <ThemedView style={{flex:1}}>
       <Suspense fallback={<ThemedActivityIndicator />} >
-        <Comment id={id} />
+        <Comment id={id as string } />
       </Suspense>
     </ThemedView>
   )

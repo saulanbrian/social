@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacityProps , TouchableOpacity } from 'reac
  
 
 type AvatarProps = TouchableOpacityProps & {
-  source: string;
+  source: string | null;
   size: number;
   imageProps?: ImageProps;
   shape?: 'circle' | 'square'

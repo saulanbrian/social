@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { 
+  InfiniteQueryPage,
   summarizeQueryPagesResult,
   updateInfiniteQuerySingleResultById
 } from '../../utils/queries'
 
 import api from '../index'
+import { Post } from '@/types/post'
 
 
 const usePostUpdater = () => {
@@ -14,19 +16,23 @@ const usePostUpdater = () => {
   
   const likePost = (id:string) => {
     
-    queryClient.setQueryData(['posts'], (data) => {
-      const updatedData = updateInfiniteQuerySingleResultById({
-        data:data,
-        id:id,
-        updateField: { is_liked:true }
-      })
-      return updatedData
+    queryClient.setQueryData<InfiniteData<InfiniteQueryPage<Post>>>(['posts'], (data) => {
+      if(data){
+        const updatedData = updateInfiniteQuerySingleResultById({
+          data:data,
+          id:id,
+          updateField: { is_liked:true }
+        })
+        return updatedData
+      }
     })
     
-    queryClient.setQueryData(['posts',id],post =>{
-      return {
-        ...post,
-        is_liked:true
+    queryClient.setQueryData<Post>(['posts',id],post => {
+      if(post){
+        return {
+          ...post,
+          is_liked:true
+        }
       }
     })
     
@@ -34,19 +40,24 @@ const usePostUpdater = () => {
   
   const unlikePost = (id:string) => {
     
-    queryClient.setQueryData(['posts'], (data) => {
-      const updatedData = updateInfiniteQuerySingleResultById({
-        data:data,
-        id:id,
-        updateField: { is_liked:false }
-      })
-      return updatedData
+    queryClient.setQueryData<InfiniteData<InfiniteQueryPage<Post>>>(['posts'], (data) => {
+      if(data){
+        const updatedData = updateInfiniteQuerySingleResultById({
+          data:data,
+          id:id,
+          updateField: { is_liked:false }
+        })
+        return updatedData
+      }
     })
     
-    queryClient.setQueryData(['posts',id],post =>{
-      return {
-        ...post,
-        is_liked:false
+    queryClient.setQueryData<Post>(['posts',id],post => {
+      if(post){
+        return {
+          ...post,
+          is_liked:false,
+          name:'sdas'
+        }
       }
     })
     
@@ -68,14 +79,16 @@ export const useLikePost = () => {
   
   return useMutation({
     mutationFn: async(id:string) => {
+
       likePost(id)
+
       setPostId(id)
+
       const res = await api.post(`posts/${id}/like`)
       return res.data
     },
     onError:(e) => {
-      console.log(e)
-      unlikePost(postId)
+      if(postId) unlikePost(postId)
     }
   })
 }
@@ -94,7 +107,7 @@ export const useUnlikePost = () => {
       return res.data
     },
     onError:(e) => {
-      likePost(postId)
+      if(postId) likePost(postId)
     }
   })
 }

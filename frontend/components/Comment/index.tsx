@@ -15,7 +15,7 @@ const Comment = ({
   return (
     <ThemedView style={styles.container}>
     
-      <Avatar source={ API_URL + author_profile} size={40}/> 
+      <Avatar source={ author_profile? API_URL as string + author_profile : null} size={40}/> 
       
       <ThemedView style={{flex:1}}>
         <ThemedText style={styles.username}>

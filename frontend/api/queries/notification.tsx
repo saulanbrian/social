@@ -1,11 +1,11 @@
-import { useInfiniteQuery, useQueryClient,  } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient, useSuspenseInfiniteQuery,  } from '@tanstack/react-query'
 
 import api from '../index'
 import { Notification } from '@/types/notification'
 import { InfiniteQueryPage } from '@/utils/queries'
 
 export const useGetInfiniteNotifications = () => {
-  return useInfiniteQuery<InfiniteQueryPage<Notification>>({
+  return useSuspenseInfiniteQuery<InfiniteQueryPage<Notification>>({
     initialPageParam:1,
     queryKey:['notifications'],
     queryFn:async({ pageParam }) => {
@@ -18,6 +18,5 @@ export const useGetInfiniteNotifications = () => {
       }
       return undefined
     },
-    staleTime:60000
   })
 }

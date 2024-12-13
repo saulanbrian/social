@@ -1,11 +1,12 @@
-import { useQuery, useSuspenseInfiniteQuery, useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery, useSuspenseInfiniteQuery, useMutation, useSuspenseQuery, InfiniteData, useQueryClient } from '@tanstack/react-query'
 import { Post } from '@/types/post'
 
 import api from '../index'
+import { InfiniteQueryPage } from '@/utils/queries'
 
 
 export const useGetPosts = () => {
-  return useSuspenseInfiniteQuery({
+  return useSuspenseInfiniteQuery<InfiniteQueryPage<Post>>({
     queryKey:['posts'],
     queryFn:async({ pageParam }) => {
       const res = await api.get(`posts/?page=${pageParam}`)

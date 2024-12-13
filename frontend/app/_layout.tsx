@@ -23,38 +23,33 @@ function InitialLayout(){
   const { theme } = useThemeContext()
   
   return (
-    <>
-      <StatusBar transculent />
-      <Stack screenOptions={{
-        headerStyle:{
-          backgroundColor:theme.colors.background.card
+    <Stack screenOptions={{
+      headerStyle:{
+        backgroundColor:theme.colors.background.card
+      },
+      headerTintColor:theme.colors.text,
+    }}>
+      <Stack.Screen name='index' options={{ headerShown:false }}/>
+      <Stack.Screen name='(tabs)' options={{
+        headerTitle:'Home',
+        headerTitleStyle:{
+          fontSize:24,
+          fontWeight:'700',
+          color:theme.colors.tabBarIcon
         },
-        headerTintColor:theme.colors.text
-      }}>
-        <Stack.Screen name='index' options={{ headerShown:false }}/>
-        <Stack.Screen name='(tabs)' options={{
-          headerTitle:'Home',
-          headerTitleStyle:{
-            fontSize:24,
-            fontWeight:'700',
-            color:theme.colors.tabBarIcon
-          },
-          headerStyle:{
-            backgroundColor:theme.colors.primary
-          },
-          headerShadowVisible:false
-        }}/>
-        <Stack.Screen name='post/[id]' options={{
-          headerTitle:'post',
-          animationForReplace:'pop',
-        }} />
-        <Stack.Screen name='comment/[id]' options={{
-          headerTitle:'comment',
-          animationForReplace:'pop'
-        }}/>
-        <Stack.Screen name='authentication' options={{ headerShown:false }}/>
-      </Stack>
-    </>
+        headerStyle:{
+          backgroundColor:theme.colors.primary
+        },
+        headerShadowVisible:false
+      }}/>
+      <Stack.Screen name='post/[id]' options={{
+        headerTitle:'post',
+      }} />
+      <Stack.Screen name='comment/[id]' options={{
+        headerTitle:'comment',
+      }}/>
+      <Stack.Screen name='authentication' options={{ headerShown:false }}/>
+    </Stack>
   )
 }
 

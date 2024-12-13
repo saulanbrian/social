@@ -19,7 +19,6 @@ import { jwtDecode } from 'jwt-decode'
 import { summarizeQueryPagesResult } from '../../utils/queries'
 
 import { Notification } from '../../types/notification'
-import { NotificationContextProvider, useNotificationContext } from '../../context/notification'
 import UpdateContextProvider, { useUpdateContext } from '../../context/update'
 
 
@@ -37,10 +36,8 @@ const HomeLayout = () => {
   
   return (
     <Tabs.Navigator
-      headerTransparent={true}
       initialRouteName='feed'
       tabBarPosition='bottom'
-      tabBarLabelShown={false}
       screenOptions={({ route }) => ({
         tabBarItemStyle:{
           alignItems:'center',
@@ -66,7 +63,12 @@ const HomeLayout = () => {
         tabBarIcon:({ focused, color }) => {
           
           let iconName:
-          'planet' | 'planet-outline' | 'person-circle' | 'person-circle-outline' | 'notifications-sharp' | 'notifications-outline'
+          | 'planet' 
+          | 'planet-outline'
+          | 'person-circle' 
+          | 'person-circle-outline' 
+          | 'notifications-sharp' 
+          | 'notifications-outline'
           
           route.name === 'feed' ? (
             iconName = focused ? 'planet' : 'planet-outline'
