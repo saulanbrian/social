@@ -17,3 +17,5 @@ export { default as TouchableIcon } from './TouchableIcon'
 export { default as FlatInput } from './FlatInput'
 
 export { default as TabBarIcon } from './TabBarIcon'
+
+export { default as TabScreen } from './TabScreen'

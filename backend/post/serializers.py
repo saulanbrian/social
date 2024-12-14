@@ -14,7 +14,7 @@ class PostSerializer(serializers.ModelSerializer):
     
     
   def get_author_profile(self,obj):
-    return obj.author.profile_picture.url
+    return obj.author.profile_picture.url if obj.author.profile_picture else None
     
   def get_author_username(self,obj):
     return obj.author.username

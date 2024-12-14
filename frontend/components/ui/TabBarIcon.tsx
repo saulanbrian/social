@@ -1,13 +1,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, ViewProps } from 'react-native'
 
 
-type Props = {
+type Props = ViewProps & {
   color:string,
   size:number,
   name:string,
   showBadge?: boolean
 }
+
 
 const TabBarIcon = ({
   color,
