@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { StyleSheet, Dimensions } from 'react-native'
 import { useRouter, usePathname } from 'expo-router'
 import { useThemeContext } from '../../context/theme'
@@ -13,55 +13,41 @@ import { summarizeQueryPagesResult } from '../../utils/queries'
 
 const Feed = () => {
   
-  const { fetchNextPage, hasNextPage, data, status, isFetching} = useGetPosts()
-  const [postClickDisabled,setPostClickDisabled] = useState(false)
-  const { width, height } = Dimensions.get('window')
-  const { theme } = useThemeContext()
-  const router = useRouter()
-  const pathname = usePathname()
-  
-  
-  const posts = data? summarizeQueryPagesResult(data): undefined
-  
-  const handlePress = (id:string) => {
-    setPostClickDisabled(true)
-    router.navigate(`/post/${id}`)
-  }
-  
-  useEffect(() => {
-    setPostClickDisabled(false)
-  },[pathname])
-
   return (
-    <ThemedView style={{flex:1, width:width}}>
-      { posts? (
-        <FlashList
-          data={posts}
-          keyExtractor={(post) => post.id}
-          onEndReached={fetchNextPage}
-          estimatedItemSize={500}
-          renderItem={({ item: post }) => {
-            return (
-              <Pressable 
-                onPress={() => handlePress(post.id)} 
-                style={{flex:1}}
-                disabled={postClickDisabled}>
-                <PostCard post={post}/>
-              </Pressable>
-            )
-          }}
-          ItemSeparatorComponent={() => {
-            return <ThemedView style={styles.separator} />
-          }}
-        />
-        ): isFetching? <ThemedActivityIndicator style={{alignSelf:'center',flex:1}}/>
-        : status === 'error' && (
-          <ThemedText>an error has occured</ThemedText>
-        )
-      }
+    <ThemedView style={{flex:1}}>
+      <Suspense fallback={<ThemedActivityIndicator />}>
+        <PostList />
+      </Suspense>
     </ThemedView>
   );
 };
+
+
+const PostList = () => {
+
+  const { data:posts } = useGetPosts()
+  const router = useRouter()
+
+  const handlePress = (id:string) => {
+    router.navigate(`/post/${id}`)
+  }
+
+  return (
+    <FlashList 
+      data={summarizeQueryPagesResult(posts)}
+      keyExtractor={(post) => post.id}
+      renderItem={({ item: post}) => (
+        <Pressable 
+          onPress={() => handlePress(post.id)} 
+          style={{flex:1}}>
+          <PostCard post={post}/>
+        </Pressable>
+      )}
+      ItemSeparatorComponent={() => <ThemedView style={styles.separator} /> }
+      estimatedItemSize={400}
+    />
+  )
+}
 
 
 const styles = StyleSheet.create({

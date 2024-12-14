@@ -51,6 +51,7 @@ const NotificationList = () => {
       keyExtractor={notification => notification.id.toString()}
       renderItem={({item: notification}) => <Notification key={notification.id} notification={notification}/>}
       onEndReached={fetchNextPage}   
+      estimatedItemSize={70}
       ListFooterComponent={ isFetchingNextPage ? <ThemedActivityIndicator /> : <ThemedText>no more notifications available</ThemedText>}
     />
   )
