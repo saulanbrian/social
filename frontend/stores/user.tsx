@@ -7,7 +7,7 @@ import { Image } from 'expo-image'
 import { API_URL } from '../constants/api'
 
 type UserState = {
-  id:string | number | null;
+  id:string | null;
   username:string | null;
   profileURL:string | null;
 }
@@ -15,7 +15,7 @@ type UserState = {
 type Actions = {
   setUsername: (username: string | null) => void,
   setProfileURL: (imageURL: string | null) => void,
-  setId:(id: string | number | null) => void
+  setId:(id: string | null) => void
 }
 
 
@@ -25,7 +25,7 @@ export const useUserStore = create<UserState & Actions>()(
       id:null,
       username:null,
       profileURL:null,
-      setId:(id: string | number | null) => set({id:id}),
+      setId:(id: string | null) => set({id:id}),
       setUsername:(username: string | null) => set({username:username}),
       setProfileURL:async(profile_picture_url: string | null) => {
         await Image.clearDiskCache()

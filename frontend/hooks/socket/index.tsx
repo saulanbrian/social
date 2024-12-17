@@ -19,12 +19,14 @@ export const useAuthenticatedWebSocket = (url:string): ReturnType  => {
       switch(socket.readyState){
         case WebSocket.CONNECTING:
           return
-        case WebSocket.CONNECTED:
+        case WebSocket.OPEN:
           socket.close()
       }
     }
     
     const token = await getValidAccessTokenAutoSave()
+    if(!token) return 
+    
     const ws = new WebSocket(`${url}?token=${token}`)
     
     ws.onopen = (e) => {

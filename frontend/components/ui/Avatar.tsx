@@ -12,7 +12,7 @@ type AvatarProps = TouchableOpacityProps & {
 } & (
   | { 
       autolinkToProfile?: true,
-      userId:string | number 
+      userId:string 
     }
   | {
       autolinkToProfile?:false,

@@ -46,7 +46,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
-        token['id'] = user.id
+        token['id'] = str(user.id)
         token['username'] = user.username
         if user.profile_picture:
             token['profile_picture'] = user.profile_picture.url
