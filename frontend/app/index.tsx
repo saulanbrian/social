@@ -7,16 +7,15 @@ import {
   StyleSheet
 } from 'react-native'
 import { ThemedView, ThemedText } from '../components/ui'
-import { Card } from '../components'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
+import { Href, useRouter } from 'expo-router'
 
 import { useAuthContext } from '../context/authentication'
 import { useThemeContext } from '../context/theme'
 
 export default function Index(){
   
-  const [initialPage,setInitialPage] = useState(null)
+  const [initialPage,setInitialPage] = useState<string | null>(null)
   const { isAuthenticated, isLoading } = useAuthContext()
   const { theme } = useThemeContext()
   const router = useRouter()
@@ -29,7 +28,7 @@ export default function Index(){
   },[isLoading])
   
   const handlePress = () => {
-    if(setInitialPage) router.replace(initialPage)
+    if(initialPage) router.replace(initialPage as Href<string>)
   }
   
   

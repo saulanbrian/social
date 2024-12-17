@@ -38,7 +38,8 @@ const PostCard = ({
     }>
       <PostHeader 
         authorProfile={ post.author_profile }
-        authorUsername={ post.author_username } />
+        authorUsername={ post.author_username }
+        authorId={post.author_id} />
       <PostImage source={post.image} shown={imageShown}/>
       <PostCaption caption={post.caption} />
       <PostActions postId={post.id} is_liked={post.is_liked}/>
@@ -64,20 +65,22 @@ const PostImage = ({ source, shown }:PostImageProps) => {
 
 type PostHeaderProps = {
   authorProfile:string;
-  authorUsername:string
+  authorUsername:string;
+  authorId:string | number
 }
 
 
 const PostHeader = ({
   authorProfile,
-  authorUsername
+  authorUsername,
+  authorId
 }: PostHeaderProps ) =>  {
   
   const { theme } = useThemeContext()
   
   return (
     <View style={styles.header}>
-      <Avatar shape={'square'} size={42} source={ API_URL + authorProfile} />
+      <Avatar shape={'square'} size={42} source={ API_URL + authorProfile} autolinkToProfile userId={authorId}/>
         
       <View style={{ gap:2 }}>
         <ThemedText style={styles.username}>{ authorUsername }</ThemedText>

@@ -1,15 +1,15 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
-import api from '..'
+import User from "@/types/user"
+import { useQuery, useSuspenseQuery, } from "@tanstack/react-query"
+import api from ".."
 
-export const useUpdateUserMutation = (id:string |  number) => {
-  return useMutation({
-    mutationFn:async( data: FormData) => {
-      const res = await api.patch(`user/${id}/update/`,data,{
-        headers:{
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+
+export const useGetUser = (id:string | number) => {
+  return useSuspenseQuery<User>({
+    queryKey:['user',id],
+    queryFn:async() => {
+      const res = await api.get(`user/${id}/`)
       return res.data
-    }
+    },
+    staleTime:5 * 60 * 10000
   })
 }

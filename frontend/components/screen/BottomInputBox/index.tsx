@@ -1,9 +1,9 @@
-import { Avatar, ThemedView, TouchableIcon, FlatInput } from '../ui'
+import { Avatar, ThemedView, TouchableIcon, FlatInput } from '../../ui'
 import { StyleSheet, ViewProps } from 'react-native'
 
 import { forwardRef, useState, useImperativeHandle, useCallback } from 'react'
-import { useThemeContext } from '../../context/theme'
-import { useUserStore } from '../../stores/user'
+import { useThemeContext } from '../../../context/theme'
+import { useUserStore } from '../../../stores/user'
 
 export type BottomInputBoxRef = {
   text:string | null;

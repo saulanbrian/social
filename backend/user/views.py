@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import CreateAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -22,6 +22,12 @@ class UserUpdateView(UpdateAPIView):
   def get_queryset(self):
     user_id = self.request.user.id
     return CustomUser.objects.filter(id=self.request.user.id)
+  
+
+class UserRetrieveAPIView(RetrieveAPIView):
+  serializer_class = UserSerializer
+  lookup_field = 'pk'
+  queryset = CustomUser.objects.all() 
   
 
   

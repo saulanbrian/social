@@ -30,6 +30,7 @@ export const useGetPost = (id:string) => {
     queryFn: async() => {
       const res = await api.get(`posts/${id}`)
       return res.data
-    }
+    },
+    staleTime: 5 * 60 * 1000
   })
 }

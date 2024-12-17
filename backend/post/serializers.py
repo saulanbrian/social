@@ -4,15 +4,19 @@ from .models import Post
 
 class PostSerializer(serializers.ModelSerializer):
   
+  author_id = serializers.SerializerMethodField()
   author_username = serializers.SerializerMethodField()
   author_profile = serializers.SerializerMethodField()
   is_liked = serializers.SerializerMethodField()
   
   class Meta:
     model = Post 
-    fields = ('id','author_username','author_profile','caption','image','is_liked')
+    fields = ('id','author_username','author_profile','caption','image','is_liked','author_id')
     
     
+  def get_author_id(self,obj):
+    return obj.author.id
+
   def get_author_profile(self,obj):
     return obj.author.profile_picture.url if obj.author.profile_picture else None
     

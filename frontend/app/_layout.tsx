@@ -49,6 +49,7 @@ function InitialLayout(){
         headerTitle:'comment',
       }}/>
       <Stack.Screen name='authentication' options={{ headerShown:false }}/>
+      <Stack.Screen name='[user]' options={{ headerTitle:'' }} />
     </Stack>
   )
 }

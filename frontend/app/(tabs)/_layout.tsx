@@ -1,25 +1,22 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { Stack, Redirect, Tabs } from 'expo-router' 
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { TabBarIcon } from '../../components/ui'
+import { TabBarIcon } from '@/components/ui'
 
-import ProfilePage  from './profile'
-import Feed  from './feed'
-import NotificationsPage from './notifications'
 
 import * as SecureStore from 'expo-secure-store'
 
-import { useGetInfiniteNotifications } from '../../api/queries/notification'
+import { useGetInfiniteNotifications } from '@/api/queries/notification'
 import { useThemeContext } from '@/context/theme'
 import { useAuthContext } from '@/context/authentication'
 import { useEffect, useState } from 'react'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { refreshToken, getAccessToken, getRefreshToken,  } from '../../utils/authentication'
+import { refreshToken, getAccessToken, getRefreshToken,  } from '@/utils/authentication'
 import { jwtDecode } from 'jwt-decode'
-import { summarizeQueryPagesResult } from '../../utils/queries'
+import { summarizeQueryPagesResult } from '@/utils/queries'
 
-import { Notification } from '../../types/notification'
-import UpdateContextProvider, { useUpdateContext } from '../../context/update'
+import { Notification } from '@/types/notification'
+import UpdateContextProvider, { useUpdateContext } from '@/context/update'
 
 
 const WEBSOCKET_URL = process.env.EXPO_PUBLIC_WS_URL

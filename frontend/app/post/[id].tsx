@@ -8,7 +8,7 @@ import {
   TouchableIcon,
 } from '../../components/ui'
 import { PostCard, ErrorBoundary } from '../../components'
-import BottomInputBox,{ BottomInputBoxRef } from '../../components/BottomInputBox'
+import BottomInputBox,{ BottomInputBoxRef } from '../../components/screen/BottomInputBox'
 import InfiniteCommentsFlashList, { InfiniteCommentsFlashListRef } from '../../components/InfiniteCommentsFlashList'
 import { 
   StyleSheet,
