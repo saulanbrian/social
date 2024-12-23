@@ -1,40 +1,29 @@
+import { ThemedActivityIndicator } from "@/components/ui";
+import { Suspense } from "react";
+import ProfileLayout from "@/layouts/profile";
+
+import { useLocalSearchParams } from "expo-router";
 import { useGetUser } from "@/api/queries/user";
-import { ThemedActivityIndicator, ThemedText } from "@/components/ui";
-import { ProfileLayout } from "@/layouts"
-import { useUserStore } from "@/stores/user";
-import { Redirect, useFocusEffect, useLocalSearchParams, useNavigation } from "expo-router";
-import { Suspense, useCallback } from "react";
-import { ActivityIndicator } from "react-native";
+
 
 const tabs = [
-  { tabName: 'index', tabLabel: 'posts'},
-  { tabName: 'photos', tabLabel: 'posts'}
+  { tabName: 'index', tabLabel: 'posts' },
+  { tabName: 'photos' }
 ]
 
 const UserProfileLayout = () => {
-
-  const navigation = useNavigation()
   const { user: userId } = useLocalSearchParams()
-  const { data:user } = useGetUser(userId as unknown as number)
+  const { data: user } = useGetUser(userId as unknown as number);
 
-  useFocusEffect(useCallback(() => {
-    if(user){
-      navigation.setOptions({
-        headerTitle:user.username
-      })
-    }
-  },[user]))
-
-  return <ProfileLayout tabs={tabs} tabBarWith={146} user={user} />
+  return <ProfileLayout tabs={tabs} user={user} parentPath={`/${userId}`} />;
 }
 
-const MainLayout = () => {
-
+const InitialLayout = () => {
   return (
-    <Suspense fallback={<ActivityIndicator />}>
+    <Suspense fallback={<ThemedActivityIndicator />}>
       <UserProfileLayout />
     </Suspense>
-  )
+  );
 }
 
-export default MainLayout;
+export default InitialLayout;

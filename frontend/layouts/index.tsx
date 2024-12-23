@@ -1,1 +1,1 @@
-export { default as ProfileLayout } from './profile'
+import { default as ProfileLayout } from './profile'

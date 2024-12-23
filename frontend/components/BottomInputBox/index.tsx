@@ -31,9 +31,9 @@ const BottomInputBox = forwardRef<BottomInputBoxRef,Props>(({
     clearInput,
   }))
   
-  const clearInput = useCallback(() => {
+  const clearInput = () => {
     setText(null)
-  },[])
+  }
   
   return (
     <ThemedView style={[styles.commentBoxContainer,style]} {...props} >

@@ -46,14 +46,16 @@ const NotificationList = () => {
 
 
   return (
-    <FlashList
-      data={summarizeQueryPagesResult(notifications)}
-      keyExtractor={notification => notification.id.toString()}
-      renderItem={({item: notification}) => <Notification key={notification.id} notification={notification}/>}
-      onEndReached={fetchNextPage}   
-      estimatedItemSize={70}
-      ListFooterComponent={ isFetchingNextPage ? <ThemedActivityIndicator /> : <ThemedText>no more notifications available</ThemedText>}
-    />
+    <ThemedView style={{flex:1}}>
+      <FlashList
+        data={summarizeQueryPagesResult(notifications)}
+        keyExtractor={notification => notification.id.toString()}
+        renderItem={({item: notification}) => <Notification key={notification.id} notification={notification}/>}
+        onEndReached={fetchNextPage}   
+        estimatedItemSize={70}
+        ListFooterComponent={ isFetchingNextPage ? <ThemedActivityIndicator />: null }
+        ListEmptyComponent={<ThemedText>you have no notifications yet</ThemedText>}/>
+    </ThemedView>
   )
 }
 

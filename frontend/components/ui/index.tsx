@@ -19,3 +19,5 @@ export { default as FlatInput } from './FlatInput'
 export { default as TabBarIcon } from './TabBarIcon'
 
 export { default as TabScreen } from './TabScreen'
+
+export { default as ThemedScrollView } from './ThemedScrollView'
