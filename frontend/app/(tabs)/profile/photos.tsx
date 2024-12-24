@@ -1,13 +1,40 @@
-import { ThemedText, ThemedView } from "@/components/ui"
+import { useGetUserImages } from "@/api/queries/user";
+import AnimatedImageList from "@/components/AnimatedImageList";
+import { ThemedActivityIndicator, ThemedText, ThemedView } from "@/components/ui"
+import { useUserStore } from "@/stores/user";
+import { summarizeQueryPagesResult } from "@/utils/queries";
+import { AnimatedFlashList } from "@shopify/flash-list";
+import { Image } from "expo-image";
+import { Suspense, useRef } from "react";
+import { Dimensions } from "react-native";
 
-const Photos = () => {
+const ProfilePhotosPage = () => {
+
+  const { id } = useUserStore()
+
   return (
-    <ThemedView style={{flex:1, backgroundColor:' red'}}>
-      <ThemedText>
-        this is where the users photos can be seen 
-      </ThemedText>
-    </ThemedView>
+    <Suspense fallback={<ThemedActivityIndicator />} >
+      <UserPhotos userId={id as string} />
+    </Suspense>
   )
 }
 
-export default Photos;
+const UserPhotos = ({ userId }: { userId: string }) => {
+
+  const { data: photos } = useGetUserImages(userId)
+  const { width } = Dimensions.get('screen')
+
+  return (
+    <AnimatedImageList 
+      images={summarizeQueryPagesResult(photos)}
+      imageProps={{
+        style:{
+          width: width / 2,
+          height:200
+        }
+      }}
+    />
+  )
+}
+
+export default ProfilePhotosPage;

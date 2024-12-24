@@ -1,3 +1,4 @@
+import React from "react"
 import { ThemedView, Avatar, ThemedText } from "../ui"
 import { StyleSheet } from "react-native"
 
@@ -37,4 +38,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default ProfileHeader
+export default React.memo(ProfileHeader)

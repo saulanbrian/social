@@ -1,6 +1,8 @@
 import User from "@/types/user"
-import { useQuery, useSuspenseQuery, } from "@tanstack/react-query"
+import { InfiniteData, useQuery, useSuspenseInfiniteQuery, useSuspenseQuery, } from "@tanstack/react-query"
 import api from ".."
+import { PostImage } from "@/types/post"
+import { InfiniteQueryPage } from "@/utils/queries"
 
 
 export const useGetUser = (id:string | number) => {
@@ -11,5 +13,23 @@ export const useGetUser = (id:string | number) => {
       return res.data
     },
     staleTime:5 * 60 * 10000
+  })
+}
+
+
+export const useGetUserImages = (userId: string) => { 
+
+  return useSuspenseInfiniteQuery<InfiniteQueryPage<PostImage>>({
+    queryKey:['user',userId,'photos'],
+    queryFn: async({ pageParam }) => {
+      const res = await api.get(`user/${userId}/photos`)
+      return res.data
+    },
+    initialPageParam: 1,
+    getNextPageParam:(lastPage,pages) => {
+      if(lastPage && lastPage.next){
+        return pages.length + 1
+      }
+    }
   })
 }

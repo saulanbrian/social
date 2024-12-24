@@ -1,12 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView, ListCreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView, ListCreateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 from rest_framework.pagination import PageNumberPagination
 
-from post.serializers import PostSerializer
+from post.serializers import PostSerializer, PostImageSerializer
 from .serializers import AuthUserSerializer, UserSerializer
 
 from post.models import Post
@@ -44,5 +44,13 @@ class UserPostListCreateAPIView(ListCreateAPIView):
   def get_queryset(self):
     user_id = self.kwargs.get('pk')
     return Post.objects.filter(author__id=user_id)
-
   
+
+class UserImageListAPIView(ListAPIView):
+  serializer_class = PostImageSerializer
+  pagination_class = Pagination
+  
+  def get_queryset(self):
+    user_id = self.kwargs.get('pk')
+    return Post.objects.filter(author__id=user_id).exclude(image__isnull=True)
+    

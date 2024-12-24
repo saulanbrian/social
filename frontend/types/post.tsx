@@ -7,3 +7,8 @@ export type Post = {
   is_liked:boolean;
   author_id:string | number
 }
+
+export type PostImage = {
+  image: string;
+  post_id:string;
+}

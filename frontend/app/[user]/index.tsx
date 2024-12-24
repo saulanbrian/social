@@ -1,46 +1,46 @@
-import { View, Text, ScrollView, Touchable, TouchableOpacity, LayoutChangeEvent } from 'react-native'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { FlashList } from '@shopify/flash-list'
-import { ThemedText, ThemedView } from '@/components/ui'
-import { useFocusEffect } from '@react-navigation/native'
-import { useProfileLayoutContext } from '@/context/tabBar'
+import { useGetInfiniteUserPosts } from "@/api/queries/post"
+import { PostCard } from "@/components"
+import { ThemedActivityIndicator, ThemedText } from "@/components/ui"
+import { summarizeQueryPagesResult } from "@/utils/queries"
+import { AnimatedFlashList } from "@shopify/flash-list"
+import { useLocalSearchParams } from "expo-router"
+import { Suspense } from "react"
+import Animated, { FadeInDown } from "react-native-reanimated"
 
-
-
-const Index = () => {
-
-  const [shits,setShits] = useState<string[]>([])
-  const scrollRef = useRef<View | null>(null)
-
-  useEffect(() => {
-    if(scrollRef.current){(
-      scrollRef.current.measureInWindow((x,y,width,height) => {
-        console.log(height);
-        
-      }))
-    }
-  },[shits])
-
-  return (
-    <View ref={scrollRef}>
-      <FlashList
-      data={shits}
-      keyExtractor={(item,i) => i.toString()}
-      renderItem={({ item: shit }) => (
-        <ThemedView style={{height:200}}>
-          <ThemedText>{ shit }</ThemedText>
-        </ThemedView>
-      )}
-      scrollEnabled
-      ListFooterComponent={() => {
-        return <TouchableOpacity onPress={() => setShits(prevShits => [...prevShits,'shit'])}>
-          <ThemedText>add another shit</ThemedText>
-        </TouchableOpacity>
-      }}
-      estimatedItemSize={200}
-    />
-    </View>
-  ) 
+const UserPostsPage = () => {
+  const { user } = useLocalSearchParams()
+  return ( 
+    <Suspense fallback={<ThemedActivityIndicator />}>
+      <Posts userId={user as string} />
+    </Suspense>
+  )
 }
 
-export default Index
+const Posts = ({ userId }: { userId: string  }) => {
+
+  const { data: posts } = useGetInfiniteUserPosts(userId)
+
+  return (
+    <AnimatedFlashList
+      data={summarizeQueryPagesResult(posts)}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item, index}) => {
+        return (
+          <Animated.View entering={FadeInDown.duration(index + 1 * 2000).springify()}>
+            <PostCard post={item} />
+          </Animated.View>
+        )
+      }}
+      estimatedItemSize={200}
+      ListEmptyComponent={ListEmptyComponent}
+    />
+  )
+}
+
+const ListEmptyComponent = () => {
+  return (
+    <ThemedText>this user doesnt have any post yet</ThemedText>
+  )
+}
+
+export default UserPostsPage

@@ -28,3 +28,15 @@ class PostSerializer(serializers.ModelSerializer):
     if request and request.user.is_authenticated:
       return obj.likes.filter(id=request.user.id).exists()
     return False
+  
+  
+class PostImageSerializer(serializers.ModelSerializer):
+  
+  post_id = serializers.SerializerMethodField()
+  
+  class Meta:
+    model = Post
+    fields = ('post_id','image')
+    
+  def get_post_id(self,obj):
+    return obj.id

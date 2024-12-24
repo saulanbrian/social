@@ -1,12 +1,39 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { useGetUserImages } from "@/api/queries/user"
+import AnimatedImageList from "@/components/AnimatedImageList"
+import { ThemedActivityIndicator } from "@/components/ui"
+import { summarizeQueryPagesResult } from "@/utils/queries"
+import { useLocalSearchParams } from "expo-router"
+import { Suspense } from "react"
+import { Dimensions } from "react-native"
 
-const Photos = () => {
+const UserPhotosPage = () => {
+  const { user } = useLocalSearchParams()
+
   return (
-    <View>
-      <Text>photos</Text>
-    </View>
+    <Suspense fallback={<ThemedActivityIndicator />}>
+      <UserPhotos userId={user as string}/>
+    </Suspense>
   )
 }
 
-export default Photos
+const UserPhotos = ({ userId }: { userId: string }) => {
+
+  const { data:images } = useGetUserImages(userId)
+  const { width } = Dimensions.get('window')
+
+  return (
+    <AnimatedImageList 
+      images={summarizeQueryPagesResult(images)} 
+      estimatedItemSize={200}
+      imageProps={
+        { 
+          style: {
+            height:200, 
+            width:width / 2
+          }
+        }
+      } />
+  )
+}
+ 
+export default UserPhotosPage

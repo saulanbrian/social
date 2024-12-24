@@ -1,6 +1,6 @@
 import { Card, Avatar, ThemedText, ThemedView, TouchableIcon } from '../ui'
 import PostActions from './actions'
-import { StyleSheet, View, ViewProps,} from 'react-native'
+import { Pressable, StyleSheet, TouchableOpacity, View, ViewProps,} from 'react-native'
 import { Image } from 'expo-image'
 import Ionicons  from '@expo/vector-icons/Ionicons'
 
@@ -8,6 +8,7 @@ import { Post } from '../../types/post'
 
 import React, { useRef } from 'react'
 import { useThemeContext } from '../../context/theme'
+import { useRouter } from 'expo-router'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL
 
@@ -28,14 +29,26 @@ const PostCard = ({
 } : PostProps) => {
   
   const { theme } = useThemeContext()
+  const router = useRouter()
+
+  const handlePress = () => {
+    router.navigate({
+      pathname: '/post/[id]',
+      params: { id: post.id }
+    })
+  }
   
   return (
-    <ThemedView style={
-      [
-        styles.card,
-        { backgroundColor: theme.colors.background.card }
-      ]
-    }>
+    <Pressable 
+      onPress={handlePress}
+      style={
+        [
+          styles.card,
+          { 
+            backgroundColor: theme.colors.background.card
+          }
+        ]
+      }>
       <PostHeader 
         authorProfile={ post.author_profile }
         authorUsername={ post.author_username }
@@ -43,7 +56,7 @@ const PostCard = ({
       <PostImage source={post.image} shown={imageShown}/>
       <PostCaption caption={post.caption} />
       <PostActions postId={post.id} is_liked={post.is_liked}/>
-    </ThemedView>
+    </Pressable>
   )
 }
 

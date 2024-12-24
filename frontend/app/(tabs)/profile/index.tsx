@@ -1,23 +1,24 @@
 import { Suspense } from "react"
-import { FlatList, ScrollView } from "react-native"
+import { FlatList, ScrollView, StyleSheet } from "react-native"
 import { PostCard } from "@/components"
 import { ThemedActivityIndicator, ThemedText, ThemedView } from "@/components/ui"
 
 import { useGetInfiniteUserPosts } from "@/api/queries/post"
 import { useUserStore } from "@/stores/user"
 import { summarizeQueryPagesResult } from "@/utils/queries"
+import { AnimatedFlashList, FlashList } from "@shopify/flash-list"
+import Animated, { FadeIn,  FadeInDown,  SlideInLeft,  SlideInRight,  SlideInUp, SlideOutUp } from "react-native-reanimated"
+import { BaseRouter } from "@react-navigation/native"
 
 
-export const UserPosts = () => {
+export const ProfilePostsPage = () => {
 
   const { id } = useUserStore()
 
   return (
-    <ThemedView style={{backgroundColor:'red'}}>
-      <Suspense fallback={<ThemedActivityIndicator />}>
-        <Posts userId={id as string}/>
-      </Suspense>
-    </ThemedView>
+    <Suspense fallback={<ThemedActivityIndicator />}>
+      <Posts userId={id as string}/>
+    </Suspense>
   )
 }
 
@@ -26,23 +27,25 @@ const Posts = ({ userId }:{ userId: string }) => {
   const { data: posts, fetchNextPage } = useGetInfiniteUserPosts(userId)
 
   return (
-    <ScrollView style={{backgroundColor:'red'}}>
-       {summarizeQueryPagesResult(posts).map(post => (<PostCard post={post} key={post.id}/>))}
-      <ThemedText>asdhadahsgdh</ThemedText>
-    </ScrollView>
+    <AnimatedFlashList 
+      data={summarizeQueryPagesResult(posts)}
+      keyExtractor={(item) => item.id}
+      renderItem={({ index, item: post }) =>(
+        <Animated.View entering={ FadeInDown.springify().duration(index + 1 * 2000) }>
+          <PostCard post={post} />
+        </Animated.View>
+
+      )}
+      estimatedItemSize={200}
+      onEndReached={fetchNextPage}
+    />
   )
 }
 
+const styles = StyleSheet.create({
+  container:{
+    paddingTop:4
+  }
+})
 
-const TestValue = () => {
-  
-  return (
-    <ThemedView style={{flex:1,backgroundColor:'white'}}>
-      <ThemedText style={{fontSize:20}}>
-        asdsa
-      </ThemedText>
-    </ThemedView>
-  )
-}
-
-export default TestValue;
+export default ProfilePostsPage;

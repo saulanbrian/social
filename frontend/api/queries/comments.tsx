@@ -23,7 +23,8 @@ export const useGetInfiniteComments = (postId:string) => {
         return pages.length + 1
       }
       return undefined
-    }
+    },
+    staleTime: 5 * 60 * 1000
   })
 }
 

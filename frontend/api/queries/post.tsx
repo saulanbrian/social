@@ -37,6 +37,7 @@ export const useGetPost = (id:string) => {
 
 
 export const useGetInfiniteUserPosts = (id:string) => {
+  
   return useSuspenseInfiniteQuery<InfiniteQueryPage<Post>>({
     queryKey:['user',id,'posts'],
     queryFn: async({ pageParam }) => {
@@ -48,6 +49,7 @@ export const useGetInfiniteUserPosts = (id:string) => {
       if(lastPage && lastPage.next){
         return pages.length + 1
       } else return undefined
-    }
+    },
+    staleTime: 5 * 60 * 1000
   })
 }
