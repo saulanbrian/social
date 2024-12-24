@@ -6,7 +6,7 @@ import { useThemeContext } from '@/context/theme'
 import { useUserStore } from '@/stores/user'
 
 export type BottomInputBoxRef = {
-  text:string | null;
+  text:string | undefined;
   clearInput:() => void;
 }
 
@@ -24,7 +24,7 @@ const BottomInputBox = forwardRef<BottomInputBoxRef,Props>(({
   
   const { theme } = useThemeContext()
   const { profileURL } = useUserStore()
-  const [text,setText] = useState<string | null>(null)
+  const [text,setText] = useState<string | undefined>(undefined)
   
   useImperativeHandle(ref, () => ({
     text,
@@ -32,7 +32,7 @@ const BottomInputBox = forwardRef<BottomInputBoxRef,Props>(({
   }))
   
   const clearInput = () => {
-    setText(null)
+    setText(undefined)
   }
   
   return (
@@ -46,12 +46,9 @@ const BottomInputBox = forwardRef<BottomInputBoxRef,Props>(({
         value={text}
         onChangeText={setText}
         placeholder={placeholder} 
-        style={
-          [
-            styles.commentInput,
-            { opacity: !text? 0.7: 1}
-          ]
-        }/>
+        multiline
+        numberOfLines={20}
+        style={styles.commentInput}/>
       <TouchableIcon 
         name={'send'} 
         color={theme.colors.tint}
@@ -71,13 +68,12 @@ const styles = StyleSheet.create({
     width:'100%',
     gap:8,
     alignItems:'center',
-    height:70
+    minHeight:70
   },
   commentInput:{
     padding:12,
     fontSize:16,
     flex:1,
-    overflow:'hidden'
   },
 })
 

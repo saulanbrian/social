@@ -5,7 +5,7 @@ export type Post = {
   author_profile: string;
   author_username:string;
   is_liked:boolean;
-  author_id:string | number
+  author_id:string
 }
 
 export type PostImage = {

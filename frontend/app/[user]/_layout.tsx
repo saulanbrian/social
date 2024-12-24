@@ -1,8 +1,8 @@
 import { ThemedActivityIndicator } from "@/components/ui";
-import { Suspense } from "react";
+import { Suspense, useLayoutEffect } from "react";
 import ProfileLayout from "@/layouts/profile";
 
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useGetUser } from "@/api/queries/user";
 
 
@@ -14,6 +14,13 @@ const tabs = [
 const UserProfileLayout = () => {
   const { user: userId } = useLocalSearchParams()
   const { data: user } = useGetUser(userId as unknown as number);
+  const navigation = useNavigation()
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle:user.username
+    })
+  })
 
   return <ProfileLayout tabs={tabs} user={user} parentPath={`/${userId}`} />;
 }

@@ -11,7 +11,7 @@ def construct_path(instance,filename):
 class Post(models.Model):
   id = models.UUIDField(primary_key=True,editable=False,unique=True,default=uuid.uuid4)
   author = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='posts')
-  caption = models.CharField(max_length=1000)
+  caption = models.CharField(max_length=1000,null=True)
   image = models.ImageField(upload_to=construct_path,null=True)
   likes = models.ManyToManyField(CustomUser,related_name='posts_liked')
   date_time_created = models.DateTimeField(auto_now_add=True)

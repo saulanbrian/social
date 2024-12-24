@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
+import { InfiniteData, useMutation, useQueryClient, } from '@tanstack/react-query'
 import { 
+  infiniteQueryAppendResultAtTop,
   InfiniteQueryPage,
   summarizeQueryPagesResult,
   updateInfiniteQuerySingleResultById
 } from '../../utils/queries'
 
 import api from '../index'
+import axios from 'axios'
 import { Post } from '@/types/post'
 
 
@@ -98,7 +100,8 @@ export const useUnlikePost = () => {
   
   const [postId,setPostId] = useState<string | null>(null)
   const { likePost, unlikePost } = usePostUpdater()
-  
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn:async(id:string) => {
       unlikePost(id)
@@ -108,6 +111,33 @@ export const useUnlikePost = () => {
     },
     onError:(e) => {
       if(postId) likePost(postId)
+    },
+  })
+}
+
+export const useCreatePost = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async(data: FormData) => {
+      const res = await api.post('posts/', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return res.data
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData<InfiniteData<InfiniteQueryPage<Post>>>(['posts'], prevData => {
+        if(prevData){
+          const updatedData = infiniteQueryAppendResultAtTop({ data: prevData, dataToAppend: data })
+          return updatedData
+        }
+      })
+    },
+    onError: (error) => {
+      console.log(error);
+      
     }
   })
 }

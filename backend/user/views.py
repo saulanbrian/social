@@ -37,7 +37,7 @@ class UserRetrieveAPIView(RetrieveAPIView):
   queryset = CustomUser.objects.all() 
 
 
-class UserPostListCreateAPIView(ListCreateAPIView):
+class UserPostListCreateAPIView(ListAPIView):
   serializer_class = PostSerializer 
   pagination_class = Pagination
   

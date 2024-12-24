@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity } from 'react-native'
 import { ThemedText } from '../components/ui'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,6 +14,7 @@ import * as NavigationBar from 'expo-navigation-bar'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { StatusBar } from 'expo-status-bar'
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 
 const queryClient = new QueryClient()
@@ -40,10 +41,11 @@ function InitialLayout(){
         headerStyle:{
           backgroundColor:theme.colors.primary
         },
-        headerShadowVisible:false
+        headerShadowVisible:false,
+        headerRight:() => <TabHeaderRight color={theme.colors.tabBarIcon} />
       }}/>
-      <Stack.Screen name='post/[id]' options={{
-        headerTitle:'post',
+      <Stack.Screen name='post' options={{
+        headerShown:false,
       }} />
       <Stack.Screen name='comment/[id]' options={{
         headerTitle:'comment',
@@ -51,6 +53,22 @@ function InitialLayout(){
       <Stack.Screen name='authentication' options={{ headerShown:false }}/>
       <Stack.Screen name='[user]' options={{ headerTitle:'' }} />
     </Stack>
+  )
+}
+
+
+const TabHeaderRight = ({ color }: { color: string}) => {
+
+  const router = useRouter()
+
+  const handlePress = () => {
+    router.push('/post/create')
+  }
+
+  return (
+    <TouchableOpacity onPress={handlePress}>
+      <MaterialIcons name='create' size={24} color={color} />
+    </TouchableOpacity>
   )
 }
 

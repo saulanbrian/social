@@ -32,5 +32,6 @@ def handle_notification(sender,action,pk_set,instance,**kwargs):
     for notification in post_like_notifications:
       if notification.actor.id in pk_set:
         notification.delete()
+        
       
       

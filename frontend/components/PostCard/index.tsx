@@ -79,7 +79,7 @@ const PostImage = ({ source, shown }:PostImageProps) => {
 type PostHeaderProps = {
   authorProfile:string;
   authorUsername:string;
-  authorId:string | number
+  authorId:string;
 }
 
 
@@ -93,7 +93,13 @@ const PostHeader = ({
   
   return (
     <View style={styles.header}>
-      <Avatar shape={'square'} size={42} source={ API_URL + authorProfile} autolinkToProfile userId={authorId}/>
+      <Avatar 
+        shape={'square'} 
+        size={42} 
+        source={ API_URL + authorProfile} 
+        autolinkToProfile 
+        userId={authorId}
+      />
         
       <View style={{ gap:2 }}>
         <ThemedText style={styles.username}>{ authorUsername }</ThemedText>
@@ -118,11 +124,11 @@ const PostHeader = ({
 
 
 const PostCaption = ({caption}:{ caption: string | null }) => {
-  return (
+  return caption? (
     <ThemedText style={styles.caption}>
       { caption }
     </ThemedText>
-  )
+  ): null
 }
 
 
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
   caption:{
     marginLeft:4,
     marginTop:4,
-    marginBottom:8,
+    marginBottom:4,
   },
   card:{
     padding:12,
@@ -154,6 +160,7 @@ const styles = StyleSheet.create({
     contentFit:'cover',
     aspectRatio:1,
     borderRadius:8,
+    marginBottom:4
   },
   username:{
     fontSize:17,
