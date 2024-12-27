@@ -25,7 +25,7 @@ const Feed = () => {
 
 const PostList = () => {
 
-  const { data:posts } = useGetPosts()
+  const { data:posts, fetchNextPage } = useGetPosts()
   const router = useRouter()
 
   return (
@@ -35,6 +35,7 @@ const PostList = () => {
       renderItem={({ item: post}) => <PostCard post={post}/> }
       ItemSeparatorComponent={() => <ThemedView style={styles.separator} /> }
       estimatedItemSize={400}
+      onEndReached={fetchNextPage}
     />
   )
 }

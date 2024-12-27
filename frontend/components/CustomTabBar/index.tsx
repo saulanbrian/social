@@ -63,7 +63,7 @@ const CustomTabBar = ({ tabs, parentPath }: CustomTabBarProps ) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection:'row',
-    flex:1,
+  
     padding:8,
     gap:8
   },

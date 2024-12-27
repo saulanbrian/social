@@ -52,5 +52,5 @@ class UserImageListAPIView(ListAPIView):
   
   def get_queryset(self):
     user_id = self.kwargs.get('pk')
-    return Post.objects.filter(author__id=user_id).exclude(image__isnull=True)
+    return Post.objects.filter(author__id=user_id).exclude(image__isnull=True).exclude(image__exact='')
     

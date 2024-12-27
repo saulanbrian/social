@@ -39,10 +39,7 @@ const Avatar = ({
     if(autolinkToProfile && userId) {
       userId === currentUserId 
       ? router.navigate('/profile')
-      : router.push({
-        pathname:'/[user]',
-        params:{ user: userId }
-      })
+      : router.navigate(`/${userId}`)
     }
   }
    

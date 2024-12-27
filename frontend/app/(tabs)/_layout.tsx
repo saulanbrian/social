@@ -54,14 +54,12 @@ const HomeLayout = () => {
           let iconName:
           | 'planet' 
           | 'planet-outline'
-          | 'person-circle' 
-          | 'person-circle-outline' 
           | 'notifications-sharp' 
           | 'notifications-outline'
           
-          route.name === 'feed' ? iconName = focused ? 'planet' : 'planet-outline'
-          : route.name === 'profile' ? iconName = focused ? 'person-circle' 
-          : 'person-circle-outline' : iconName = focused ? 'notifications-sharp' : 'notifications-outline'
+          route.name === 'feed' 
+          ? ( iconName = focused ? 'planet' : 'planet-outline' )
+          : ( iconName = focused ? 'notifications-sharp' : 'notifications-outline' )
         
           
           return (
@@ -80,7 +78,6 @@ const HomeLayout = () => {
       })}>
       <Tabs.Screen name='feed' />
       <Tabs.Screen name='notifications' />
-      <Tabs.Screen name='profile' />
     </Tabs>
   )
 }

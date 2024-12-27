@@ -1,10 +1,12 @@
-import { useGetUserImages } from "@/api/queries/user"
-import AnimatedImageList from "@/components/AnimatedImageList"
-import { ThemedActivityIndicator } from "@/components/ui"
-import { summarizeQueryPagesResult } from "@/utils/queries"
-import { useLocalSearchParams } from "expo-router"
+import { PostImageListPreview } from "@/components"
 import { Suspense } from "react"
 import { Dimensions } from "react-native"
+import { ThemedActivityIndicator } from "@/components/ui"
+
+import { useGetUserImages } from "@/api/queries/user"
+import { summarizeQueryPagesResult } from "@/utils/queries"
+import { useLocalSearchParams } from "expo-router"
+
 
 const UserPhotosPage = () => {
   const { user } = useLocalSearchParams()
@@ -19,20 +21,12 @@ const UserPhotosPage = () => {
 const UserPhotos = ({ userId }: { userId: string }) => {
 
   const { data:images } = useGetUserImages(userId)
-  const { width } = Dimensions.get('window')
 
   return (
-    <AnimatedImageList 
-      images={summarizeQueryPagesResult(images)} 
-      estimatedItemSize={200}
-      imageProps={
-        { 
-          style: {
-            height:200, 
-            width:width / 2
-          }
-        }
-      } />
+    <PostImageListPreview 
+      images={summarizeQueryPagesResult(images)}
+      moreImagesCount={images.pages[0].count - 3}
+    />
   )
 }
  

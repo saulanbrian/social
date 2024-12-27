@@ -18,7 +18,7 @@ from .serializers import PostSerializer
 from comment.serializers import CommentSerializer
 
 class PostPagination(PageNumberPagination):
-  page_size = 20
+  page_size = 10
 
 
 class PosListCreateAPIView(ListCreateAPIView):
