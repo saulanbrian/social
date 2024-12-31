@@ -9,14 +9,14 @@ import {
 
 import api from '../index'
 import axios from 'axios'
-import { Post } from '@/types/post'
+import { Post, PostMutationArgs } from '@/types/post'
 
 
 const usePostUpdater = () => {
   
   const queryClient = useQueryClient()
   
-  const likePost = (id:string) => {
+  const likePost = ({ id, authorId }: PostMutationArgs ) => {
     
     queryClient.setQueryData<InfiniteData<InfiniteQueryPage<Post>>>(['posts'], (data) => {
       if(data){
@@ -37,10 +37,21 @@ const usePostUpdater = () => {
         }
       }
     })
+
+    queryClient.setQueryData<InfiniteData<InfiniteQueryPage<Post>>>(['user',authorId,'posts'], (prevData) => {
+      if(prevData){
+        const updatedData = updateInfiniteQuerySingleResultById({
+          data:prevData,
+          id,
+          updateField:{ is_liked: true }
+        })
+        return updatedData
+      }
+    })
     
   }
   
-  const unlikePost = (id:string) => {
+  const unlikePost = ({ id, authorId }: PostMutationArgs) => {
     
     queryClient.setQueryData<InfiniteData<InfiniteQueryPage<Post>>>(['posts'], (data) => {
       if(data){
@@ -63,6 +74,16 @@ const usePostUpdater = () => {
       }
     })
     
+    queryClient.setQueryData<InfiniteData<InfiniteQueryPage<Post>>>(['user', authorId, 'posts'], (prevData) => {
+      if(prevData){
+        const updatedData = updateInfiniteQuerySingleResultById({
+          data: prevData,
+          updateField: { is_liked: false },
+          id,
+        })
+        return updatedData
+      }
+    })
   }
   
   return {
@@ -75,45 +96,43 @@ const usePostUpdater = () => {
 
 export const useLikePost = () => {
   
-  const [postId,setPostId] = useState<string | null>(null)
+  const [postInfo,setPostInfo] = useState<PostMutationArgs | null>(null)
   const { likePost, unlikePost } = usePostUpdater()
   
   
   return useMutation({
-    mutationFn: async(id:string) => {
-
-      likePost(id)
-
-      setPostId(id)
-
-      const res = await api.post(`posts/${id}/like`)
+    mutationFn: async(post: PostMutationArgs) => {
+      likePost(post)
+      setPostInfo(post)
+      const res = await api.post(`posts/${post.id}/like`)       
       return res.data
     },
     onError:(e) => {
-      if(postId) unlikePost(postId)
-    }
+      if(postInfo) unlikePost(postInfo)
+    },
   })
 }
 
 
 export const useUnlikePost = () => {
   
-  const [postId,setPostId] = useState<string | null>(null)
+  const [postInfo,setPostInfo] = useState<PostMutationArgs| null>(null)
   const { likePost, unlikePost } = usePostUpdater()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn:async(id:string) => {
-      unlikePost(id)
-      setPostId(id)
-      const res = await api.post(`posts/${id}/unlike`)
+    mutationFn:async(post: { id : string, authorId: string}) => {
+      unlikePost(post)
+      setPostInfo(post)
+      const res = await api.post(`posts/${post.id}/unlike`)
       return res.data
     },
     onError:(e) => {
-      if(postId) likePost(postId)
+      if(postInfo) likePost(postInfo)
     },
   })
 }
+
 
 export const useCreatePost = () => {
   const queryClient = useQueryClient()

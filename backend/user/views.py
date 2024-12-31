@@ -43,7 +43,7 @@ class UserPostListCreateAPIView(ListAPIView):
   
   def get_queryset(self):
     user_id = self.kwargs.get('pk')
-    return Post.objects.filter(author__id=user_id)
+    return Post.objects.filter(author__id=user_id).order_by('-date_time_created')
   
 
 class UserImageListAPIView(ListAPIView):

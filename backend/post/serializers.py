@@ -29,6 +29,13 @@ class PostSerializer(serializers.ModelSerializer):
       return obj.likes.filter(id=request.user.id).exists()
     return False
   
+  def to_representation(self,obj):
+    representation = super().to_representation(obj)
+    request = self.context.get('request',None)
+    if not request or not request.user.is_authenticated:
+      representation.pop('is_liked')
+    return representation
+  
   
 class PostImageSerializer(serializers.ModelSerializer):
   

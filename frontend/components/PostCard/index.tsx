@@ -55,7 +55,7 @@ const PostCard = ({
         authorId={post.author_id} />
       <PostImage source={post.image} shown={imageShown}/>
       <PostCaption caption={post.caption} />
-      <PostActions postId={post.id} is_liked={post.is_liked}/>
+      <PostActions postId={post.id} is_liked={post.is_liked} authorId={post.author_id}/>
     </Pressable>
   )
 }

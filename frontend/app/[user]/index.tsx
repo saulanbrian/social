@@ -10,6 +10,7 @@ import { summarizeQueryPagesResult } from "@/utils/queries";
 import { Post } from "@/types/post";
 
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { View } from "react-native";
 
 const UserPostsPage = () => {
   const { user } = useLocalSearchParams();
@@ -38,6 +39,10 @@ const Posts = ({ userId }: { userId: string }) => {
       )}
       onScroll={childrenScrollHandler}
       estimatedItemSize={200}
+      snapToAlignment={'center'}
+      decelerationRate={0.0001}
+      ItemSeparatorComponent={() => <View style={{height:2}} />}
+      contentContainerStyle={{paddingHorizontal:4}}
     />
   );
 };

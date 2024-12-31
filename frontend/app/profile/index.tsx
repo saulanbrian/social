@@ -1,5 +1,5 @@
 import React, { Suspense, useMemo } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import Animated, { FadeInDown, useAnimatedScrollHandler } from "react-native-reanimated";
 import { PostCard } from "@/components";
@@ -40,6 +40,10 @@ const Posts = React.memo(({ userId }: { userId: string }) => {
       estimatedItemSize={200}
       onEndReached={fetchNextPage}
       onScroll={childrenScrollHandler}
+      snapToAlignment={'center'}
+      decelerationRate={0.0001}
+      ItemSeparatorComponent={() => <View style={{height:2}} />}
+      contentContainerStyle={{paddingHorizontal:4}}
     />
   );
 });

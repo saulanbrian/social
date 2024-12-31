@@ -8,10 +8,11 @@ import { useRouter, usePathname } from 'expo-router'
 
 type Props = {
   postId:string;
-  is_liked:boolean;
+  authorId:string;
+  is_liked?:boolean;
 }
 
-const PostActions = ({ postId, is_liked }: Props) => {
+const PostActions = ({ postId, is_liked, authorId }: Props) => {
   
   const { theme } = useThemeContext()
   const { mutate:likePost, isPending:likingPost, status:likeStatus } = useLikePost()
@@ -19,7 +20,7 @@ const PostActions = ({ postId, is_liked }: Props) => {
   } = useUnlikePost()
 
   const handleLike = () => {
-    is_liked? unlikePost(postId): likePost(postId)
+    is_liked? unlikePost({ id: postId, authorId, }): likePost({ id: postId, authorId, })
   }
   
   return (

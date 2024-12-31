@@ -36,6 +36,9 @@ const PostList = () => {
       ItemSeparatorComponent={() => <ThemedView style={styles.separator} /> }
       estimatedItemSize={400}
       onEndReached={fetchNextPage}
+      decelerationRate={0.00001}
+      snapToAlignment='center'
+      contentContainerStyle={{ paddingHorizontal:4, paddingTop: 2}}
     />
   )
 }

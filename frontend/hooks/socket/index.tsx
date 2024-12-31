@@ -44,9 +44,9 @@ export const useAuthenticatedWebSocket = (url:string): ReturnType  => {
       setSocket(null)
     }
     
-    return () => {
-      ws.close()
-    }
+    // return () => {
+    //   ws.close()
+    // }
     
   }
   
