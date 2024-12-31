@@ -4,11 +4,12 @@ import ProfileLayout from "@/layouts/profile";
 
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useGetUser } from "@/api/queries/user";
+import { CustomTabBarTabType } from "@/components/CustomTabBar";
 
 
-const tabs = [
+const tabs: CustomTabBarTabType[] = [
   { tabName: 'index', tabLabel: 'posts' },
-  { tabName: 'photos' }
+  { tabName: 'photos-preview',tabLabel:'photos' }
 ]
 
 const UserProfileLayout = () => {

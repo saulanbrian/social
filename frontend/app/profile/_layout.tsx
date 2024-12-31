@@ -1,13 +1,15 @@
 import { useGetUser } from "@/api/queries/user"
+import { AutoCenteredActivityIndicator } from "@/components"
+import { CustomTabBarTabType } from "@/components/CustomTabBar"
 import { ThemedActivityIndicator, ThemedText } from "@/components/ui"
 import ProfileLayout from "@/layouts/profile"
 import { useUserStore } from "@/stores/user"
 import { useFocusEffect, useNavigation } from "expo-router"
 import { Suspense } from "react"
 
-const tabs = [
+const tabs: CustomTabBarTabType[] = [
   { tabName: 'index', tabLabel:'posts'},
-  { tabName: 'photos'},
+  { tabName: 'photos-preview',tabLabel:'photos'}
 ]
 
 const Layout = () => {
@@ -31,7 +33,7 @@ const Layout = () => {
 
 const InitialLayout = () => {
   return (
-    <Suspense fallback={<ThemedActivityIndicator />}>
+    <Suspense fallback={<AutoCenteredActivityIndicator />}>
       <Layout />
     </Suspense>
   )

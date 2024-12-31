@@ -7,7 +7,7 @@ import {
   FlatInput,
   TouchableIcon,
 } from '@/components/ui'
-import { PostCard, ErrorBoundary } from '@/components'
+import { PostCard, ErrorBoundary, AutoCenteredActivityIndicator } from '@/components'
 import BottomInputBox, { BottomInputBoxRef } from '@/components/BottomInputBox'
 import InfiniteCommentsFlashList, { InfiniteCommentsFlashListRef } from '@/components/InfiniteCommentsFlashList'
 import { 
@@ -53,7 +53,7 @@ const PostDetailPage = () => {
 
   return (
     <ThemedView style={{flex:1,position:'relative'}}>
-      <Suspense fallback={<ThemedActivityIndicator />}>
+      <Suspense fallback={<AutoCenteredActivityIndicator />}>
         <PostDetail id={id as string } onLoad={() => setStatus('success')}/>
       </Suspense>
       <CommentBoxContainer id={id as string} fetchStatus={status}/>

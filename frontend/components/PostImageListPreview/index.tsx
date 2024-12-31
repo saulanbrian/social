@@ -1,5 +1,5 @@
 import { ThemedView, ThemedText } from '../ui'
-import { Text, StyleSheet, Dimensions, View } from 'react-native'
+import { Text, StyleSheet, Dimensions, View, TouchableOpacity, Pressable } from 'react-native'
 import { Image } from 'expo-image'
 
 import React from 'react'
@@ -10,10 +10,15 @@ const BoxSize = Dimensions.get('window').width / 2
 
 type PostImagelistPreviewProps = {
   images: PostImage[],
-  moreImagesCount: number
+  moreImagesCount: number,
+  onClickForMore?: () => void
 }
 
-const PostImageListPreview = ({ images, moreImagesCount }: PostImagelistPreviewProps ) => {
+const PostImageListPreview = ({ 
+  images,
+  moreImagesCount,
+  onClickForMore
+}: PostImagelistPreviewProps ) => {
 
   const hasAtleatFourPictures = images.length >= 4
 
@@ -29,9 +34,15 @@ const PostImageListPreview = ({ images, moreImagesCount }: PostImagelistPreviewP
           )
         })}
         { hasAtleatFourPictures && (
-          <View style={styles.showMoreButton}>
+          <Pressable 
+            style={({ pressed }) => ({
+              ...styles.showMoreButton,
+              opacity:pressed? 0.8: 0.6
+            })}
+            onPress={onClickForMore}
+          >
             <ThemedText style={styles.showMoreButtonText}>+{ moreImagesCount }</ThemedText>
-          </View>
+          </Pressable>
         )}
       </ThemedView>
     )
@@ -50,7 +61,6 @@ const styles = StyleSheet.create({
     height: BoxSize,
     width: BoxSize,
     backgroundColor:'black',
-    opacity:0.6,
     position:'absolute',
     bottom:0,
     right:0,

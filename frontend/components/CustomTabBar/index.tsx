@@ -4,8 +4,13 @@ import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Href, usePathname, useRouter } from 'expo-router';
 import { useThemeContext } from '@/context/theme';
 
+export type CustomTabBarTabType = {
+   tabName: string; 
+   tabLabel?: string 
+}
+
 type CustomTabBarProps = {
-  tabs: { tabName: string; tabLabel?: string }[];
+  tabs: CustomTabBarTabType[];
   parentPath:string | null
 }
 

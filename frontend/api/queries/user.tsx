@@ -22,7 +22,7 @@ export const useGetUserImages = (userId: string) => {
   return useSuspenseInfiniteQuery<InfiniteQueryPage<PostImage>>({
     queryKey:['user',userId,'photos'],
     queryFn: async({ pageParam }) => {
-      const res = await api.get(`user/${userId}/photos`)
+      const res = await api.get(`user/${userId}/photos?page=${pageParam}`)
       return res.data
     },
     initialPageParam: 1,

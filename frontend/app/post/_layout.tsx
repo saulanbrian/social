@@ -1,5 +1,6 @@
 import { useThemeContext } from "@/context/theme"
 import { Stack } from "expo-router"
+import { Dimensions } from "react-native"
 
 const PostStack = () => {
 
@@ -11,7 +12,7 @@ const PostStack = () => {
         backgroundColor:theme.colors.background.card
       },
       headerTintColor:theme.colors.text,
-      headerShadowVisible:false
+      headerShadowVisible:false,
     }}>
       <Stack.Screen name="[id]" options={{
         headerTitle:'post'

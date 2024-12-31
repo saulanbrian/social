@@ -1,4 +1,4 @@
-import { Slot, useFocusEffect, usePathname, useRouter, useSegments  } from "expo-router"
+import { Slot, Stack, useFocusEffect, usePathname, useRouter, useSegments  } from "expo-router"
 import { ThemedView, ThemedText, Avatar, ThemedActivityIndicator, ThemedScrollView } from '@/components/ui'
 import { Text, StyleSheet, ScrollView, DimensionValue, NativeSyntheticEvent, NativeScrollEvent, TouchableOpacity} from 'react-native'
 import { ProfileHeader } from "@/components"
@@ -24,7 +24,7 @@ type ProfileLayoutProps = {
 const ProfileLayout = ({ parentPath, user, tabs, children }: ProfileLayoutProps) => {
 
   const { childrenScrollOffsetY } = useProfileLayoutContext()
-  const segments = useSegments()
+  const { theme } = useThemeContext()
 
   const rStyles = useAnimatedStyle(() => {
     return {
@@ -45,7 +45,12 @@ const ProfileLayout = ({ parentPath, user, tabs, children }: ProfileLayoutProps)
         <CustomTabBar tabs={tabs} parentPath={parentPath} />
       </Animated.View>
       <ThemedView style={{flex:1}}>   
-        <Slot />
+        <Stack screenOptions={{
+          headerShown: false,
+          contentStyle:{
+            backgroundColor:theme.colors.background.default
+          }
+        }} />
       </ThemedView>
     </ThemedView>
   )

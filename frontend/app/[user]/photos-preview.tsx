@@ -5,10 +5,10 @@ import { ThemedActivityIndicator } from "@/components/ui"
 
 import { useGetUserImages } from "@/api/queries/user"
 import { summarizeQueryPagesResult } from "@/utils/queries"
-import { useLocalSearchParams } from "expo-router"
+import { useLocalSearchParams, useRouter } from "expo-router"
 
 
-const UserPhotosPage = () => {
+const UserPhotosPreviewPage = () => {
   const { user } = useLocalSearchParams()
 
   return (
@@ -21,13 +21,18 @@ const UserPhotosPage = () => {
 const UserPhotos = ({ userId }: { userId: string }) => {
 
   const { data:images } = useGetUserImages(userId)
+  const router = useRouter()
 
   return (
     <PostImageListPreview 
       images={summarizeQueryPagesResult(images)}
       moreImagesCount={images.pages[0].count - 3}
+      onClickForMore={() => router.push({
+        pathname:'/images/user/[id]',
+        params:{ id: userId }
+      })}
     />
   )
 }
  
-export default UserPhotosPage
+export default UserPhotosPreviewPage
