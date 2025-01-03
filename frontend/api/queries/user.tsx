@@ -1,5 +1,5 @@
 import User from "@/types/user"
-import { InfiniteData, useQuery, useSuspenseInfiniteQuery, useSuspenseQuery, } from "@tanstack/react-query"
+import { InfiniteData, useMutation, useQuery, useSuspenseInfiniteQuery, useSuspenseQuery, } from "@tanstack/react-query"
 import api from ".."
 import { PostImage } from "@/types/post"
 import { InfiniteQueryPage } from "@/utils/queries"
@@ -32,5 +32,18 @@ export const useGetUserImages = (userId: string) => {
       }
     },
     staleTime: 5 * 60 & 1000
+  })
+}
+
+export const useGetCurrentUser = ({ enabled } : { enabled?: boolean } = { enabled: true } ) => {
+
+  return useQuery<User>({
+    queryKey:['current_user'],
+    queryFn:async() => {
+      const res = await api.get('user/current')
+      return res.data
+    },
+    staleTime:Infinity,
+    enabled,
   })
 }

@@ -1,4 +1,4 @@
-import { useUserStore } from '@/stores/user';
+import { useGetCurrentUser } from '@/api/queries/user';
 import { Image, ImageProps } from 'expo-image'
 import { useNavigation, useRouter } from 'expo-router';
 import { View, StyleSheet, TouchableOpacityProps , TouchableOpacity } from 'react-native'
@@ -32,12 +32,12 @@ const Avatar = ({
 }: AvatarProps) => {
 
   const router = useRouter()
-  const { id: currentUserId } = useUserStore()
+  const { data:user } = useGetCurrentUser()
   
   
   const handlePress = () => {
     if(autolinkToProfile && userId) {
-      userId === currentUserId 
+      userId === user?.id 
       ? router.navigate('/profile')
       : router.navigate(`/${userId}`)
     }

@@ -1,8 +1,8 @@
 import { ThemedView, ThemedText } from '../ui'
-import { Text, StyleSheet, Dimensions, View, TouchableOpacity, Pressable } from 'react-native'
+import { Text, StyleSheet, Dimensions, View, TouchableOpacity, Pressable, LayoutChangeEvent } from 'react-native'
 import { Image } from 'expo-image'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { PostImage } from '@/types/post'
 
 
@@ -20,16 +20,25 @@ const PostImageListPreview = ({
   onClickForMore
 }: PostImagelistPreviewProps ) => {
 
+  const [containerHeight,setContainerHeight] = useState(0)
+  const [containerWidth,setContainerWidth] = useState(0)
+  const imageHeight = containerHeight / 2
+  const imageWidth = containerWidth / 2
   const hasAtleatFourPictures = images.length >= 4
 
+  const handleLayout = (e:LayoutChangeEvent) => {
+    setContainerHeight(e.nativeEvent.layout.height)
+    setContainerWidth(e.nativeEvent.layout.width)
+  }
+
   return (
-      <ThemedView style={styles.container}>
+      <ThemedView style={styles.container} onLayout={handleLayout}>
         { images.map((item,index) => {
           return index <= 3 && (
             <Image 
               key={item.post_id} 
               source={{ uri: item.image}} 
-              style={styles.image} 
+              style={{ height: imageHeight,width:imageWidth}} 
               cachePolicy={'memory-disk'}/>
           )
         })}
@@ -37,7 +46,9 @@ const PostImageListPreview = ({
           <Pressable 
             style={({ pressed }) => ({
               ...styles.showMoreButton,
-              opacity:pressed? 0.8: 0.6
+              opacity:pressed? 0.8: 0.6,
+              height:imageHeight,
+              width:imageWidth
             })}
             onPress={onClickForMore}
           >
@@ -51,15 +62,15 @@ const PostImageListPreview = ({
 const styles = StyleSheet.create({
   container:{
     flexDirection:'row',
-    flexWrap:'wrap'
+    flexWrap:'wrap',
+    flex:1
   },
   image:{
     height:BoxSize,
     width: BoxSize
   },
   showMoreButton:{
-    height: BoxSize,
-    width: BoxSize,
+    
     backgroundColor:'black',
     position:'absolute',
     bottom:0,

@@ -1,18 +1,17 @@
 import { PostImageListPreview } from "@/components";
 
 import React, { Suspense } from "react";
-import { useGetUserImages } from "@/api/queries/user";
+import { useGetCurrentUser, useGetUserImages } from "@/api/queries/user";
 import { ThemedActivityIndicator } from "@/components/ui";
-import { useUserStore } from "@/stores/user";
 import { summarizeQueryPagesResult } from "@/utils/queries";
 import { Href, usePathname, useRouter } from "expo-router";
 
 const ProfilePhotosPreviewPage = () => {
-  const { id } = useUserStore();
+  const { data: user } = useGetCurrentUser();
 
   return (
     <Suspense fallback={<ThemedActivityIndicator />}>
-      <UserImagesPreview userId={id as string} />
+      <UserImagesPreview userId={user?.id as string} />
     </Suspense>
   );
 };

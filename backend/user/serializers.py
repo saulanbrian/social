@@ -8,10 +8,39 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = CustomUser
-      fields = ('id','username','profile_picture')
-      
+  
+  is_followed = serializers.SerializerMethodField()
+  
+  class Meta:
+    model = CustomUser
+    fields = (
+      'id',
+      'username',
+      'profile_picture',
+      'background_photo',
+      'bio',
+      'followers',
+      'following',
+      'is_followed'
+    )
+   
+    
+  def get_is_followed(self,obj):
+    request = self.context.get('request',None)
+    if request and request.user.is_authenticated:
+      if obj.followers and obj.followers.count() >= 1:
+        return obj.followers.filter(id=request.user.id).exists() 
+    return None 
+  
+  def to_representation(self,obj):
+    representation = super().to_representation(obj)
+    request = self.context.get('request')
+    if not request or not request.user.is_authenticated:
+      try:
+        representation.pop('is_followed')
+      except:
+        pass
+    return representation
 
 class AuthUserSerializer(serializers.ModelSerializer):
   

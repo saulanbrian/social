@@ -157,7 +157,6 @@ const styles = StyleSheet.create({
     position:'relative'
   },
   image:{
-    contentFit:'cover',
     aspectRatio:1,
     borderRadius:8,
     marginBottom:4

@@ -3,13 +3,13 @@ import { Dimensions, StyleSheet, TouchableOpacity } from "react-native"
 import { Image } from "expo-image"
 
 import useImagePicker from "@/hooks/image-picker"
-import { useUserStore } from "@/stores/user"
 import React,{ forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import * as ImagePicker from 'expo-image-picker'
 import { useThemeContext } from "@/context/theme"
 import { Entypo } from "@expo/vector-icons"
 import { useCreatePost } from "@/api/interactions/post"
 import { useRouter } from "expo-router"
+import { useGetCurrentUser } from "@/api/queries/user"
 
 const PostCreationPage = () => {
 
@@ -63,12 +63,12 @@ const PostCreationPage = () => {
 
 const Header = () => {
 
-  const { profileURL,username } = useUserStore()
+  const { data:user } = useGetCurrentUser()
 
   return (
     <ThemedView style={styles.header}>
-      <Avatar source={profileURL} size={48} />
-      <ThemedText style={styles.headerUsername}>{ username }</ThemedText>
+      <Avatar source={user?.profile_picture as string} size={48} />
+      <ThemedText style={styles.headerUsername}>{ user?.username }</ThemedText>
     </ThemedView>
   )
 }

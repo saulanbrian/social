@@ -39,7 +39,6 @@ import React, {
   Suspense 
 } from 'react'
 import { useThemeContext } from '../../context/theme'
-import { useUserStore } from '../../stores/user'
 
 import { summarizeQueryPagesResult } from '@/utils/queries'
 

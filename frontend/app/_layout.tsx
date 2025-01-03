@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { StatusBar } from 'expo-status-bar'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import * as SplashScreen from 'expo-splash-screen'
 
 
 const queryClient = new QueryClient()
@@ -75,10 +76,13 @@ const TabHeaderRight = ({ color }: { color: string}) => {
 }
 
 
+
+
 export default function RootLayout(){
   
   React.useEffect(() => {
     const hideNavBar = async() => {
+      await SplashScreen.preventAutoHideAsync()
       await NavigationBar.setVisibilityAsync('hidden')
       await NavigationBar.setBehaviorAsync('overlay-swipe')
     }
@@ -86,14 +90,14 @@ export default function RootLayout(){
   },[])
   
   return (
-    <AuthContextProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <AuthContextProvider>
         <GlobalSocketContextProvider>
           <ThemeContextProvider>
             <InitialLayout />
           </ThemeContextProvider>
         </GlobalSocketContextProvider>
-      </QueryClientProvider>
-    </AuthContextProvider>
+      </AuthContextProvider>
+    </QueryClientProvider>
   )
 }

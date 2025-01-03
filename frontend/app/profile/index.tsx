@@ -6,17 +6,18 @@ import { PostCard } from "@/components";
 import { ThemedActivityIndicator } from "@/components/ui";
 
 import { useGetInfiniteUserPosts } from "@/api/queries/post";
-import { useUserStore } from "@/stores/user";
 import { summarizeQueryPagesResult } from "@/utils/queries";
 import { useProfileLayoutContext } from "@/context/profile-layouts";
 import { Post } from "@/types/post";
+import { useGetCurrentUser } from "@/api/queries/user";
 
 export const ProfilePostsPage = () => {
-  const { id } = useUserStore();
+
+  const { data: user} = useGetCurrentUser()
 
   return (
     <Suspense fallback={<ThemedActivityIndicator />}>
-      <Posts userId={id as string} />
+      <Posts userId={user?.id as string} />
     </Suspense>
   );
 };

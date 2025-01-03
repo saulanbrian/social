@@ -3,7 +3,7 @@ import { StyleSheet, ViewProps } from 'react-native'
 
 import { forwardRef, useState, useImperativeHandle, useCallback } from 'react'
 import { useThemeContext } from '@/context/theme'
-import { useUserStore } from '@/stores/user'
+import { useGetCurrentUser } from '@/api/queries/user'
 
 export type BottomInputBoxRef = {
   text:string | undefined;
@@ -23,7 +23,7 @@ const BottomInputBox = forwardRef<BottomInputBoxRef,Props>(({
 },ref) => {
   
   const { theme } = useThemeContext()
-  const { profileURL } = useUserStore()
+  const { data: user } = useGetCurrentUser()
   const [text,setText] = useState<string | undefined>(undefined)
   
   useImperativeHandle(ref, () => ({
@@ -41,7 +41,7 @@ const BottomInputBox = forwardRef<BottomInputBoxRef,Props>(({
         name={'folder-open'} 
         color={theme.colors.tint}
         size={28}/>
-      <Avatar source={profileURL} size={36} />
+      <Avatar source={user?.profile_picture as string} size={36} />
       <FlatInput
         value={text}
         onChangeText={setText}

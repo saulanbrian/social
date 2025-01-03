@@ -1,15 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 
 import { getValidAccessTokenAutoSave } from '../../utils/authentication/'
-
-type ReturnType = {
-  socket: WebSocket | null;
-  isConnected: boolean;
-}
+import { useAuthContext } from '@/context/authentication';
 
 
-export const useAuthenticatedWebSocket = (url:string): ReturnType  => {
+export const useAuthenticatedWebSocket = (url:string): { socket: WebSocket | null; isConnected: boolean }  => {
   
+  const { isAuthenticated } = useAuthContext()
   const [socket,setSocket] = useState<WebSocket | null>(null)
   const [isConnected,setIsConnected] = useState<boolean>(false)
   
@@ -51,7 +48,9 @@ export const useAuthenticatedWebSocket = (url:string): ReturnType  => {
   }
   
   useEffect(() => {
-    connect()
+    if(isAuthenticated){
+      connect()
+    }
     
     return () => {
       if(socket) socket.close()

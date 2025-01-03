@@ -15,6 +15,7 @@ from .models import CustomUser
 
 class Pagination(PageNumberPagination):
   page_size = 10
+  
 
 class UserCreateAPIView(CreateAPIView):
   serializer_class = AuthUserSerializer
@@ -34,7 +35,12 @@ class UserUpdateView(UpdateAPIView):
 class UserRetrieveAPIView(RetrieveAPIView):
   serializer_class = UserSerializer
   lookup_field = 'pk'
-  queryset = CustomUser.objects.all() 
+  queryset = CustomUser.objects.all()
+  
+  def get_serializer_context(self):
+    context = super().get_serializer_context()
+    context['request'] = self.request
+    return context
 
 
 class UserPostListCreateAPIView(ListAPIView):
@@ -53,4 +59,29 @@ class UserImageListAPIView(ListAPIView):
   def get_queryset(self):
     user_id = self.kwargs.get('pk')
     return Post.objects.filter(author__id=user_id).exclude(image__isnull=True).exclude(image__exact='')
-    
+  
+  
+@permission_classes([IsAuthenticated])
+@api_view(['POST'])
+def follow_user(request,pk):
+  user = get_object_or_404(CustomUser, pk=pk)
+  user.followers.add(request.user)
+  serializer = UserSerializer(user)
+  return Response(data=serializer.data)
+
+
+@permission_classes([IsAuthenticated])
+@api_view(['POST'])
+def unfollow_user(request,pk):
+  user = get_object_or_404(CustomUser, pk=pk)
+  user.followers.remove(request.user)
+  serializer = UserSerializer(user)
+  return Response(data=serializer.data)
+
+
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def get_current_user(request):
+  user = get_object_or_404(CustomUser,pk=request.user.id)
+  serializer = UserSerializer(user)
+  return Response(serializer.data)

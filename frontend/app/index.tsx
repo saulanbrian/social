@@ -1,17 +1,13 @@
-import React, { useState } from 'react'
-import {
-  ActivityIndicator,
-  View,
-  Pressable,
-  TouchableOpacity,
-  StyleSheet
-} from 'react-native'
-import { ThemedView, ThemedText } from '../components/ui'
+import React, { useEffect, useState } from 'react'
+import {ActivityIndicator,View,Pressable,TouchableOpacity,StyleSheet} from 'react-native'
+import { ThemedView, ThemedText, ThemedActivityIndicator } from '../components/ui'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Href, useRouter } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
 
 import { useAuthContext } from '../context/authentication'
 import { useThemeContext } from '../context/theme'
+import { AutoCenteredActivityIndicator } from '@/components'
 
 export default function Index(){
   
@@ -20,64 +16,63 @@ export default function Index(){
   const { theme } = useThemeContext()
   const router = useRouter()
   
-  React.useEffect(() => {
+  useEffect(() => {
     if(!isLoading){
       const page = isAuthenticated? '/(tabs)/feed' : '/authentication'
       setInitialPage(page)
     }
   },[isLoading])
-  
-  const handlePress = () => {
-    if(initialPage) router.replace(initialPage as Href<string>)
-  }
-  
+
+  useEffect(() => {
+    if(initialPage){
+      router.replace(initialPage as Href)
+    }
+  },[initialPage])
+
   
   return (
-    <SafeAreaView style={{flex:1,}}>
+    <SafeAreaView style={{ flex: 1}}>
       <ThemedView style={styles.container}>
-      
-        <ThemedView>
-          <ThemedText style={styles.text}>
-            Hello SupaNi**a! 
-          </ThemedText>
+    
+        <ThemedView style={styles.welcomeTextContainer}>
+          <ThemedText style={styles.headerText}>HELLO DRAGON</ThemedText>
+          <ThemedText style={styles.subHeaderText}>you're not actually welcome here but ok, you may come</ThemedText>
         </ThemedView>
-        
-        <TouchableOpacity 
-          style={
-            [
-              { backgroundColor: theme.colors.primary },
-              styles.button
-            ]
-          } 
-          onPress={handlePress}>
-          <ThemedText style={{ fontSize: 20 }}>
-            GET STARTED
-          </ThemedText>
-        </TouchableOpacity>
+
+        <ThemedText style={styles.loadingText}>
+          please wait while we retrieve user information ( as if im with a team)
+        </ThemedText>
+
+        <ThemedActivityIndicator style={styles.indicator}/>
         
       </ThemedView>
+    
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  button:{
-    position:'absolute',
-    bottom:0,
-    width:'100%',
-    padding:24,
-    alignItems:'center',
-    justifyContent:'center'
-  },
   container:{
-    flex:1,
-    alignItems:'center',
-    justifyContent:'center'
+    flex:1
   },
-  text:{
-    fontSize:50,
-    fontWeight:800,
-    alignSelf:'center',
-    marginBottom:100
+  headerText:{
+    fontSize:36,
+    fontWeight:800
+  },
+  indicator:{
+    marginVertical:16
+  },
+  loadingText:{
+    marginHorizontal:60,
+    textAlign:'center',
+    fontSize:12
+  },
+  subHeaderText:{
+    maxWidth:240
+  },
+  welcomeTextContainer:{
+    flex:1,
+    paddingTop:240,
+    paddingLeft:8
   }
 })

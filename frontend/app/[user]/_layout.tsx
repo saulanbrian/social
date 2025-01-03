@@ -1,10 +1,13 @@
-import { ThemedActivityIndicator } from "@/components/ui";
+import { ThemedActivityIndicator, ThemedText } from "@/components/ui";
 import { Suspense, useLayoutEffect } from "react";
 import ProfileLayout from "@/layouts/profile";
 
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useGetUser } from "@/api/queries/user";
 import { CustomTabBarTabType } from "@/components/CustomTabBar";
+import { Pressable } from "react-native";
+import { useFollowUser, useUnfollowUser } from "@/api/interactions/user";
+import { useThemeContext } from "@/context/theme";
 
 
 const tabs: CustomTabBarTabType[] = [
@@ -23,8 +26,14 @@ const UserProfileLayout = () => {
     })
   })
 
-  return <ProfileLayout tabs={tabs} user={user} parentPath={`/${userId}`} />;
+  return (
+    <ProfileLayout 
+      tabs={tabs} 
+      user={user} 
+      parentPath={`/${userId}`}  />
+  )
 }
+
 
 const InitialLayout = () => {
   return (
