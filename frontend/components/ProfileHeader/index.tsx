@@ -20,7 +20,7 @@ const ProfileHeader = ({
   followers,
   following
 }: User) => {
-  
+
   const { data: currentUser } = useGetCurrentUser()
   const isCurrentUser = currentUser?.id === id
 
@@ -28,7 +28,7 @@ const ProfileHeader = ({
     <ThemedView>
 
       <BackgroundAndProfile isCurrentUser={isCurrentUser} profilePicture={profile_picture} backgroundPhoto={background_photo}/>
-      <ActionContainer isCurrentUser={isCurrentUser} isFollowed={is_followed}/>
+      <ActionContainer isCurrentUser={isCurrentUser} isFollowed={is_followed} userId={id}/>
       <ThemedText style={styles.username}>{ username }</ThemedText>
       { bio && <ThemedText style={styles.bio}>{bio}</ThemedText>}
       <FollowersAndFollowing followers={followers} following={following}/>
@@ -38,22 +38,49 @@ const ProfileHeader = ({
 }
 
 
-const ActionContainer = ({ isFollowed, isCurrentUser }: { isFollowed: boolean | undefined; isCurrentUser: boolean}) => {
+const ActionContainer = ({ 
+  isFollowed, 
+  isCurrentUser ,
+  userId
+}: {
+  isFollowed: boolean | undefined;
+  isCurrentUser: boolean;
+  userId:string
+}) => {
 
   const { theme } = useThemeContext()
+  const { mutate: follow } = useFollowUser()
+  const { mutate: unfollow } = useUnfollowUser()
+  
+  const handlePress = () => {
+    if(isCurrentUser){
+      //leaving it for now
+    }else if(isFollowed !== undefined){
+      if(isFollowed){
+        unfollow(userId)
+      }else{
+        follow(userId)
+      }
+    }
+  }
 
   return (
-    <ThemedView style={ styles.actionContainer }>
+    <Pressable style={ styles.actionContainer } onPress={handlePress}>
       <ThemedView 
         style={
           [
             { 
-              borderColor:theme.colors.tabBarIcon,
+              borderColor:!isCurrentUser?( !isFollowed ?theme.colors.tint :theme.colors.tabBarIcon ):theme.colors.tabBarIcon,
+              backgroundColor:!isCurrentUser? ( !isFollowed?theme.colors.tint: undefined): undefined
             },
             styles.actionButton
           ]
         }>
-        <ThemedText style={{ textAlign: 'center' }}>
+        <ThemedText 
+          style={{
+            textAlign: 'center',
+            color:theme.colors.tabBarIcon
+          }}>
           { 
             isCurrentUser
             ? 'edit profile'
@@ -63,7 +90,7 @@ const ActionContainer = ({ isFollowed, isCurrentUser }: { isFollowed: boolean | 
           }
         </ThemedText>
       </ThemedView>
-    </ThemedView>
+    </Pressable>
   )
 }
 

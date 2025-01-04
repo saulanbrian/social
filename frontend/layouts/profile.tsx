@@ -35,10 +35,10 @@ const ProfileLayout = ({
     return {
       maxHeight:interpolate(
         childrenScrollOffsetY.value,
-        [0,400],
+        [0,200],
         [400,0],
         'clamp'
-      ),
+      )
     }
   })
 

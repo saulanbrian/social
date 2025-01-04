@@ -26,20 +26,17 @@ class UserSerializer(serializers.ModelSerializer):
    
     
   def get_is_followed(self,obj):
-    request = self.context.get('request',None)
-    if request and request.user.is_authenticated:
-      if obj.followers and obj.followers.count() >= 1:
-        return obj.followers.filter(id=request.user.id).exists() 
+    show_if_followed = self.context.get('show_if_followed')
+    user_id = self.context.get('user_id')
+    if show_if_followed and show_if_followed == True and user_id:
+        return obj.followers.filter(id=user_id).exists()
     return None 
   
   def to_representation(self,obj):
     representation = super().to_representation(obj)
-    request = self.context.get('request')
-    if not request or not request.user.is_authenticated:
-      try:
-        representation.pop('is_followed')
-      except:
-        pass
+    show_if_followed = self.context.get('show_if_followed')
+    if not show_if_followed or show_if_followed == False:
+      representation.pop('is_followed')
     return representation
 
 class AuthUserSerializer(serializers.ModelSerializer):

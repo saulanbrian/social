@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '..'
 import User from '@/types/user'
+import useUserUpdater from '../updaters/user'
+import { useState } from 'react'
 
 export const useUpdateUserMutation = (id:string |  number) => {
   return useMutation({
@@ -18,18 +20,18 @@ export const useUpdateUserMutation = (id:string |  number) => {
 
 export const useFollowUser = () => {
 
-  const queryClient = useQueryClient()
+  const [user,setUser] = useState<string>()
+  const { markAsFollowed, unmarkAsFollowed } = useUserUpdater()
 
   return useMutation<User,Error,string>({
     mutationFn: async(userId:string) => {
+      setUser(userId)
+      markAsFollowed(userId)
       const res = await api.post(`user/${userId}/follow`)
       return res.data
     },
-    onSuccess:(user) => {
-      queryClient.invalidateQueries({
-        queryKey:['user',user.id],
-        exact:true
-      })
+    onError:() => {
+      if(user) unmarkAsFollowed(user)
     }
   })
 }
@@ -37,18 +39,18 @@ export const useFollowUser = () => {
 
 export const useUnfollowUser = () => {
 
-  const queryClient = useQueryClient()
+  const [user,setUser] = useState<string>()
+  const { markAsFollowed, unmarkAsFollowed } = useUserUpdater()
 
   return useMutation<User,Error,string>({
     mutationFn: async(userId:string) => {
+      setUser(userId)
+      unmarkAsFollowed(userId)
       const res = await api.post(`user/${userId}/unfollow`)
       return res.data
     },
-    onSuccess:(user) => {
-      queryClient.invalidateQueries({
-        queryKey:['user',user.id],
-        exact:true
-      })
+    onError:() => {
+      if(user) markAsFollowed(user)
     }
   })
 }

@@ -3,7 +3,7 @@ import { useAuthenticatedWebSocket } from '../hooks/socket'
 import { useQueryClient } from '@tanstack/react-query'
 import { getValidAccessTokenAutoSave } from '../utils/authentication'
 import { infiniteQueryAppendResultAtTop } from '../utils/queries'
-import { useNotificationUpdater } from '@/api/interactions/notifications'
+import { useNotificationUpdater } from '@/api/updaters/notifications'
 import { Notification } from '@/types/notification'
 
 const WEBSOCKET_URL = process.env.EXPO_PUBLIC_WS_URL

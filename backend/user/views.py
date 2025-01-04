@@ -39,7 +39,9 @@ class UserRetrieveAPIView(RetrieveAPIView):
   
   def get_serializer_context(self):
     context = super().get_serializer_context()
-    context['request'] = self.request
+    if self.request and self.request.user.is_authenticated:
+      context['show_if_followed'] = True
+      context['user_id'] = self.request.user.id
     return context
 
 
