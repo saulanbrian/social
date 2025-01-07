@@ -35,7 +35,14 @@ const HomeLayout = () => {
     <Tabs
       initialRouteName='feed'
       screenOptions={({ route }) => ({
-        headerShown:false,
+        headerTitleStyle:{
+          fontSize:24,
+          fontWeight:'700',
+          color:theme.colors.tabBarIcon
+        },
+        headerStyle:{
+          backgroundColor:theme.colors.primary
+        },
         lazy:false,
         tabBarItemStyle:{
           alignItems:'center',
@@ -49,6 +56,7 @@ const HomeLayout = () => {
         tabBarInactiveTintColor:theme.colors.tabBarIcon,
         tabBarShowLabel:false,
         tabBarShowIcon:true,
+        tabBarHideOnKeyboard:true,
         tabBarIcon:({ focused, color, size }: { focused: boolean, color: string, size: number}) => {
           
           let iconName:
@@ -56,11 +64,13 @@ const HomeLayout = () => {
           | 'planet-outline'
           | 'notifications-sharp' 
           | 'notifications-outline'
+          | 'search'
+          | 'search-outline'
           
           route.name === 'feed' 
           ? ( iconName = focused ? 'planet' : 'planet-outline' )
-          : ( iconName = focused ? 'notifications-sharp' : 'notifications-outline' )
-        
+          : route.name === 'notifications'? ( iconName = focused ? 'notifications-sharp' : 'notifications-outline' )
+          : iconName = focused ? 'search': 'search-outline'
           
           return (
             <TabBarIcon 
@@ -77,6 +87,9 @@ const HomeLayout = () => {
         },
       })}>
       <Tabs.Screen name='feed' />
+      <Tabs.Screen name='search' options={{
+        headerShown:false
+      }} />
       <Tabs.Screen name='notifications' />
     </Tabs>
   )

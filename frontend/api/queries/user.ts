@@ -35,8 +35,8 @@ export const useGetUserImages = (userId: string) => {
   })
 }
 
-export const useGetCurrentUser = ({ enabled } : { enabled?: boolean } = { enabled: true } ) => {
-
+export const useGetCurrentUser = ({ enabled } : { enabled?: boolean } = { enabled: true }) => {
+  
   return useQuery<User>({
     queryKey:['current_user'],
     queryFn:async() => {

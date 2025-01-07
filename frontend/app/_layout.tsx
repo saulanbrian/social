@@ -33,17 +33,7 @@ function InitialLayout(){
     }}>
       <Stack.Screen name='index' options={{ headerShown:false }}/>
       <Stack.Screen name='(tabs)' options={{
-        headerTitle:'Home',
-        headerTitleStyle:{
-          fontSize:24,
-          fontWeight:'700',
-          color:theme.colors.tabBarIcon
-        },
-        headerStyle:{
-          backgroundColor:theme.colors.primary
-        },
-        headerShadowVisible:false,
-        headerRight:() => <TabHeaderRight color={theme.colors.tabBarIcon} />
+        headerShown:false
       }}/>
       <Stack.Screen name='post' options={{
         headerShown:false,
@@ -58,24 +48,6 @@ function InitialLayout(){
     </Stack>
   )
 }
-
-
-const TabHeaderRight = ({ color }: { color: string}) => {
-
-  const router = useRouter()
-
-  const handlePress = () => {
-    router.push('/post/create')
-  }
-
-  return (
-    <TouchableOpacity onPress={handlePress}>
-      <MaterialIcons name='create' size={24} color={color} />
-    </TouchableOpacity>
-  )
-}
-
-
 
 
 export default function RootLayout(){

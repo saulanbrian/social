@@ -20,7 +20,7 @@ type LoginProps = {
 }
 
 interface AuthContextType {
-  isAuthenticated: boolean;
+  isAuthenticated: boolean | undefined;
   setIsAuthenticated: (authState:boolean) => void;
   isLoading:boolean;
   login: ({access,refresh}:LoginProps) => void;
@@ -42,10 +42,10 @@ interface ContextProp {
 export const AuthContextProvider = ({ children }: ContextProp) => {
   
   const [isLoading,setIsLoading] = React.useState<boolean>(true)
-  const [isAuthenticated,setIsAuthenticated] = React.useState<boolean>(false)
+  const [isAuthenticated,setIsAuthenticated] = React.useState<boolean | undefined>()
 
   const router = useRouter()
-  const { status } = useGetCurrentUser({ enabled: isAuthenticated })
+  const { status } = useGetCurrentUser({ enabled: isAuthenticated !== undefined? isAuthenticated: false })
 
 
   useEffect(() => {
@@ -58,9 +58,16 @@ export const AuthContextProvider = ({ children }: ContextProp) => {
 
 
   useEffect(() => {
-    if(status === 'success') setIsLoading(false)
-  },[status])
-
+    if(isAuthenticated !== undefined){
+      if(!isAuthenticated){
+        setIsLoading(false)
+      }
+      else if(isAuthenticated && status !== 'pending'){
+        setIsLoading(false)
+      }
+    }
+  },[isAuthenticated,status])
+  
   
   const login = React.useCallback(async({access,refresh}: LoginProps) => {
 

@@ -1,15 +1,13 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import serializers 
-
-
 from .models import Post
 from comment.models import Comment
 from django.contrib.contenttypes.models import ContentType
@@ -77,3 +75,20 @@ def add_comment(request,pk):
     )
     return Response(serializer.data,status=status.HTTP_201_CREATED)
   return Response(serializer.errors,status=status.HTTTP_400_BAD_REQUEST)
+
+
+class PostSearchList(ListAPIView):
+  serializer_class = PostSerializer
+  pagination_class = PostPagination
+  
+  def get_queryset(self):
+    search_param = self.request.query_params.get('q',None)
+    if not search_param:
+      raise NotFound(detail='search key is required')
+    return Post.objects.filter(caption__icontains=search_param)
+
+  def get_serializer_context(self):
+    context = super().get_serializer_context()
+    if  self.request.user and self.request.user.is_authenticated:
+      context['request'] = self.request
+    return context

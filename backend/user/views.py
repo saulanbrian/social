@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.exceptions import NotFound
 
 from post.serializers import PostSerializer, PostImageSerializer
 from .serializers import AuthUserSerializer, UserSerializer
@@ -16,10 +17,31 @@ from .models import CustomUser
 class Pagination(PageNumberPagination):
   page_size = 10
   
+class SearchPagination(PageNumberPagination):
+  page_size = 20
+  
 
 class UserCreateAPIView(CreateAPIView):
   serializer_class = AuthUserSerializer
 
+
+class UserSearchList(ListAPIView):
+  serializer_class = UserSerializer
+  pagination_class = SearchPagination
+  
+  def get_queryset(self):
+    search_param = self.request.query_params.get('q',None)
+    if not search_param:
+      raise NotFound(detail='a search key is required')
+    return CustomUser.objects.filter(username__icontains=search_param)
+  
+
+  def get_serializer_context(self):
+    context = super().get_serializer_context()
+    if self.request and self.request.user.is_authenticated:
+      context['show_if_followed'] = True
+      context['user_id'] = self.request.user.id 
+    return context
 
 class UserUpdateView(UpdateAPIView):
   serializer_class = UserSerializer
