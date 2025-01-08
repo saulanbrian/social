@@ -18,7 +18,11 @@ const SearchLayout = () => {
         headerTitle:'search'
       }} />
       <Stack.Screen name='[keyword]' options={{
-        headerTitle:''
+        headerTitle:'',
+        headerStyle:{
+          backgroundColor:theme.colors.background.default
+        },
+        headerTintColor:theme.colors.text
       }}/>
     </Stack>
   )

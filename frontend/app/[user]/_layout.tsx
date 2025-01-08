@@ -2,8 +2,8 @@ import { ThemedActivityIndicator, ThemedText } from "@/components/ui";
 import { Suspense, useLayoutEffect } from "react";
 import ProfileLayout from "@/layouts/profile";
 
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useGetUser } from "@/api/queries/user";
+import { Redirect, useLocalSearchParams, useNavigation } from "expo-router";
+import { useGetCurrentUser, useGetUser } from "@/api/queries/user";
 import { CustomTabBarTabType } from "@/components/CustomTabBar";
 import { Pressable } from "react-native";
 import { useFollowUser, useUnfollowUser } from "@/api/interactions/user";
@@ -36,6 +36,12 @@ const UserProfileLayout = () => {
 
 
 const InitialLayout = () => {
+
+  const { data: currentUser } = useGetCurrentUser()
+  const { user: userId } = useLocalSearchParams()
+
+  if(currentUser?.id === userId ) return <Redirect href={'/profile'}/>
+
   return (
     <Suspense fallback={<ThemedActivityIndicator />}>
       <UserProfileLayout />

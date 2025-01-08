@@ -11,3 +11,5 @@ export { default as ProfileHeader } from './ProfileHeader'
 export { default as PostImageListPreview } from './PostImageListPreview'
 
 export { default as AutoCenteredActivityIndicator} from './AutoCenteredActivityIndicator'
+
+export { default as SearchItemComponent } from './SearchItemComponent'
