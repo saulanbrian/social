@@ -46,7 +46,8 @@ const PostCard = ({
           styles.card,
           { 
             backgroundColor: theme.colors.background.card
-          }
+          },
+          style
         ]
       }>
       <PostHeader 

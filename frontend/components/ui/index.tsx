@@ -23,3 +23,5 @@ export { default as TabScreen } from './TabScreen'
 export { default as ThemedScrollView } from './ThemedScrollView'
 
 export { default as SuspendedView } from './SuspendedView'
+
+export { default as TabBarButton } from './TabBarButton'

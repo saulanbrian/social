@@ -2,11 +2,6 @@ import { forwardRef } from 'react'
 import { useThemeContext } from '../../context/theme'
 import { TextInputProps, TextInput, StyleSheet } from 'react-native'
 
-
-type CustomTextIputProps = Omit<TextInputProps, 'value'> & {
-  value: string | null
-}
-
 const FlatInput = forwardRef<TextInput,TextInputProps>(({
   style,
   value,

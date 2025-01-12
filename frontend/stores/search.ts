@@ -9,6 +9,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 type SearchStore = {
   history:SearchItem[];
   addToHistory:(item: SearchItem ) => void;
+  clearHistory:() => void
 }
 
 export const useSearchStore = create<SearchStore>()(
@@ -17,7 +18,8 @@ export const useSearchStore = create<SearchStore>()(
       history:[],
       addToHistory:(item: SearchItem ) => {
         set((state) => ({ history: [item, ...state.history]}))
-      }
+      },
+      clearHistory:() => { set(state => ({ history: [] }))}
     }),
     {
       name:'search-storage',

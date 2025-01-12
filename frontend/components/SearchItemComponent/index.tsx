@@ -7,6 +7,7 @@ import { Post } from "@/types/post"
 import User from "@/types/user"
 import { Feather, FontAwesome5, Ionicons } from "@expo/vector-icons"
 import { useThemeContext } from "@/context/theme"
+import { useCallback, useMemo } from "react"
 
 
 type SearchItemComponentProps = Omit<PressableProps,('onPress' | 'style')> & {
@@ -15,51 +16,47 @@ type SearchItemComponentProps = Omit<PressableProps,('onPress' | 'style')> & {
 
 const SearchItemComponent = ({ item, ...props }: SearchItemComponentProps ) => {
 
-  const { item: actualItem, type } = item
-  const { addToHistory, history  } = useSearchStore()
+  const { addToHistory, history } = useSearchStore()
   const router = useRouter()
 
-  const handlePress = () => {
+  const handlePress = () => { 
 
     if(!history.some(historyItem => historyItem === item)){
       addToHistory(item)
     }
-
-    switch(type){
-      case 'post':
-        router.push({
-          pathname:'/search/[keyword]',
-          params:{ keyword: actualItem.caption as string}
-        })
-        break
-      case 'user':
-        router.push({
-          pathname:'/[user]/',
-          params: { user: actualItem.id }
-        })
-        break
+    
+    if(typeof item === 'string'){
+      router.push({
+        pathname:'/search/[keyword]',
+        params: { keyword: item }
+      })
+    }else{
+      router.push({
+        pathname:'/[user]',
+        params: { user: item.id }
+      })
     }
   }
 
   return (
     <Pressable onPress={handlePress} style={styles.container} {...props}>
-      {
-        type === 'post' 
-        ? <PostSearchItemComponent post={actualItem} /> 
-        : <UserSearchItemComponent user={actualItem} />
+      { 
+        typeof item === 'string'
+          ? <KeywordSearchItemComponent keyword={item}/>
+          : <UserSearchItemComponent user={item} />
       }
     </Pressable>
   )
 }
 
 
-const PostSearchItemComponent = ({ post }: { post: Post }) => {
+const KeywordSearchItemComponent = ({ keyword }: { keyword: string }) => {
 
   const { theme }  = useThemeContext()
 
   return (
     <View style={styles.itemComponent}>
-      <ThemedText style={styles.itemComponentText}>{ post.caption as string }</ThemedText>
+      <ThemedText style={styles.itemComponentText}>{ keyword }</ThemedText>
       <Feather name="arrow-up-right" size={28} color={theme.colors.text} style={{opacity:0.5}} />
     </View>
   )

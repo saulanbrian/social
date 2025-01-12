@@ -37,12 +37,12 @@ const UserProfileLayout = () => {
 
 const InitialLayout = () => {
 
-  const { data: currentUser } = useGetCurrentUser()
+  const { data: currentUser, status } = useGetCurrentUser()
   const { user: userId } = useLocalSearchParams()
 
   if(currentUser?.id === userId ) return <Redirect href={'/profile'}/>
 
-  return (
+  return status === 'success' && (
     <Suspense fallback={<ThemedActivityIndicator />}>
       <UserProfileLayout />
     </Suspense>

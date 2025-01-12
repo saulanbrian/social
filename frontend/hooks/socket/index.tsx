@@ -56,7 +56,7 @@ export const useAuthenticatedWebSocket = (url:string): { socket: WebSocket | nul
       if(socket) socket.close()
     }
     
-  },[url])
+  },[url,isAuthenticated])
   
   return { isConnected, socket }
 }
