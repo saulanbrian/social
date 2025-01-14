@@ -31,9 +31,10 @@ class UserSearchList(ListAPIView):
   
   def get_queryset(self):
     search_param = self.request.query_params.get('q',None)
+    user_id = self.request.user.id if self.request.user and self.request.user.is_authenticated else None
     if not search_param:
       raise NotFound(detail='a search key is required')
-    return CustomUser.objects.filter(username__icontains=search_param)
+    return CustomUser.objects.filter(username__icontains=search_param).exclude(id=user_id)
   
 
   def get_serializer_context(self):

@@ -22,7 +22,8 @@ const SearchLayout = () => {
         headerStyle:{
           backgroundColor:theme.colors.background.default
         },
-        headerTintColor:theme.colors.text
+        headerTintColor:theme.colors.text,
+        headerShadowVisible:false
       }}/>
     </Stack>
   )

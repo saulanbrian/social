@@ -1,6 +1,6 @@
 import { useSearchPosts, useSearchUser } from "@/api/queries/search"
 import { SearchItemComponent } from "@/components"
-import { Avatar, FlatInput, FlatInputWithClearButton, SuspendedView, ThemedActivityIndicator, ThemedText, ThemedView } from "@/components/ui"
+import { Avatar, FlatInput, SuspendedView, ThemedActivityIndicator, ThemedText, ThemedView } from "@/components/ui"
 import { useThemeContext } from "@/context/theme"
 import useDebounce from "@/hooks/debounce"
 import { useSearchStore } from "@/stores/search"
@@ -26,9 +26,9 @@ const SearchPage = () => {
   const router = useRouter()
 
   return (
-    <ThemedView style={{flex:1}}>
+    <ThemedView style={styles.container}>
       <SearchContainer value={searchKey} onChangeText={setSearchKey} />
-      { searchKey ? <SearchSuggestions value={debouncedSearchKey} /> : <SearchHistory />}
+      { searchKey?.trim() ? <SearchSuggestions value={debouncedSearchKey?.trim()} /> : <SearchHistory />}
     </ThemedView>
   )
 }
@@ -47,7 +47,7 @@ const SearchContainer = ({
   const { theme } = useThemeContext()
 
   const handlePress = () => {    
-    if(value){
+    if(value?.trim()){
 
       if(!history.some(item => item === value)){
         addToHistory(value)
@@ -66,7 +66,7 @@ const SearchContainer = ({
         onChangeText={onChangeText} 
         style={styles.searchInput}
         placeholder="what's on your mouth..."/>
-      <Ionicons name='search' color={theme.colors.tint} size={28} onPress={handlePress}/>
+      <Ionicons name='search' color={theme.colors.tint} size={24} onPress={handlePress}/>
     </ThemedView>
   )
 }
@@ -83,16 +83,21 @@ const SearchHistory = () => {
             <Text style={styles.clearButton}>clear</Text>
           </TouchableOpacity>
         ):(
-          <ThemedText style={{ textAlign:'center', paddingRight:48}}>your search history will appear here</ThemedText>
+          <ThemedText style={{ textAlign:'center', paddingRight:48}}>
+            your search history will appear here
+          </ThemedText>
         )
       }
       <FlashList 
         data={history}
         keyExtractor={(_,i) => i.toString()}
-        renderItem={({ item }) => {
-          return <SearchItemComponent item={item} />
-        }}
+        renderItem={({ item }) => (
+          <SearchItemComponent 
+            item={item} 
+            style={{ marginVertical: typeof item === 'string'? 4: undefined }} />
+        )}
         estimatedItemSize={72}
+        contentContainerStyle={styles.historyList}
       />
     </ThemedView>
   )
@@ -128,9 +133,10 @@ const SearchSuggestions = ({ value }: { value: string | undefined; }) => {
         keyExtractor={(_,i) => i.toString()}
         renderItem={({ item }) => <SearchItemComponent item={item}/> }
         ListEmptyComponent={() => (
-          <ThemedText>no results found</ThemedText>
+          <ThemedText style={{margin:12,marginLeft:8}}>no results found</ThemedText>
         )}
         estimatedItemSize={72}
+        contentContainerStyle={styles.suggestionList}
       /> 
     </SuspendedView>
   )
@@ -142,30 +148,45 @@ const styles = StyleSheet.create({
     color:'red',
     textAlign:"right",
     marginLeft:'auto',
+    marginVertical:8,
     paddingRight:20
+  },
+  container:{
+    flex:1,
+    paddingVertical:16,
+    // paddingHorizontal:12
+  },
+  historyList:{
+    paddingRight:12,
+    paddingLeft:8
   },
   searchContainer:{
     flexDirection:'row',
-    padding:16,
     gap:8,
     alignItems:'center',
+    width:'100%',
+    paddingHorizontal:12
   },
   searchHistory:{
     flex:1,
-    marginHorizontal:8
   },
   searchInput:{
     padding:12,
     fontSize:16,
     borderRadius:4,
-    width:'80%'
+    width:'88%'
   },
   searchInputContainer:{
-    width:'84%',
+    maxWidth:'84%',
+    flex:1,
+    overflow:'hidden'
   },
   suggestionBox:{
     flex:1,
-    marginHorizontal:8
+  },
+  suggestionList:{
+    paddingRight:12,
+    paddingLeft:8
   }
 })
 

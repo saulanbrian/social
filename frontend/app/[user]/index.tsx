@@ -41,8 +41,7 @@ const Posts = ({ userId }: { userId: string }) => {
       estimatedItemSize={200}
       snapToAlignment={'center'}
       decelerationRate={0.0001}
-      ItemSeparatorComponent={() => <View style={{height:2}} />}
-      contentContainerStyle={{paddingHorizontal:4}}
+      ItemSeparatorComponent={() => <View style={{height:1}} />}
     />
   );
 };

@@ -38,7 +38,6 @@ const PostList = () => {
       onEndReached={fetchNextPage}
       decelerationRate={0.00001}
       snapToAlignment='center'
-      contentContainerStyle={{ paddingHorizontal:4, paddingTop: 2}}
     />
   )
 }
@@ -49,7 +48,7 @@ const styles = StyleSheet.create({
     position:'relative',
   },
   separator:{
-    height:2
+    height:1
   }
 })
 

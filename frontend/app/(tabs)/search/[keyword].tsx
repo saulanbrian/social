@@ -1,7 +1,7 @@
 import { useSearchPosts, useSearchUser } from "@/api/queries/search"
 import { PostCard, UserPreviewCard } from "@/components"
 import ListEmptyComponent from "@/components/ListEmptyComponent"
-import { FlatInput, TabBarButton, ThemedText, ThemedView } from "@/components/ui"
+import { FlatInput, SuspendedView, TabBarButton, ThemedText, ThemedView } from "@/components/ui"
 import { useThemeContext } from "@/context/theme"
 import { useSearchStore } from "@/stores/search"
 import { Post } from "@/types/post"
@@ -25,8 +25,8 @@ const SearchResultsPage = () => {
   const navigation = useNavigation()
   const { history, addToHistory } = useSearchStore()
   const { keyword } = useLocalSearchParams()
-  const { data: users } = useSearchUser(keyword as string)
-  const { data: posts } = useSearchPosts(keyword as string)
+  const { data: users, status: userStatus} = useSearchUser(keyword as string)
+  const { data: posts, status: postStatus } = useSearchPosts(keyword as string)
 
   const layout = useWindowDimensions()
   const [index,setIndex] = useState(0)
@@ -49,11 +49,18 @@ const SearchResultsPage = () => {
 
   const renderScene = useMemo(() => (
     SceneMap({ 
-      all:() => <AllResults results={[...userResults,...postResults]}/>,
-      user:() => <UserResults results={userResults} />,
-      post:() => <PostResults results={postResults} />
+      all:() => (
+        <AllResults 
+          results={[...userResults,...postResults]} 
+          state={
+            postStatus === userStatus? postStatus || userStatus: 'pending'
+          }
+        />
+      ),
+      user:() => <UserResults results={userResults} state={userStatus}/>,
+      post:() => <PostResults results={postResults} state={postStatus}/>
     })
-  ),[postResults,userResults])
+  ),[postResults,userResults,userStatus,postStatus])
 
   useFocusEffect(() => {
     navigation.setOptions({
@@ -65,16 +72,16 @@ const SearchResultsPage = () => {
     <TabView 
       navigationState={{ index, routes }}
       onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
+      initialLayout={{ width: layout.width, height:layout.height }}
       renderScene={renderScene}
       renderTabBar={renderTabBar}
     />
   )
 }
 
-const AllResults = ({ results }: { results: ( Post | User )[] }) => {
+const AllResults = ({ results, state }: { results: ( Post | User )[]; state:'pending' | 'error' | 'success'}) => {
   return (
-    <ThemedView style={{flex:1}}>
+    <SuspendedView status={state} style={{flex:1}}>
       <FlatList
         data={results}
         keyExtractor={item => item.id}
@@ -82,18 +89,18 @@ const AllResults = ({ results }: { results: ( Post | User )[] }) => {
           const hasUsername = item.hasOwnProperty('username')
           return hasUsername
             ? <UserPreviewCard user={item as User} />
-            : <PostCard post={item as Post} style={{ borderRadius: 4 }}/>
+            : <PostCard post={item as Post}/>
         }}
         ItemSeparatorComponent={() => <View style={{height:2}} />}
-        contentContainerStyle={{paddingHorizontal:4}}
+        ListEmptyComponent={<SearchEmptyComponent searchType="all"/>}
       />
-    </ThemedView>
+    </SuspendedView>
   )
 }
 
-const UserResults = React.memo(({ results } : { results: User[] }) => {
+const UserResults = React.memo(({ results, state } : { results: User[]; state:'pending' | 'error' | 'success' }) => {
   return (
-    <ThemedView style={{flex:1}}>
+    <SuspendedView status={state} style={{flex:1}}>
       <FlashList
         data={results}
         keyExtractor={item => item.id}
@@ -101,17 +108,15 @@ const UserResults = React.memo(({ results } : { results: User[] }) => {
           return <UserPreviewCard user={user}/>
         }}
         estimatedItemSize={77}
-        contentContainerStyle={{
-          paddingHorizontal:4, 
-        }}
+        ListEmptyComponent={<SearchEmptyComponent searchType="user"/>}
       />
-    </ThemedView>
+    </SuspendedView>
   )
 })
 
-const PostResults = React.memo(({ results }: { results: Post[] }) => {
+const PostResults = React.memo(({ results, state  }: { results: Post[]; state:'pending' | 'error' | 'success'}) => {
   return (
-    <ThemedView style={{flex:1}}>
+    <SuspendedView status={state} style={{flex:1}}>
       <FlashList 
         data={results}
         keyExtractor={item => `post_${item.id}`}
@@ -119,8 +124,9 @@ const PostResults = React.memo(({ results }: { results: Post[] }) => {
           return <PostCard post={post} />
         }}
         estimatedItemSize={280}
+        ListEmptyComponent={<SearchEmptyComponent searchType="post"/>}
       />
-    </ThemedView>
+    </SuspendedView>
   )
 })
 
@@ -155,11 +161,31 @@ const TabBar = ({
   )
 }
 
+const SearchEmptyComponent = ({ searchType }: { searchType: 'user' | 'post' | 'all' }) => {
+
+  const lookup = searchType === 'all'? 'user nor a post': searchType
+
+  return (
+    <ThemedView style={{flex:1,justifyContent:'center',alignItems:'center',height:'100%'}}>
+      <ThemedText style={styles.emptyText}>
+        sorry, we couldnt find a {lookup} that matches the search key
+      </ThemedText>
+    </ThemedView>
+  )
+}
+
 
 const styles = StyleSheet.create({
+  emptyText:{
+    alignSelf:'center',
+    textAlign:'justify',
+    maxWidth:'90%',
+    marginTop:16
+  },
   tabBar:{
     flexDirection:'row',
     padding:12,
+    paddingVertical:8,
     gap:8
   },
 })
