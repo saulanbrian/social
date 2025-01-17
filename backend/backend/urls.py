@@ -15,7 +15,8 @@ urlpatterns = [
     path('user/',include('user.urls')),
     path('posts/',include('post.urls')),
     path('comments/',include('comment.urls')),
-    path('notifications/',include('notification.urls'))
+    path('notifications/',include('notification.urls')),
+    path('chat/',include('chat.urls'))
 ] 
 
 if settings.DEBUG:

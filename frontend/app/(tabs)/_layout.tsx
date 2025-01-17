@@ -1,5 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { Stack, Redirect, Tabs } from 'expo-router' 
+import { Stack, Redirect, Tabs, useRouter, Link } from 'expo-router' 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { TabBarIcon } from '@/components/ui'
 
@@ -17,6 +17,7 @@ import { summarizeQueryPagesResult } from '@/utils/queries'
 
 import { Notification } from '@/types/notification'
 import UpdateContextProvider, { useUpdateContext } from '@/context/update'
+import { Pressable } from 'react-native';
 
 
 const WEBSOCKET_URL = process.env.EXPO_PUBLIC_WS_URL
@@ -28,7 +29,8 @@ const HomeLayout = () => {
   const { theme } = useThemeContext()
   const { isAuthenticated } = useAuthContext()
   const { freshNotifications } = useUpdateContext()
-  
+  const router = useRouter()
+
   if(!isAuthenticated) return <Redirect href={'/authentication'} />
   
   return (
@@ -82,19 +84,30 @@ const HomeLayout = () => {
                   freshNotifications.length >= 1
                 )
               }
-              />
+            />
           )
         },
       })}>
-      <Tabs.Screen name='feed' />
+      <Tabs.Screen name='feed'  options={{
+        headerRight:() => (
+          <Link href={'/message'} style={{paddingRight:16}}>
+            <TabBarIcon 
+              name='chatbubble-outline'
+              color={theme.colors.tabBarIcon}
+              size={24}
+              showBadge
+            />
+          </Link>
+        )
+      }}/>
       <Tabs.Screen name='search' options={{
-        headerShown:false
+        headerShown:false,
+        lazy:true
       }} />
       <Tabs.Screen name='notifications' />
     </Tabs>
   )
 }
-
 
 const MainLayout = () => {
   return (

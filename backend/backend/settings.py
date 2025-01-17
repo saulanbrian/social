@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'post.apps.PostConfig',
     'comment.apps.CommentConfig',
     'notification.apps.NotificationConfig',
+    'chat.apps.ChatConfig'
 ]
 
 MIDDLEWARE = [

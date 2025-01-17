@@ -110,3 +110,18 @@ def get_current_user(request):
   user = get_object_or_404(CustomUser,pk=request.user.id)
   serializer = UserSerializer(user)
   return Response(serializer.data)
+
+class UserFollowingListAPIView(ListAPIView):
+  serializer_class = UserSerializer
+  pagination_class = Pagination
+  
+  def get_queryset(self):
+    id_as_params = self.request.query_params.get('user_id',None)
+    if not id_as_params:
+      user_id = self.request.user.id
+      user = get_object_or_404(CustomUser,pk=user_id)
+      return user.following.all()
+    else:
+      user = get_object_or_404(CustomUser,pk=id_as_params)
+      return user.following.all()
+  

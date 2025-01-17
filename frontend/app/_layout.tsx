@@ -45,6 +45,7 @@ function InitialLayout(){
       <Stack.Screen name='[user]' options={{ headerTitle:'' }} />
       <Stack.Screen name='profile' options={{ headerTitle: '' }} />
       <Stack.Screen name='images' options={{ headerShown: false}} />
+      <Stack.Screen name='message' options={{ headerShown: false }} />
     </Stack>
   )
 }

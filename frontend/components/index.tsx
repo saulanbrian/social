@@ -15,3 +15,7 @@ export { default as AutoCenteredActivityIndicator} from './AutoCenteredActivityI
 export { default as SearchItemComponent } from './SearchItemComponent'
 
 export { default as UserPreviewCard } from './UserPreviewCard'
+
+export { default as ConversationCard } from './ConversationCard'
+
+export { default as ChatComponent } from './ChatComponent'

@@ -3,9 +3,9 @@ import { View, StyleSheet, ViewProps } from 'react-native'
 
 
 type Props = ViewProps & {
-  color:string,
-  size:number,
-  name:string,
+  color:string;
+  size:number;
+  name:string;
   showBadge?: boolean
 }
 
@@ -14,11 +14,12 @@ const TabBarIcon = ({
   color,
   size,
   name,
-  showBadge
+  showBadge,
+  style
 }: Props) => {
   
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,style]}>
       <Ionicons color={color} size={size} name={name}/>
       { !!showBadge && <View style={ styles.badge } /> }
     </View>
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     color:'red',
     height:8,
     width:8,
-    right:-5,
+    right:-2,
     borderRadius:4,
     zIndex:5,
     position:'absolute',

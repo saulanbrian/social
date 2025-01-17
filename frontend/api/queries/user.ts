@@ -1,5 +1,5 @@
 import User from "@/types/user"
-import { InfiniteData, useMutation, useQuery, useSuspenseInfiniteQuery, useSuspenseQuery, } from "@tanstack/react-query"
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useSuspenseInfiniteQuery, useSuspenseQuery, } from "@tanstack/react-query"
 import api from ".."
 import { PostImage } from "@/types/post"
 import { InfiniteQueryPage } from "@/utils/queries"
@@ -45,5 +45,21 @@ export const useGetCurrentUser = ({ enabled } : { enabled?: boolean } = { enable
     },
     staleTime:Infinity,
     enabled,
+  })
+}
+
+export const useGetFollowedUser = () => {
+  return useInfiniteQuery<InfiniteQueryPage<User>>({
+    queryKey:['user','following'],
+    queryFn: async({ pageParam }) => {
+      const res = await api.get(`user/following?page=${pageParam}`)
+      return res.data
+    },
+    initialPageParam:1,
+    getNextPageParam:(lastPage,pages) => {
+      if(lastPage.next){
+        return pages.length + 1
+      }
+    }
   })
 }
