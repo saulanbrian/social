@@ -12,7 +12,7 @@ export type BottomInputBoxRef = {
 
 type Props = ViewProps & {
   placeholder:string;
-  handleSend:() => void;
+  handleSend:(text:string | undefined ) => void;
 }
 
 const BottomInputBox = forwardRef<BottomInputBoxRef,Props>(({
@@ -53,7 +53,7 @@ const BottomInputBox = forwardRef<BottomInputBoxRef,Props>(({
         name={'send'} 
         color={theme.colors.tint}
         size={24}
-        onPress={handleSend}/>
+        onPress={() => handleSend(text)}/>
     </ThemedView>
   )
 })

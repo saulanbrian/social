@@ -9,7 +9,8 @@ const useUserUpdater = () => {
       if(prevData){
         const updatedData: User = {
           ...prevData,
-          is_followed:true
+          is_followed:true,
+          followers:prevData.followers + 1
         }
         return updatedData
       }
@@ -22,7 +23,8 @@ const useUserUpdater = () => {
       if(prevData){
         const updatedData: User = {
           ...prevData,
-          is_followed:false
+          is_followed:false,
+          followers:prevData.followers - 1
         }
         return updatedData
       }

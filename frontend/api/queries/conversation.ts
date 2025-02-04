@@ -15,7 +15,8 @@ export const useGetConversations = () => {
       if(lastPage.next){
         return pages.length + 1
       }
-    }
+    },
+    staleTime:5 * 60 * 1000
   })
 }
 

@@ -10,6 +10,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class UserSerializer(serializers.ModelSerializer):
   
   is_followed = serializers.SerializerMethodField()
+  followers = serializers.SerializerMethodField()
+  following = serializers.SerializerMethodField()
   
   class Meta:
     model = CustomUser
@@ -38,6 +40,12 @@ class UserSerializer(serializers.ModelSerializer):
     if not show_if_followed or show_if_followed == False:
       representation.pop('is_followed')
     return representation
+
+  def get_followers(self,obj):
+    return obj.followers.count()
+  
+  def get_following(self,obj):
+    return obj.following.count()
 
 class AuthUserSerializer(serializers.ModelSerializer):
   

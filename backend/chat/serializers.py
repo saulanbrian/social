@@ -31,7 +31,7 @@ class ConversationSerializer(serializers.ModelSerializer):
     fields = ('id','participants','last_message','other_end')
     
   def get_last_message(self,obj):
-    last_message =  obj.messages.last()
+    last_message =  obj.messages.order_by('-timestamp').first()
     if last_message: 
       return ChatSerializer(last_message).data
     return None

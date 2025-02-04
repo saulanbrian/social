@@ -19,3 +19,5 @@ export { default as UserPreviewCard } from './UserPreviewCard'
 export { default as ConversationCard } from './ConversationCard'
 
 export { default as ChatComponent } from './ChatComponent'
+
+export { default as PendingMessage } from './PendingMessage'

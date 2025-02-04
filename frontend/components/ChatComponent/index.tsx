@@ -1,15 +1,16 @@
 import { Chat } from "@/types/chat"
 import { Avatar, ThemedText, ThemedView } from "../ui"
-import { StyleSheet } from "react-native"
+import { StyleSheet, ViewStyle } from "react-native"
 import { useThemeContext } from "@/context/theme"
 
 type ChatComponentProps = {
   messageType:'sent' | 'received';
   message: string;
-  sender_profile?: string
+  sender_profile?: string;
+  style?:ViewStyle
 }
 
-const ChatComponent = ({ message, sender_profile, messageType }: ChatComponentProps) => {
+const ChatComponent = ({ message, sender_profile, messageType, style }: ChatComponentProps) => {
 
   const { theme } = useThemeContext()
   const sent = messageType === 'sent'
@@ -18,9 +19,11 @@ const ChatComponent = ({ message, sender_profile, messageType }: ChatComponentPr
     <ThemedView style={
       [
         {
-          flexDirection: sent ? 'row-reverse': 'row'
+          flexDirection: sent ? 'row-reverse': 'row',
+          alignSelf: sent? 'flex-end': 'flex-start'
         },
-        styles.container
+        styles.container,
+        style
       ]
     }>
       { !sent && <Avatar source={sender_profile || null} size={40}/>}
@@ -32,7 +35,9 @@ const ChatComponent = ({ message, sender_profile, messageType }: ChatComponentPr
             color:sent? theme.colors.tabBarIcon: theme.colors.text
           }
         ]
-      }>{ message }</ThemedText>
+      }>
+        { message }
+      </ThemedText>
     </ThemedView>
   )
 }

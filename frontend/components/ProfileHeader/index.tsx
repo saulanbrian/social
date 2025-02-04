@@ -129,11 +129,11 @@ const BackgroundAndProfile = ({
   )
 }
 
-const FollowersAndFollowing = ({ followers, following }: { followers: string[]; following: string[]}) => {
+const FollowersAndFollowing = ({ followers, following }: { followers: number; following: number}) => {
   return (
     <ThemedView style={{ flexDirection:'row', padding: 8, gap: 4}}>
-      <ThemedText>{ followers.length } followers | </ThemedText>
-      <ThemedText>{ following.length } following</ThemedText>
+      <ThemedText>{ followers } followers | </ThemedText>
+      <ThemedText>{ following } following</ThemedText>
     </ThemedView>
   )
 }
