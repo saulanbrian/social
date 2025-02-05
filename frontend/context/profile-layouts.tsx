@@ -1,10 +1,13 @@
-import React, { createContext, useContext, useState } from "react";
-import { ScrollHandlerProcessed, SharedValue, useAnimatedScrollHandler, useSharedValue } from "react-native-reanimated";
+import { useSegments } from "expo-router";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { ScrollHandlerProcessed, SharedValue, useAnimatedScrollHandler, useSharedValue, withDelay, withSpring } from "react-native-reanimated";
 
 
 type ProfileLayoutContextType = {
   childrenScrollOffsetY:SharedValue<number>;
   childrenScrollHandler:ScrollHandlerProcessed<Record<string, unknown>>;
+  setHeaderHeight:React.Dispatch<React.SetStateAction<number>>;
+  headerHeight:number
 }
 
 const ProfileLayoutContext = createContext<ProfileLayoutContextType | null>(null)
@@ -24,11 +27,20 @@ const ProfileLayoutContextProvider = ({children}:{ children: React.ReactNode}) =
       childrenScrollOffsetY.value = e.contentOffset.y
     }
   })
+  const [headerHeight,setHeaderHeight] = useState(0)
+  const segments = useSegments()
+
+  useEffect(() => {
+    childrenScrollOffsetY.value = 0
+  },[segments])
+
 
   return (
     <ProfileLayoutContext.Provider value={{
       childrenScrollOffsetY,
       childrenScrollHandler,
+      headerHeight,
+      setHeaderHeight
     }}>
       { children }
     </ProfileLayoutContext.Provider>

@@ -1,5 +1,5 @@
 import { ThemedView, ThemedText } from '../ui'
-import { Text, StyleSheet, Dimensions, View, TouchableOpacity, Pressable, LayoutChangeEvent } from 'react-native'
+import { Text, StyleSheet, Dimensions, View, TouchableOpacity, Pressable, LayoutChangeEvent, ViewStyle } from 'react-native'
 import { Image } from 'expo-image'
 
 import React, { useEffect, useState } from 'react'
@@ -11,13 +11,15 @@ const BoxSize = Dimensions.get('window').width / 2
 type PostImagelistPreviewProps = {
   images: PostImage[],
   moreImagesCount: number,
-  onClickForMore?: () => void
+  onClickForMore?: () => void,
+  style?:ViewStyle
 }
 
 const PostImageListPreview = ({ 
   images,
   moreImagesCount,
-  onClickForMore
+  onClickForMore,
+  style
 }: PostImagelistPreviewProps ) => {
 
   const [containerHeight,setContainerHeight] = useState(0)
@@ -32,7 +34,7 @@ const PostImageListPreview = ({
   }
 
   return (
-      <ThemedView style={styles.container} onLayout={handleLayout}>
+      <ThemedView style={[styles.container,style]} onLayout={handleLayout}>
         { images.map((item,index) => {
           return index <= 3 && (
             <Image 

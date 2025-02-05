@@ -26,7 +26,7 @@ const RanimatedPostFlashList = Animated.createAnimatedComponent(FlashList<Post>)
 
 const Posts = ({ userId }: { userId: string }) => {
   const { data: posts } = useGetInfiniteUserPosts(userId);
-  const { childrenScrollHandler } = useProfileLayoutContext();
+  const { childrenScrollHandler, headerHeight } = useProfileLayoutContext();
 
   return (
     <RanimatedPostFlashList
@@ -42,6 +42,7 @@ const Posts = ({ userId }: { userId: string }) => {
       snapToAlignment={'center'}
       decelerationRate={0.0001}
       ItemSeparatorComponent={() => <View style={{height:1}} />}
+      contentContainerStyle={{paddingTop:headerHeight}}
     />
   );
 };

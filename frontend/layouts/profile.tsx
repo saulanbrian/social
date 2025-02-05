@@ -1,6 +1,6 @@
 import { Slot, Stack, useFocusEffect, usePathname, useRouter, useSegments  } from "expo-router"
 import { ThemedView, ThemedText, Avatar, ThemedActivityIndicator, ThemedScrollView } from '@/components/ui'
-import { Text, StyleSheet, ScrollView, DimensionValue, NativeSyntheticEvent, NativeScrollEvent, TouchableOpacity, LayoutChangeEvent} from 'react-native'
+import { Text, StyleSheet, ScrollView, DimensionValue, NativeSyntheticEvent, NativeScrollEvent, TouchableOpacity, LayoutChangeEvent, View} from 'react-native'
 import { ProfileHeader } from "@/components"
 
 import { useThemeContext } from "@/context/theme"
@@ -27,31 +27,40 @@ const ProfileLayout = ({
   children
  }: ProfileLayoutProps) => {
 
-  const { childrenScrollOffsetY } = useProfileLayoutContext()
+  const { childrenScrollOffsetY, setHeaderHeight, headerHeight } = useProfileLayoutContext()
   const { theme } = useThemeContext()
   
   const rStyles = useAnimatedStyle(() => {
 
     return {
-      maxHeight:interpolate(
-        childrenScrollOffsetY.value,
-        [0,400],
-        [400,0],
-        'clamp'
-      )
+      transform:[
+        {
+          translateY:withSpring(
+            -childrenScrollOffsetY.value,
+            { damping: 100 }
+          )
+        }
+      ],
+      position:'absolute',
+      zIndex:1,
+      width:'100%'
     }
   })
 
+  const handleLayout = (e:LayoutChangeEvent) => {
+    const heigth = e.nativeEvent.layout.height
+    setHeaderHeight(heigth)
+  }
 
   return (
-    <ThemedView style={{flex:1}}>
+    <ThemedView style={{flex:1,position:'relative'}}>
 
-      <Animated.View style={[rStyles]}>
+      <Animated.View style={[rStyles]} onLayout={handleLayout}>
         <ProfileHeader {...user} />
         { children }        
         <CustomTabBar tabs={tabs} parentPath={parentPath} />
       </Animated.View>
-      
+
       <ThemedView style={[{flex:1}]}>   
         <Stack screenOptions={{
           headerShown: false,

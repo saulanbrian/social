@@ -25,7 +25,7 @@ export const ProfilePostsPage = () => {
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList<Post>);
 
 const Posts = React.memo(({ userId }: { userId: string }) => {
-  const { childrenScrollHandler } = useProfileLayoutContext();
+  const { childrenScrollHandler, headerHeight } = useProfileLayoutContext();
   const { data, fetchNextPage } = useGetInfiniteUserPosts(userId);
   const posts = useMemo(() => data, [data]);
 
@@ -43,7 +43,9 @@ const Posts = React.memo(({ userId }: { userId: string }) => {
       onScroll={childrenScrollHandler}
       snapToAlignment={'center'}
       decelerationRate={0.0001}
+      scrollEventThrottle={16}
       ItemSeparatorComponent={() => <View style={{height:1}} />}
+      contentContainerStyle={{ paddingTop:headerHeight }}
     />
   );
 });
