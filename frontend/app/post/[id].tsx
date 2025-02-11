@@ -1,191 +1,83 @@
-import { 
-  ThemedText, 
-  ThemedView,
-  ThemedActivityIndicator,
-  Avatar,
-  Card,
-  FlatInput,
-  TouchableIcon,
-} from '@/components/ui'
-import { PostCard, ErrorBoundary, AutoCenteredActivityIndicator } from '@/components'
-import BottomInputBox, { BottomInputBoxRef } from '@/components/BottomInputBox'
-import InfiniteCommentsFlashList, { InfiniteCommentsFlashListRef } from '@/components/InfiniteCommentsFlashList'
-import { 
-  StyleSheet,
-  ScrollView,
-  Dimensions, 
-  View,
-  ViewProps,
-  Keyboard,
-  KeyboardAvoidingView,
-  NativeEventEmitter,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-} from 'react-native'
-import { Image } from 'expo-image'
-import Ionicons from '@expo/vector-icons/Ionicons'
+import { useAddComment } from "@/api/interactions/comments"
+import { useGetComment, useGetInfiniteComments } from "@/api/queries/comments"
+import { useGetPost } from "@/api/queries/post"
+import { Comment, CompoundPostCard } from "@/components"
+import BottomInputBox, { BottomInputBoxRef } from "@/components/BottomInputBox"
+import { SuspendedView, ThemedText, ThemedView } from "@/components/ui"
+import { Post } from "@/types/post"
+import { summarizeQueryPagesResult } from "@/utils/queries"
+import { FlashList } from "@shopify/flash-list"
+import { useLocalSearchParams } from "expo-router"
+import { useRef, useState } from "react"
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from "react-native-reanimated"
 
-import { useGetPost } from '../../api/queries/post'
-import { useQueryClient } from '@tanstack/react-query'
-import { useAddComment } from '../../api/interactions/comments'
-import { useLocalSearchParams } from 'expo-router'
-import React, { 
-  useState,
-  useEffect,
-  useRef, 
-  useMemo,
-  forwardRef,
-  useCallback,
-  Suspense 
-} from 'react'
-import { useThemeContext } from '../../context/theme'
-
-import { summarizeQueryPagesResult } from '@/utils/queries'
-
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL
 
 const PostDetailPage = () => {
-  
+
   const { id } = useLocalSearchParams()
-  const [status,setStatus] = useState<string>('loading')
+  const { data: post, status: postStatus} = useGetPost(id as string)
+  const { data: comments, status: commentStatus, fetchNextPage } = useGetInfiniteComments(id as string)
+  const { mutate: comment } = useAddComment(id as string)
+  const keyboard = useAnimatedKeyboard()
+  const inputRef = useRef<BottomInputBoxRef>()
+  const [inputHeight, setinputHeight] = useState(0)
 
-  return (
-    <ThemedView style={{flex:1,position:'relative'}}>
-      <Suspense fallback={<AutoCenteredActivityIndicator />}>
-        <PostDetail id={id as string } onLoad={() => setStatus('success')}/>
-      </Suspense>
-      <CommentBoxContainer id={id as string} fetchStatus={status}/>
-    </ThemedView>
-  )
-}
-
-
-type PostDetailProps = {
-  id:string,
-  onLoad:() => void
-}
-
-
-const PostDetail = ({ id, onLoad }: PostDetailProps) => {
-  
-  const { data:post, status } = useGetPost(id)
-  const [keyboardHeight,setKeyboardHeight] = useState<number>(0)
-  const [scrollHeight,setScrollHeight] = useState<number>(0)
-  const scrollRef = useRef<ScrollView | null>(null)
-  
-  useEffect(() => {
-    if(status === 'success'){
-      onLoad()
+  const handleComment = (text:string | undefined) => {
+    if(text){
+      comment(text)
+      inputRef.current?.clearInput()
     }
-  },[status])
-  
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', e => {
-      setKeyboardHeight(e.endCoordinates.height)
-    })
-    
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide', e => {
-      setKeyboardHeight(0)
-    })
-    
-    return () => {
-      keyboardDidShowListener.remove()
-      keyboardDidHideListener.remove()
-    }
-  },[])
-  
-  useEffect(() => {
-    if(scrollRef.current){ 
-      scrollRef.current.scrollTo({ y: scrollHeight + keyboardHeight  })
-    }
-  },[keyboardHeight])
-
-  const handleMomentumScrollEnd = (e:NativeSyntheticEvent<NativeScrollEvent>) => {
-    setScrollHeight(e.nativeEvent.contentOffset.y)
   }
+
+  const rStyles = useAnimatedStyle(() => ({
+    transform:[
+      {
+        translateY:-keyboard.height.value
+      }
+    ]
+  }))
+
+  const status = postStatus === commentStatus ? commentStatus || postStatus: 'pending' 
   
+
   return (
-    <ScrollView 
-      ref={scrollRef}
-      onMomentumScrollEnd={handleMomentumScrollEnd}
-      >
-      <PostImage uri={ post.image  } />
-      <PostCard post={post} imageShown={false} />
-      <Suspense fallback={<ThemedActivityIndicator />}>
-        <InfiniteCommentsFlashList 
-          contentContainerStyle={{
-            paddingTop:12
+    <SuspendedView status={status} style={{flex:1}}>
+      <Animated.View style={[{ flex: 1}, rStyles]}>
+        <FlashList
+          data={comments ? summarizeQueryPagesResult(comments): [] }
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => <Comment {...item} />}
+          ListHeaderComponent={<StyledPostCard post={post!}/>}
+          estimatedItemSize={20}
+          onEndReached={() => { 
+            console.log('end reached');
+            fetchNextPage()
+            
           }}
-          postId={id} />
-      </Suspense>
-      <View style={{height:70}} />
-    </ScrollView>
+          contentContainerStyle={{ paddingBottom: inputHeight }}
+        />
+        <BottomInputBox 
+          placeholder="add a comment...." 
+          handleSend={handleComment}
+          style={{ position: 'absolute', bottom: 0}}
+          onLayout={e => setinputHeight(e.nativeEvent.layout.height)}
+        />
+      </Animated.View>
+    </SuspendedView>
   )
 }
 
-const PostImage = ({ uri }: { uri: string | null }) => {
-  return uri? (
-    <Image source={{ uri:uri }} style={styles.image} />
-  ): null
-}
 
-
-type CommentBoxContainerProps = {
-  id:string;
-  fetchStatus:string
-}
-
-
-const CommentBoxContainer = ({ 
-  id,
-  fetchStatus
-}: CommentBoxContainerProps ) => {
-  
-  const { mutate: send, isPending, status } = useAddComment(id)
-  const commentRef = useRef<BottomInputBoxRef | null>(null)
-  
-  const handleSendComment = () => {
-    Keyboard.dismiss()
-    if(!isPending && !!commentRef.current?.text && fetchStatus === 'success'){
-      send(commentRef.current.text)
-    }
-  }
-  
-  useEffect(() => {
-    if(status === 'success'){
-      commentRef.current?.clearInput()
-    }
-  },[status])
-  
+const StyledPostCard = ({ post }: { post: Post }) => {
   return (
-    <BottomInputBox 
-      placeholder={'comment'} 
-      ref={commentRef}
-      handleSend={handleSendComment}/>
+    <CompoundPostCard post={post!} >
+      <CompoundPostCard.Image style={{paddingHorizontal:0}}/>
+      <CompoundPostCard.Header style={{ paddingTop: 8 }}/>
+      <CompoundPostCard.Caption />
+      <CompoundPostCard.Actions style={{ paddingBottom: 8}}/>
+    </CompoundPostCard>
   )
 }
 
-const styles = StyleSheet.create({
-  container:{
-    minHeight:Dimensions.get('window').height,
-  },
-  commentSectionHeader:{
-    fontSize:16,
-    fontWeight:400,
-    marginTop:20,
-    marginBottom:12,
-    marginLeft:8
-  },
-  image:{
-    aspectRatio:1,
-  },
-  indicator:{
-    flex:1,
-    alignSelf:'center'
-  },
-  
-})
 
-export default React.memo(PostDetailPage)
+export default PostDetailPage

@@ -25,7 +25,7 @@ export const useGetPosts = () => {
 
 
 export const useGetPost = (id:string) => {
-  return useSuspenseQuery<Post>({
+  return useQuery<Post>({
     queryKey:['posts',id],
     queryFn: async() => {
       const res = await api.get(`posts/${id}`)
