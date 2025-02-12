@@ -30,26 +30,24 @@ const ProfileLayout = ({
   const { childrenScrollOffsetY, setHeaderHeight, headerHeight } = useProfileLayoutContext()
   const { theme } = useThemeContext()
   
-  const rStyles = useAnimatedStyle(() => {
-
-    return {
-      transform:[
-        {
-          translateY:withSpring(
-            -childrenScrollOffsetY.value,
-            { damping: 100 }
-          )
-        }
-      ],
-      position:'absolute',
-      zIndex:1,
-      width:'100%'
-    }
-  })
+  const rStyles = useAnimatedStyle(() => ({
+    transform:[
+      {
+        translateY:withSpring( -childrenScrollOffsetY.value, { damping: 100 } )
+      }
+    ],
+    position:'absolute',
+    zIndex:1,
+    width:'100%'
+  }))
 
   const handleLayout = (e:LayoutChangeEvent) => {
     const heigth = e.nativeEvent.layout.height
-    setHeaderHeight(heigth)
+    setHeaderHeight(heigth) //used in tabs to define paddings
+  }
+
+  const handleTabPress = () => {
+    childrenScrollOffsetY.value = 0
   }
 
   return (
@@ -58,7 +56,7 @@ const ProfileLayout = ({
       <Animated.View style={[rStyles]} onLayout={handleLayout}>
         <ProfileHeader {...user} />
         { children }        
-        <CustomTabBar tabs={tabs} parentPath={parentPath} />
+        <CustomTabBar tabs={tabs} parentPath={parentPath} onTabPRess={handleTabPress}/>
       </Animated.View>
 
       <ThemedView style={[{flex:1}]}>   

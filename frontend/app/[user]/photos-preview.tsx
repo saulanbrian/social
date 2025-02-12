@@ -1,7 +1,7 @@
 import { PostImageListPreview } from "@/components"
 import { Suspense } from "react"
 import { Dimensions, View } from "react-native"
-import { ThemedActivityIndicator } from "@/components/ui"
+import { ButtonLink, ThemedActivityIndicator } from "@/components/ui"
 
 import { useGetUserImages } from "@/api/queries/user"
 import { summarizeQueryPagesResult } from "@/utils/queries"
@@ -22,16 +22,17 @@ const UserPhotosPreviewPage = () => {
 
 const UserPhotos = ({ userId }: { userId: string }) => {
 
-  const { data:images } = useGetUserImages(userId)
-  const router = useRouter()
+  const { data } = useGetUserImages(userId)
   const { headerHeight } = useProfileLayoutContext()
+
+  const images = summarizeQueryPagesResult(data)
 
   return (
     <View style={{ paddingTop: headerHeight }}>
       <FlashList 
-        data={summarizeQueryPagesResult(images)}
+        data={images.slice(0,4)}
         keyExtractor={item => item.post_id}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <Image 
             source={{ uri: item.image }}
             style={{ height: 200, width: 200}}/>
@@ -40,6 +41,14 @@ const UserPhotos = ({ userId }: { userId: string }) => {
         estimatedItemSize={200}
         showsHorizontalScrollIndicator={false}
       />
+      {
+        images.length > 4 && (
+          <ButtonLink 
+            href={`/images/user/${userId}`} 
+            text="see all" 
+            style={{padding:4,paddingLeft:8}}/>
+        )
+      }
     </View>
   )
 }

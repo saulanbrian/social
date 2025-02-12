@@ -8,7 +8,7 @@ import { Post } from "@/types/post"
 import { summarizeQueryPagesResult } from "@/utils/queries"
 import { FlashList } from "@shopify/flash-list"
 import { useLocalSearchParams } from "expo-router"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Animated, { useAnimatedKeyboard, useAnimatedStyle } from "react-native-reanimated"
 
 
@@ -18,14 +18,14 @@ const PostDetailPage = () => {
   const { data: post, status: postStatus} = useGetPost(id as string)
   const { data: comments, status: commentStatus, fetchNextPage } = useGetInfiniteComments(id as string)
   const { mutate: comment } = useAddComment(id as string)
-  const keyboard = useAnimatedKeyboard()
+  const keyboard = useAnimatedKeyboard({ isStatusBarTranslucentAndroid: true })
   const inputRef = useRef<BottomInputBoxRef>()
   const [inputHeight, setinputHeight] = useState(0)
 
   const handleComment = (text:string | undefined) => {
     if(text){
       comment(text)
-      inputRef.current?.clearInput()
+      inputRef.current && inputRef.current.clearInput()
     }
   }
 
@@ -38,7 +38,7 @@ const PostDetailPage = () => {
   }))
 
   const status = postStatus === commentStatus ? commentStatus || postStatus: 'pending' 
-  
+
 
   return (
     <SuspendedView status={status} style={{flex:1}}>
@@ -49,11 +49,7 @@ const PostDetailPage = () => {
           renderItem={({ item }) => <Comment {...item} />}
           ListHeaderComponent={<StyledPostCard post={post!}/>}
           estimatedItemSize={20}
-          onEndReached={() => { 
-            console.log('end reached');
-            fetchNextPage()
-            
-          }}
+          onEndReached={fetchNextPage}
           contentContainerStyle={{ paddingBottom: inputHeight }}
         />
         <BottomInputBox 

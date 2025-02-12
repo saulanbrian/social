@@ -2,7 +2,7 @@ import { PostImageListPreview } from "@/components";
 
 import React, { Suspense } from "react";
 import { useGetCurrentUser, useGetUserImages } from "@/api/queries/user";
-import { ThemedActivityIndicator } from "@/components/ui";
+import { ButtonLink, ThemedActivityIndicator, ThemedText } from "@/components/ui";
 import { summarizeQueryPagesResult } from "@/utils/queries";
 import { Href, usePathname, useRouter } from "expo-router";
 import Animated, { useAnimatedRef, useAnimatedStyle } from "react-native-reanimated";
@@ -22,15 +22,15 @@ const ProfilePhotosPreviewPage = () => {
 
 const UserImagesPreview = React.memo(({ userId }: { userId: string }) => {
 
-  const router = useRouter()
-  const pathname = usePathname()
   const { data } = useGetUserImages(userId);
-  const { headerHeight, childrenScrollOffsetY } = useProfileLayoutContext()
+  const { headerHeight  } = useProfileLayoutContext()
+
+  const images = summarizeQueryPagesResult(data)
 
   return (
     <View style={{ paddingTop: headerHeight }}>
       <Animated.FlatList
-        data={summarizeQueryPagesResult(data)}
+        data={images.slice(0,4)}
         horizontal
         keyExtractor={item => item.post_id}
         renderItem={({ item }) => (
@@ -43,6 +43,14 @@ const UserImagesPreview = React.memo(({ userId }: { userId: string }) => {
           />
         )}
       />
+      {
+        images.length > 4 && (
+          <ButtonLink 
+            href={`/images/user/${userId}`} 
+            text="see all" 
+            style={{padding:4,paddingLeft:8}}/>
+        )
+      }
     </View>
   );
 });

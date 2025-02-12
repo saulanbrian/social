@@ -6,15 +6,16 @@ import { useThemeContext } from '@/context/theme';
 
 export type CustomTabBarTabType = {
    tabName: string; 
-   tabLabel?: string 
+   tabLabel?: string;
 }
 
 type CustomTabBarProps = {
   tabs: CustomTabBarTabType[];
-  parentPath:string | null
+  parentPath:string | null;
+  onTabPRess?:() => void
 }
 
-const CustomTabBar = ({ tabs, parentPath }: CustomTabBarProps ) => {
+const CustomTabBar = ({ tabs, parentPath, onTabPRess }: CustomTabBarProps ) => {
 
   const router = useRouter()
   const [currentTab, setCurrentTab] = useState<string>(tabs[0].tabName)
@@ -26,6 +27,7 @@ const CustomTabBar = ({ tabs, parentPath }: CustomTabBarProps ) => {
       router.replace(parentPath as Href)
     }else 
     router.replace(parentPath + `/${tabName}` as Href)
+    onTabPRess?.()
   },[])
   
   return (

@@ -28,12 +28,6 @@ const ProfileLayoutContextProvider = ({children}:{ children: React.ReactNode}) =
     }
   })
   const [headerHeight,setHeaderHeight] = useState(0)
-  const segments = useSegments()
-
-  useEffect(() => {
-    childrenScrollOffsetY.value = 0
-  },[segments])
-
 
   return (
     <ProfileLayoutContext.Provider value={{

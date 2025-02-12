@@ -25,3 +25,5 @@ export { default as ThemedScrollView } from './ThemedScrollView'
 export { default as SuspendedView } from './SuspendedView'
 
 export { default as TabBarButton } from './TabBarButton'
+
+export { default as ButtonLink } from './ButtonLink'
