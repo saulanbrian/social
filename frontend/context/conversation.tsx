@@ -78,7 +78,7 @@ const ConversationContextProvider = ({ children, conversationId }: { children: R
     }
   }
 
-  return conversation && messageQuery.data? ( 
+  return ( 
     <ConversationContext.Provider value={{
       conversation,
       messageQuery,
@@ -87,7 +87,7 @@ const ConversationContextProvider = ({ children, conversationId }: { children: R
      }}>
       { children }
     </ConversationContext.Provider>
-  ): <AutoCenteredActivityIndicator />
+  )
 }
 
 export default ConversationContextProvider

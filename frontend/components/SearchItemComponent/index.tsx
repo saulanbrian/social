@@ -1,6 +1,6 @@
 import { SearchItem } from "@/types/search"
 import { Pressable, PressableProps, StyleSheet, View } from "react-native"
-import { Avatar, ThemedText } from "../ui"
+import { Avatar, ThemedText, ThemedView } from "../ui"
 import { Href, useRouter } from "expo-router"
 import { useSearchStore } from "@/stores/search"
 import { Post } from "@/types/post"
@@ -10,37 +10,20 @@ import { useThemeContext } from "@/context/theme"
 import React, { useCallback, useMemo } from "react"
 
 
-type SearchItemComponentProps = Omit<PressableProps,'onPress'> & {
+type SearchItemComponentProps = PressableProps & {
   item: SearchItem
 }
 
-const SearchItemComponent = ({ item, style, ...props }: SearchItemComponentProps ) => {
-
-  const { addToHistory, history } = useSearchStore()
-  const router = useRouter()
-
-  const redirectPath = typeof item === 'string'? "/search/[keyword]" : "/[user]"
-  const urlParams = typeof item === 'string'? { keyword: item }: { user: item.id }
-
-  const handlePress = () => { 
-
-    if(!history.some(historyItem => historyItem === item)){
-      addToHistory(item)
-    }
-    router.push({
-      pathname:redirectPath,
-      params:urlParams 
-    } as Href)
-  }
+const SearchItemComponent = ({ item, style, ...props}: SearchItemComponentProps ) => {
 
   return (
-    <Pressable 
-      onPress={handlePress} 
-      style={({pressed,hovered}) => [
+    <Pressable style={
+      ({ pressed, hovered }) => [
         styles.container,
-        style && typeof style === 'function'? style({pressed,hovered}): style
-      ]} 
-      {...props}>
+        style && typeof style === 'function'? style({ pressed, hovered}): style
+      ]}
+      { ...props }  
+    >
       { 
         typeof item === 'string'
           ? <KeywordSearchItemComponent keyword={item}/>
@@ -49,7 +32,6 @@ const SearchItemComponent = ({ item, style, ...props }: SearchItemComponentProps
     </Pressable>
   )
 }
-
 
 const KeywordSearchItemComponent = ({ keyword }: { keyword: string }) => {
 

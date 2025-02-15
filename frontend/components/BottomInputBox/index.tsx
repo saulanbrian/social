@@ -63,12 +63,13 @@ const styles = StyleSheet.create({
     padding:12,
     position:'absolute',
     bottom:0,
-    flex:1,
     flexDirection:'row',
     width:'100%',
     gap:8,
     alignItems:'center',
-    minHeight:70
+    minHeight:70,
+    left:0,
+    right:0
   },
   commentInput:{
     padding:12,

@@ -1,6 +1,7 @@
 import { useSearchPosts, useSearchUser } from "@/api/queries/search"
 import { SearchItemComponent } from "@/components"
 import { Avatar, FlatInput, SuspendedView, ThemedActivityIndicator, ThemedText, ThemedView } from "@/components/ui"
+import SearchContextProvider, { useSearchContext } from "@/context/search"
 import { useThemeContext } from "@/context/theme"
 import useDebounce from "@/hooks/debounce"
 import { useSearchStore } from "@/stores/search"
@@ -10,7 +11,7 @@ import User from "@/types/user"
 import { summarizeQueryPagesResult } from "@/utils/queries"
 import { Ionicons } from "@expo/vector-icons"
 import { FlashList } from "@shopify/flash-list"
-import { useNavigation, useRouter } from "expo-router"
+import { Href, useNavigation, useRouter } from "expo-router"
 import React, { useState } from "react"
 import { StyleSheet, View, ScrollView, Pressable, Modal, Dimensions, TouchableOpacity, Text} from "react-native"
 import { useAnimatedRef, useSharedValue } from "react-native-reanimated"
@@ -19,42 +20,61 @@ import { useAnimatedRef, useSharedValue } from "react-native-reanimated"
 const API_URL = process.env.EXPO_PUBLIC_API_URL
 
 
+const PageWrapper = () => {
+
+  const router = useRouter()
+  const { history, addToHistory } = useSearchStore()
+
+  const handleSearchItemPress = (item:SearchItem) => {
+
+    const path:Href = typeof item === 'string' 
+      ? { pathname:'/search/[keyword]', params: { keyword: item }}
+      : { pathname:'/[user]',params: { user: item.id }}
+
+    router.push(path)
+
+    if(!history.some(historyItem => historyItem === item)){
+      addToHistory(item)
+    }
+    
+  }
+
+  return (
+    <SearchContextProvider  searchItemPressHandler={handleSearchItemPress}>
+      <SearchPage />
+    </SearchContextProvider>
+  )
+}
+
 const SearchPage = () => {
 
-  const [searchKey,setSearchKey] = useState<string>()
-  const debouncedSearchKey = useDebounce(searchKey,1000)
-  const router = useRouter()
+  const { searchKey } = useSearchContext()
 
   return (
     <ThemedView style={styles.container}>
-      <SearchContainer value={searchKey} onChangeText={setSearchKey} />
-      { searchKey?.trim() ? <SearchSuggestions value={debouncedSearchKey?.trim()} /> : <SearchHistory />}
+      <SearchContainer />
+      { searchKey?.trim() ? <SearchSuggestions /> : <SearchHistory />}
     </ThemedView>
   )
 }
 
-
-const SearchContainer = ({
-  value, 
-  onChangeText
-}:{ 
-  value: string | undefined, 
-  onChangeText:React.Dispatch<React.SetStateAction<string | undefined>>
-}) => {
+const SearchContainer = () => {
 
   const { addToHistory, history} = useSearchStore()
+  const { searchKey, setSearchKey } = useSearchContext()
   const router = useRouter()
   const { theme } = useThemeContext()
 
   const handlePress = () => {    
-    if(value?.trim()){
+    if(searchKey?.trim()){
 
-      if(!history.some(item => item === value)){
-        addToHistory(value)
+      if(!history.some(item => item === searchKey)){
+        addToHistory(searchKey)
       }
+
       router.push({
         pathname:'/search/[keyword]',
-        params:{ keyword: value }
+        params:{ keyword: searchKey }
       })
     }
   }
@@ -62,8 +82,8 @@ const SearchContainer = ({
   return (
     <ThemedView style={styles.searchContainer}>
       <FlatInput 
-        value={value} 
-        onChangeText={onChangeText} 
+        value={searchKey} 
+        onChangeText={setSearchKey} 
         style={styles.searchInput}
         placeholder="what's on your mouth..."/>
       <Ionicons name='search' color={theme.colors.tint} size={24} onPress={handlePress}/>
@@ -75,26 +95,20 @@ const SearchContainer = ({
 const SearchHistory = () => {
 
   const { history, clearHistory } = useSearchStore()
+  const { searchItemPressHandler } = useSearchContext()
 
   return (
     <ThemedView style={styles.searchHistory}>
-      { history.length >=1 ? (
-          <TouchableOpacity onPress={() => clearHistory()}>
-            <Text style={styles.clearButton}>clear</Text>
-          </TouchableOpacity>
-        ):(
-          <ThemedText style={{ textAlign:'center', paddingRight:48}}>
-            your search history will appear here
-          </ThemedText>
-        )
-      }
+      <ClearHistoryButton />
       <FlashList 
         data={history}
         keyExtractor={(_,i) => i.toString()}
         renderItem={({ item }) => (
           <SearchItemComponent 
             item={item} 
-            style={{ marginVertical: typeof item === 'string'? 4: undefined }} />
+            style={{ marginVertical: typeof item === 'string'? 4: undefined }} 
+            onPress={() => searchItemPressHandler(item)}
+          />
         )}
         estimatedItemSize={72}
         contentContainerStyle={styles.historyList}
@@ -103,13 +117,26 @@ const SearchHistory = () => {
   )
 }
 
+const ClearHistoryButton = () => {
+  
+  const { history, clearHistory } = useSearchStore()
 
-const SearchSuggestions = ({ value }: { value: string | undefined; }) => {
+  return history.length >= 1 && (
+    <TouchableOpacity onPress={() => clearHistory()} style={styles.clearButton}>
+      <Text style={{ color: 'red'}}>clear</Text>
+    </TouchableOpacity>
+  )
+}
+
+
+const SearchSuggestions = () => {
 
   const { theme } = useThemeContext()
-
-  const { data: posts, status: postSearchStatus, } = useSearchPosts(value)
-  const { data: users, status: userSearchStatus } = useSearchUser(value)
+  const { searchKey, searchItemPressHandler } = useSearchContext()
+  const debouncedSearchKey = useDebounce(searchKey,1000)
+  const { data: posts, status: postSearchStatus, } = useSearchPosts(debouncedSearchKey)
+  const { data: users, status: userSearchStatus } = useSearchUser(debouncedSearchKey)
+  const router = useRouter()
 
   const userResults = users ? summarizeQueryPagesResult(users) : []
   const postResults = posts ? summarizeQueryPagesResult(posts) : []
@@ -124,14 +151,14 @@ const SearchSuggestions = ({ value }: { value: string | undefined; }) => {
   | 'pending' 
   | 'error' = userSearchStatus === postSearchStatus? userSearchStatus || postSearchStatus: 'pending'
 
-  if(!value) return null
+  if(!searchKey) return null
 
   return (
     <SuspendedView status={status} style={styles.suggestionBox}>
       <FlashList 
         data={items}
         keyExtractor={(_,i) => i.toString()}
-        renderItem={({ item }) => <SearchItemComponent item={item}/> }
+        renderItem={({ item }) => <SearchItemComponent item={item} onPress={() => searchItemPressHandler(item)}/> }
         ListEmptyComponent={() => (
           <ThemedText style={{margin:12,marginLeft:8}}>no results found</ThemedText>
         )}
@@ -145,16 +172,13 @@ const SearchSuggestions = ({ value }: { value: string | undefined; }) => {
 
 const styles = StyleSheet.create({
   clearButton:{
-    color:'red',
-    textAlign:"right",
-    marginLeft:'auto',
-    marginVertical:8,
-    paddingRight:20
+    alignSelf:'flex-end',
+    paddingRight:20,
+    marginVertical:8
   },
   container:{
     flex:1,
     paddingVertical:16,
-    // paddingHorizontal:12
   },
   historyList:{
     paddingRight:12,
@@ -191,4 +215,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default SearchPage
+export default PageWrapper

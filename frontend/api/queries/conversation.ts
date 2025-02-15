@@ -1,6 +1,6 @@
 import { Conversation } from "@/types/conversation"
 import { InfiniteQueryPage } from "@/utils/queries"
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import api from ".."
 
 export const useGetConversations = () => {
@@ -22,7 +22,7 @@ export const useGetConversations = () => {
 
 
 export const useGetConversation = (id:string) => {
-  return useQuery<Conversation>({
+  return useSuspenseQuery<Conversation>({
     queryKey:['conversation',id],
     queryFn:async() => {
       const res = await api.get(`chat/conversations/${id}`)
