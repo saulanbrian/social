@@ -2,6 +2,8 @@ import { Conversation } from "@/types/conversation"
 import { InfiniteQueryPage } from "@/utils/queries"
 import { useInfiniteQuery, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import api from ".."
+import { useState } from "react"
+import axios, { AxiosError } from "axios"
 
 export const useGetConversations = () => {
   return useInfiniteQuery<InfiniteQueryPage<Conversation>>({
@@ -29,5 +31,17 @@ export const useGetConversation = (id:string) => {
       return res.data
     },
     staleTime:5 * 60 * 1000
+  })
+}
+
+
+export const useFindConversationWithUser = (userId:string | undefined) => {
+  return useQuery<Conversation>({
+    queryKey:['conversations',userId],
+    queryFn:async() => {
+      const res = await api.get(`chat/conversations/find?userId=${userId}`)
+      return res.data
+    },
+    enabled:!!userId
   })
 }

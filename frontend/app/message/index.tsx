@@ -1,4 +1,4 @@
-import { useGetConversations } from "@/api/queries/conversation"
+import { useFindConversationWithUser, useGetConversations } from "@/api/queries/conversation"
 import { useSearchUser } from "@/api/queries/search"
 import { useGetFollowedUser } from "@/api/queries/user"
 import { ConversationCard, SearchItemComponent } from "@/components"
@@ -126,7 +126,7 @@ const ConversationList = () => {
 
 const SearchResults = () => {
 
-  const { searchKey } = useSearchContext()
+  const { searchKey, searchItemPressHandler } = useSearchContext()
   const debouncedSearchKey = useDebounce(searchKey,1000)
   const { data, status, fetchNextPage } = useSearchUser(debouncedSearchKey)
   const { headerHeight, scrollHandlerToAnimatedHeader } = useMessageAppContext()
@@ -140,7 +140,7 @@ const SearchResults = () => {
       <AnimatedFlashList 
         data={results}
         keyExtractor={(item, i)=> `${item.id}_${i.toString()}`}
-        renderItem={({ item }) => <SearchItemComponent item={item}/>}
+        renderItem={({ item }) => <SearchItemComponent item={item} onPress={() => searchItemPressHandler(item)}/>}
         estimatedItemSize={24}
         onScroll={scrollHandlerToAnimatedHeader}
         contentContainerStyle={{ paddingTop: headerHeight }}
@@ -175,9 +175,29 @@ const styles = StyleSheet.create({
 
 export default function Page(){
 
+  //user id to find conversation with
+  const [userId,setUserId] = useState<string>()
+  const { data, status, failureReason } = useFindConversationWithUser(userId)
+  console.log(status);
+  
+
+  const handlePress = (item:SearchItem) => {
+    if(typeof item !== 'string'){
+      setUserId(item.id)
+    }
+  }
+
+  useEffect(() => {
+    if(status === 'success'){
+      console.log(status);
+    }else{
+      console.log(failureReason);
+    }
+  },[status,failureReason])
+
   return (
     <MessageContextProvider>
-      <SearchContextProvider searchItemPressHandler={(item:SearchItem) => {}}>
+      <SearchContextProvider searchItemPressHandler={handlePress}>
         <ConversationListPage />
       </SearchContextProvider>
     </MessageContextProvider>
