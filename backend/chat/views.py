@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view, authentication_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -28,7 +28,7 @@ class ConversationList(ListAPIView):
   
   def get_queryset(self):
     user_id = self.request.user.id
-    return Conversation.objects.filter(participants__id=user_id)
+    return Conversation.objects.filter(participants__id=user_id).exclude(messages__isnull=True)
   
   def get_serializer_context(self):
     context = super().get_serializer_context()
@@ -70,20 +70,27 @@ class ConversationMessageListCreate(ListCreateAPIView):
       sender=self.request.user,
       conversation=conversation
     )
-    
-@authentication_classes([IsAuthenticated])
+ 
+
+
+@permission_classes([IsAuthenticated])
 @api_view(['GET'])
-def find_conversation_with_user(request):
+def get_or_create_conversation(request):
   user_id = request.query_params.get('userId',None)
   if not user_id:
     return Response({'error':'userId is required'},status=status.HTTP_400_BAD_REQUEST)
   
   user = get_object_or_404(User,pk=user_id)
-  authenticated_user_conversations = Conversation.objects.filter(participants__id=request.user.id)
   
-  conversation = authenticated_user_conversations.filter(participants__id=user.id).first()
+  conversation = Conversation.objects.filter(
+    participants__id=request.user.id
+  ).filter(
+    participants__id=user_id
+  ).first()
+  
   if not conversation:
-    return Response({'error':'couldn\'t find conversation'}, status=status.HTTP_404_NOT_FOUND)
-  
-  serializer = ConversationSerializer(conversation,context={'current_user': request.user})
+    conversation = Conversation.objects.create()
+    conversation.participants.set([user,request.user])
+    
+  serializer = ConversationSerializer(conversation,context={'current_user':request.user})
   return Response(serializer.data,status=status.HTTP_200_OK)

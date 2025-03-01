@@ -1,4 +1,4 @@
-import { useFindConversationWithUser, useGetConversations } from "@/api/queries/conversation"
+import { useGetConversations, useGetOrCreateConversationWithUser } from "@/api/queries/conversation"
 import { useSearchUser } from "@/api/queries/search"
 import { useGetFollowedUser } from "@/api/queries/user"
 import { ConversationCard, SearchItemComponent } from "@/components"
@@ -13,6 +13,7 @@ import User from "@/types/user"
 import { InfiniteQueryPage, summarizeQueryPagesResult } from "@/utils/queries"
 import { FlashList } from "@shopify/flash-list"
 import { useQueryClient } from "@tanstack/react-query"
+import { useRouter } from "expo-router"
 import React, { useCallback, useEffect, useState } from "react"
 import { Dimensions, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native"
 import { FlatList, Pressable, StyleSheet } from "react-native"
@@ -177,10 +178,9 @@ export default function Page(){
 
   //user id to find conversation with
   const [userId,setUserId] = useState<string>()
-  const { data, status, failureReason } = useFindConversationWithUser(userId)
-  console.log(status);
+  const { data, status } = useGetOrCreateConversationWithUser(userId)
+  const router = useRouter()
   
-
   const handlePress = (item:SearchItem) => {
     if(typeof item !== 'string'){
       setUserId(item.id)
@@ -189,11 +189,9 @@ export default function Page(){
 
   useEffect(() => {
     if(status === 'success'){
-      console.log(status);
-    }else{
-      console.log(failureReason);
+      router.push({ pathname:'/message/[conversation_id]', params: { conversation_id: data.id }})
     }
-  },[status,failureReason])
+  },[status])
 
   return (
     <MessageContextProvider>

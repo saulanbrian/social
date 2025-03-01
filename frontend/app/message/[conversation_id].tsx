@@ -6,6 +6,7 @@ import { AutoCenteredActivityIndicator, ChatComponent, PendingMessage } from "@/
 import BottomInputBox, { BottomInputBoxRef }from "@/components/BottomInputBox"
 import { SuspendedView, ThemedActivityIndicator, ThemedText, ThemedView } from "@/components/ui"
 import ConversationContextProvider, { useConversationContext } from "@/context/conversation"
+import { useThemeContext } from "@/context/theme"
 import { useAuthenticatedWebSocket } from "@/hooks/socket"
 import { Chat } from "@/types/chat"
 import { summarizeQueryPagesResult } from "@/utils/queries"
@@ -13,14 +14,19 @@ import { FlashList } from "@shopify/flash-list"
 import { useQueryClient } from "@tanstack/react-query"
 import { useLocalSearchParams, useNavigation } from "expo-router"
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react"
-import { Alert, LayoutChangeEvent } from "react-native"
-import Animated,{ measure, runOnJS, useAnimatedRef, useAnimatedScrollHandler } from "react-native-reanimated"
+import { Alert, Dimensions, LayoutChangeEvent } from "react-native"
+import Animated,{ measure, runOnJS, useAnimatedKeyboard, useAnimatedRef, useAnimatedScrollHandler, useAnimatedStyle } from "react-native-reanimated"
+import { useHeaderHeight } from '@react-navigation/elements';
 
 
+const DimensionHeight = Dimensions.get('screen').height
 
 const ConversationPage = () => {
 
   const { conversation_id } = useLocalSearchParams()
+  const { theme: { colors: { background } } } = useThemeContext()
+  const headerHeight = useHeaderHeight()
+  const { height: keyboardHeight } = useAnimatedKeyboard({ isStatusBarTranslucentAndroid: true })
 
   const conversationId = useMemo(() => {
     return conversation_id
@@ -28,20 +34,34 @@ const ConversationPage = () => {
 
   const [inputBoxHeight,setInputBoxHeight] = useState<number>(0)
 
+  const rStyles = useAnimatedStyle(() => ({
+    transform:[
+      {
+        translateY:-keyboardHeight.value 
+      }
+    ]
+  }))
+
   return (
-    <Suspense fallback={<AutoCenteredActivityIndicator />}>
-      <ConversationContextProvider conversationId={conversation_id as string}>
-        <ThemedView style={{flex:1 }}>
-          <Messages />
-          <MessageBox onLayout={(e) => setInputBoxHeight(e.nativeEvent.layout.height) } />
-        </ThemedView>
-      </ConversationContextProvider>
-    </Suspense>
+    <Animated.View style={[
+      {
+        height:DimensionHeight - headerHeight,
+        backgroundColor:background.default,
+      },
+      rStyles
+    ]}>
+      <Suspense fallback={<AutoCenteredActivityIndicator />}>
+        <ConversationContextProvider conversationId={conversation_id as string}>
+          <Messages inputBoxHeight={inputBoxHeight}/>
+          <MessageBox onLayout={(e) => setInputBoxHeight(e.nativeEvent.layout.height)}/>
+        </ConversationContextProvider>
+      </Suspense>
+    </Animated.View>
   )
 }
 
 
-const Messages = () => {
+const Messages = ({ inputBoxHeight }: { inputBoxHeight: number }) => {
 
   const { conversation : { id, other_end }, messageQuery } = useConversationContext()
   const {
@@ -55,7 +75,7 @@ const Messages = () => {
   const chatsSum = useMemo(() => {
     return chats? summarizeQueryPagesResult(chats): []
   }, [chats])
-
+  
 
   return (
     <FlashList 
@@ -76,6 +96,7 @@ const Messages = () => {
       estimatedItemSize={50}
       inverted
       showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingTop: inputBoxHeight}}
       onEndReached={() => { 
         retrieveOlderMessages()          
       }}
@@ -102,7 +123,6 @@ const MessageBox = ({ onLayout }:{ onLayout:(e:LayoutChangeEvent) => void }) => 
         }
       }}
       onLayout={onLayout}
-      style={{bottom:90}}
     />
   )
 }

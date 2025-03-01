@@ -35,11 +35,11 @@ export const useGetConversation = (id:string) => {
 }
 
 
-export const useFindConversationWithUser = (userId:string | undefined) => {
+export const useGetOrCreateConversationWithUser = (userId: string | undefined ) => {
   return useQuery<Conversation>({
-    queryKey:['conversations',userId],
+    queryKey:['conveersations',userId],
     queryFn:async() => {
-      const res = await api.get(`chat/conversations/find?userId=${userId}`)
+      const res = await api.get(`chat/conversations/get_or_create?userId=${userId}`)
       return res.data
     },
     enabled:!!userId
